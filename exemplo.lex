@@ -3,15 +3,17 @@
 %{
 /* need this for the call to atof() below */
 #include <math.h>
+int contalinhas = 0;
 %}
 
 DIGIT   [0-9]
-KEY 	int|bool|this|Object|true|false|return|super|extends|if|else|while
-ID 	[a-zA-Z][a-zA-Z0-9]*
+KEYWORD	int|bool|this|Object|true|false|return|super|extends|if|else|while
+ID 	[A-z][A-z0-9]*
 %%
 
-{KEY} { printf( "KEYWORD: %s\n", yytext); }
+{KEYWORD} { printf( "KEYWORD: %s\n", yytext); }
 {ID} { printf( "ID: %s\n", yytext); }
+{DIGIT}*{ID} {printf("Line %d: IDs can't start with a digits\n", contalinhas);}
 {DIGIT}*    { printf( "NUM: %s\n", yytext); }
 ","        { printf( "COMMA\n"); }
 ";"        { printf( "SEMICOLON\n"); }
@@ -30,8 +32,9 @@ ID 	[a-zA-Z][a-zA-Z0-9]*
 "&&"        { printf( "BAND\n"); }
 "||"        { printf( "BOR\n"); }
 "=="        { printf( "BEQ\n"); }
-[ \t\n]+        {/* Caracteres vazios :)*/ }
-.	{ printf("Caracter nao especificado!\n");
+[ \t\n]+        { contalinhas++;/* Caracteres vazios :)*/ }
+.	{ printf("Line %d: Character %s not recognized\n", yytext, contalinhas);
+
 /* 
 tipo de comentário
 regras de erro:

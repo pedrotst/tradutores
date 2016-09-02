@@ -3,7 +3,8 @@
 %{
 /* need this for the call to atof() below */
 #include <math.h>
-int count_lines = 0;
+#include <string.h>
+int count_lines = 0, chars = 0;
 %}
 
 DIGIT   [0-9]
@@ -13,33 +14,33 @@ NOPERATOR >>|<<|^|**|\|
 
 %%
 
-{DIGIT}+{ID}|{DIGIT}+{KEYWORD} {printf("Line %d: Malformed arithmethic expression\n", count_lines);}
-{NOPERATOR}        {printf("Line %d: Operator %s Not Supported\n", count_lines, yytext);}
-{KEYWORD} {printf("KEYWORD: %s\n", yytext);}
-{ID} {printf("ID: %s\n", yytext);}
-{DIGIT}*    {printf("NUM: %s\n", yytext);}
-","        {printf("COMMA\n");}
-";"        {printf("SEMICOLON\n");}
-"="        {printf("VAR_ATTRIBUITION\n");}
-"\("        {printf("L_PAREN\n");}
-"\)"        {printf("R_PAREN\n");}
-"\{"        {printf("L_CURL_BRACKETS\n");}
-"\}"        {printf("R_CURL_BRACKETS\n");}
-"."        {printf("DOT\n");}
-"+"        {printf("PLUS\n");}
-"-"        {printf("MINUS\n");}
-"*"        {printf("MULT\n");}
-"/"        {printf("DIV\n");}
-"~"        {printf("NOT\n");}
-"&&"        {printf("BAND\n");}
-"||"        {printf("BOR\n");}
-"=="        {printf("BEQ\n");}
-">="        {printf("BGE\n");}
-"<="        {printf("BLE\n");}
-">"        {printf("BGT\n");}
-"<"        {printf("BLT\n");}
-[ \t\n]+        {count_lines++;/* Caracteres vazios :)*/}
-.	{printf("Line %d: Character %s not recognized\n", count_lines, yytext);
+{DIGIT}+{ID}|{DIGIT}+{KEYWORD} {printf("Line %d,%d: Malformed arithmethic expression\n", count_lines, chars); }
+{NOPERATOR}        {printf("Line %d,%d: Operator %s Not Supported\n", count_lines, chars, yytext);chars+=strlen(yytext);}
+{KEYWORD} {printf("KEYWORD: %s\n", yytext);chars+=strlen(yytext);}
+{ID} {printf("ID: %s\n", yytext);chars+=strlen(yytext);}
+{DIGIT}*    {printf("NUM: %s\n", yytext);chars+=strlen(yytext);}
+","        {printf("COMMA\n");chars+=strlen(yytext);}
+";"        {printf("SEMICOLON\n");chars+=strlen(yytext);}
+"="        {printf("VAR_ATTRIBUITION\n");chars+=strlen(yytext);}
+"\("        {printf("L_PAREN\n");chars+=strlen(yytext);}
+"\)"        {printf("R_PAREN\n");chars+=strlen(yytext);}
+"\{"        {printf("L_CURL_BRACKETS\n");chars+=strlen(yytext);}
+"\}"        {printf("R_CURL_BRACKETS\n");chars+=strlen(yytext);}
+"."        {printf("DOT\n");chars+=strlen(yytext);}
+"+"        {printf("PLUS\n");chars+=strlen(yytext);}
+"-"        {printf("MINUS\n");chars+=strlen(yytext);}
+"*"        {printf("MULT\n");chars+=strlen(yytext);}
+"/"        {printf("DIV\n");chars+=strlen(yytext);}
+"~"        {printf("NOT\n");chars+=strlen(yytext);}
+"&&"        {printf("BAND\n");chars+=strlen(yytext);}
+"||"        {printf("BOR\n");chars+=strlen(yytext);}
+"=="        {printf("BEQ\n");chars+=strlen(yytext);}
+">="        {printf("BGE\n");chars+=strlen(yytext);}
+"<="        {printf("BLE\n");chars+=strlen(yytext);}
+">"        {printf("BGT\n");chars+=strlen(yytext);}
+"<"        {printf("BLT\n");chars+=strlen(yytext);}
+[ \t\n]+        {count_lines++;chars=0;/* Caracteres vazios :)*/}
+.	{printf("Line %d: Character %s not recognized\n", count_lines, yytext);chars+=strlen(yytext)
 
 /* 
 tipo de comentário

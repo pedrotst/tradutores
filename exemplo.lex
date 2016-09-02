@@ -3,18 +3,18 @@
 %{
 /* need this for the call to atof() below */
 #include <math.h>
-int contalinhas = 0;
+int count_lines = 0;
 %}
 
 DIGIT   [0-9]
 KEYWORD	int|bool|this|Object|true|false|return|super|extends|if|else|while
 ID 	[A-z_][A-z_0-9]*
-NOPERATOR >>|<<|<|>|>=|<=|^
+NOPERATOR >>|<<|^|**|\|
 
 %%
 
-{DIGIT}+{ID}|{DIGIT}+{KEYWORD} {printf("Line %d: Malformed arithmethic expression\n", contalinhas);}
-{NOPERATOR}        {printf("Line %d: Operator %s Not Supported\n", contalinhas, yytext);}
+{DIGIT}+{ID}|{DIGIT}+{KEYWORD} {printf("Line %d: Malformed arithmethic expression\n", count_lines);}
+{NOPERATOR}        {printf("Line %d: Operator %s Not Supported\n", count_lines, yytext);}
 {KEYWORD} {printf("KEYWORD: %s\n", yytext);}
 {ID} {printf("ID: %s\n", yytext);}
 {DIGIT}*    {printf("NUM: %s\n", yytext);}
@@ -30,13 +30,16 @@ NOPERATOR >>|<<|<|>|>=|<=|^
 "-"        {printf("MINUS\n");}
 "*"        {printf("MULT\n");}
 "/"        {printf("DIV\n");}
-"**"        {printf("POW\n");}
 "~"        {printf("NOT\n");}
 "&&"        {printf("BAND\n");}
 "||"        {printf("BOR\n");}
 "=="        {printf("BEQ\n");}
-[ \t\n]+        {contalinhas++;/* Caracteres vazios :)*/}
-.	{printf("Line %d: Character %s not recognized\n", contalinhas, yytext);
+">="        {printf("BGE\n");}
+"<="        {printf("BLE\n");}
+">"        {printf("BGT\n");}
+"<"        {printf("BLT\n");}
+[ \t\n]+        {count_lines++;/* Caracteres vazios :)*/}
+.	{printf("Line %d: Character %s not recognized\n", count_lines, yytext);
 
 /* 
 tipo de comentário

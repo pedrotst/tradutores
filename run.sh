@@ -1,1 +1,3 @@
-lex exemplo.lex && gcc lex.yy.c -lfl && ./a.out
+lex exemplo.lex 
+gcc lex.yy.c -lfl 
+./a.out

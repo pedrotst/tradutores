@@ -8,9 +8,9 @@ int count_lines = 0, chars = 0;
 %}
 
 DIGIT   [0-9]
+NOPERATOR >>|<<|^|\*\*|\|
 KEYWORD	int|bool|this|Object|true|false|return|super|extends|if|else|while
 ID 	[A-z_][A-z_0-9]*
-NOPERATOR >>|<<|^|**|\|
 
 %%
 
@@ -39,8 +39,9 @@ NOPERATOR >>|<<|^|**|\|
 "<="        {printf("BLE\n");chars+=strlen(yytext);}
 ">"        {printf("BGT\n");chars+=strlen(yytext);}
 "<"        {printf("BLT\n");chars+=strlen(yytext);}
-[ \t\n]+        {count_lines++;chars=0;/* Caracteres vazios :)*/}
-.	{printf("Line %d: Character %s not recognized\n", count_lines, yytext);chars+=strlen(yytext)
+[ \t\n]+        {chars+=strlen(yytext);/* Caracteres vazios :)*/}
+[\n]+		{count_lines++;chars=0;}
+.	{printf("Line %d: Character %s not recognized\n", count_lines, yytext);chars+=strlen(yytext);
 
 /* 
 tipo de comentário
@@ -49,16 +50,6 @@ regras de erro:
 falar a linha do erro
 ler a espec
 para compilar e rodar:
-lex exemplo.lex && gcc lex.yy.c -lfl && ./a.out
-lex exemplo.lex && gcc lex.yy.c -lfl && ./a.out
-lex exemplo.lex && gcc lex.yy.c -lfl && ./a.out
-lex exemplo.lex && gcc lex.yy.c -lfl && ./a.out
-lex exemplo.lex && gcc lex.yy.c -lfl && ./a.out
-lex exemplo.lex && gcc lex.yy.c -lfl && ./a.out
-lex exemplo.lex && gcc lex.yy.c -lfl && ./a.out
-lex exemplo.lex && gcc lex.yy.c -lfl && ./a.out
-lex exemplo.lex && gcc lex.yy.c -lfl && ./a.out
-
 lex exemplo.lex && gcc lex.yy.c -lfl && ./a.out
 */ 
 }

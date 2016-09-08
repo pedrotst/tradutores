@@ -1,3 +1,3 @@
-lex exemplo.lex 
-gcc lex.yy.c -lfl 
-./a.out
+lex sint.lex 
+gcc -o sint.out lex.yy.c -lfl 
+./sint.out

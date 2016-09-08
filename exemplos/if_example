@@ -1,0 +1,76 @@
+/*
+    Este e um exemplo de programa FJ+- mal formado para exercitar os casos de erro.
+   Os erros deste arquivo sao:
+   1) Operador nao implementado na linha 13
+   2) Expressao aritimetica mal formada na linha 14
+*/
+
+int a, b, c, err;
+bool d;
+
+a = 3;
+b = 5;
+d = a >> b;
+err = 2a + c;
+
+if(a >= b){
+    c = 4;
+}
+else{
+    c = 1;
+}
+
+/* Tokens Identificados
+
+KEYWORD: int
+ID: a
+COMMA
+ID: b
+COMMA
+ID: c
+COMMA
+ID: err
+SEMICOLON
+KEYWORD: bool
+ID: d
+SEMICOLON
+ID: a
+VAR_ATTRIBUITION
+NUM: 3
+SEMICOLON
+ID: b
+VAR_ATTRIBUITION
+NUM: 5
+SEMICOLON
+ID: d
+VAR_ATTRIBUITION
+ID: a
+Line 13,6: Operator >> Not Supported
+ID: b
+SEMICOLON
+ID: err
+VAR_ATTRIBUITION
+Line 14,6: Malformed arithmethic expression
+PLUS
+ID: c
+SEMICOLON
+KEYWORD: if
+L_PAREN
+ID: a
+BGE
+ID: b
+R_PAREN
+L_CURL_BRACKETS
+ID: c
+VAR_ATTRIBUITION
+NUM: 4
+SEMICOLON
+R_CURL_BRACKETS
+KEYWORD: else
+L_CURL_BRACKETS
+ID: c
+VAR_ATTRIBUITION
+NUM: 1
+SEMICOLON
+R_CURL_BRACKETS
+*/

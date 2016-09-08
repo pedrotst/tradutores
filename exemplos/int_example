@@ -1,0 +1,170 @@
+/*
+    Este é um exemplo de implementação dos naturais em Featherweight Java puro,
+    ele deverá ser interpretado corretamente por FJ+-
+    Note como este exemplo permite recursao atraves do this e override de metodos das superclasses.
+    O retorno do parser deverá ser os tokens listados abaixo
+*/
+
+class Int extends Object{
+    Int(){super();}
+
+    Int add(Int rhs){
+        return rhs.add(this);
+    }
+}
+
+class O extends Int{
+    O(){super();}
+
+    Int add(Int rhs){
+        return rhs;
+    }
+}
+
+class S extends Int{
+    Int num;
+
+    S(Int num){
+        super();
+        this.num=num;
+    }
+
+    Int add(Int rhs){
+        return this.num.add(new S(rhs));
+    }
+    
+}
+new S(new S(new O())).add(new S(new O()))
+
+/* Tokens Reconhecidos 
+
+ID: class
+ID: Int
+KEYWORD: extends
+KEYWORD: Object
+L_CURL_BRACKETS
+ID: Int
+L_PAREN
+R_PAREN
+L_CURL_BRACKETS
+KEYWORD: super
+L_PAREN
+R_PAREN
+SEMICOLON
+R_CURL_BRACKETS
+ID: Int
+ID: add
+L_PAREN
+ID: Int
+ID: rhs
+R_PAREN
+L_CURL_BRACKETS
+KEYWORD: return
+ID: rhs
+DOT
+ID: add
+L_PAREN
+KEYWORD: this
+R_PAREN
+SEMICOLON
+R_CURL_BRACKETS
+R_CURL_BRACKETS
+ID: class
+ID: O
+KEYWORD: extends
+ID: Int
+L_CURL_BRACKETS
+ID: O
+L_PAREN
+R_PAREN
+L_CURL_BRACKETS
+KEYWORD: super
+L_PAREN
+R_PAREN
+SEMICOLON
+R_CURL_BRACKETS
+ID: Int
+ID: add
+L_PAREN
+ID: Int
+ID: rhs
+R_PAREN
+L_CURL_BRACKETS
+KEYWORD: return
+ID: rhs
+SEMICOLON
+R_CURL_BRACKETS
+R_CURL_BRACKETS
+ID: class
+ID: S
+KEYWORD: extends
+ID: Int
+L_CURL_BRACKETS
+ID: Int
+ID: num
+SEMICOLON
+ID: S
+L_PAREN
+ID: Int
+ID: num
+R_PAREN
+L_CURL_BRACKETS
+KEYWORD: super
+L_PAREN
+R_PAREN
+SEMICOLON
+KEYWORD: this
+DOT
+ID: num
+VAR_ATTRIBUITION
+ID: num
+SEMICOLON
+R_CURL_BRACKETS
+ID: Int
+ID: add
+L_PAREN
+ID: Int
+ID: rhs
+R_PAREN
+L_CURL_BRACKETS
+KEYWORD: return
+KEYWORD: this
+DOT
+ID: num
+DOT
+ID: add
+L_PAREN
+KEYWORD: new
+ID: S
+L_PAREN
+ID: rhs
+R_PAREN
+R_PAREN
+SEMICOLON
+R_CURL_BRACKETS
+R_CURL_BRACKETS
+KEYWORD: new
+ID: S
+L_PAREN
+KEYWORD: new
+ID: S
+L_PAREN
+KEYWORD: new
+ID: O
+L_PAREN
+R_PAREN
+R_PAREN
+R_PAREN
+DOT
+ID: add
+L_PAREN
+KEYWORD: new
+ID: S
+L_PAREN
+KEYWORD: new
+ID: O
+L_PAREN
+R_PAREN
+R_PAREN
+R_PAREN
+*/

@@ -1,0 +1,61 @@
+/*
+    Este e um exemplo de programa FJ+- mal formado para exercitar os casos de erro.
+   Os erros deste arquivo sao:
+   1) Operador nao implementado na linha 13
+   2) Expressao aritimetica mal formada na linha 14
+
+   Note que deve ser bem aceito o caso while(True) , pois True pode ser o nome de uma variavel booleana. Utilizar este nome nao eh recomendado, mas eh uma possibilidade.
+   Note tambem que Class sera identificado como uma ID, e nao como uma keyword. O mesmo acontecera com Int, Bool e afins (Ver int_example).
+
+*/
+
+Class While (){
+}
+
+class While (){
+}
+
+int a;
+bool t;
+a = 0;
+
+while(True){
+    a = a+1;
+}
+
+/*
+ID: Class
+ID: While
+L_PAREN
+R_PAREN
+L_CURL_BRACKETS
+R_CURL_BRACKETS
+KEYWORD: class
+ID: While
+L_PAREN
+R_PAREN
+L_CURL_BRACKETS
+R_CURL_BRACKETS
+KEYWORD: int
+ID: a
+SEMICOLON
+KEYWORD: bool
+ID: t
+SEMICOLON
+ID: a
+VAR_ATTRIBUITION
+NUM: 0
+SEMICOLON
+KEYWORD: while
+L_PAREN
+ID: True
+R_PAREN
+L_CURL_BRACKETS
+ID: a
+VAR_ATTRIBUITION
+ID: a
+PLUS
+NUM: 1
+SEMICOLON
+R_CURL_BRACKETS
+*/

@@ -1,0 +1,5 @@
+*.swp
+*.tab.c
+*.tab.h
+*.o
+*.bak

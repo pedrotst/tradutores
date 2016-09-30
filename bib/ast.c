@@ -97,57 +97,5 @@ void print_opnode(bin_op* b_op, int tabs){
     printf("}\n");
 
 }
-/*
 
-
-ast* leafnode(symbol s){
-    ast *a = node_alloc();
-    a->node_type = TERM_T;
-    a->sym = s;
-    a->left = NULL;
-    a ->right = NULL;
-    return a;
-}
-
-
-
-void destruct_tree(ast* a){
-    ast *l, *r;
-    if(a!=NULL){
-        free(a);
-        l = a->left;
-        r = a->right;
-        destruct_tree(l);
-        destruct_tree(r);
-    }
-}
-void print_ntype(int n_type){
-    switch(n_type){
-        case TERM_T:
-            printf("TERM: ");
-            break;
-        case EXP_T:
-            printf("EXP: ");
-            break;
-        case LINE_T:
-            printf("LINE: ");
-            break;
-        default:
-            break;
-    }
-}
-
-void print_symbol(symbol s){
-    switch(s.tag){
-        case 0:
-        printf("%d", s.u.num);
-        break;
-        case 1:
-        printf("%c", s.u.op);
-        break;
-        default:
-        break;
-    }
-}
-*/
 

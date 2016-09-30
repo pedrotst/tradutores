@@ -8,6 +8,9 @@
 #define TERM_T 1
 #define EXP_T 2
 #define LINE_T 3
+#define OPNODE_T 4
+
+typedef struct exp_s exp;
 
 typedef union symbol_un {
     char op;
@@ -19,21 +22,39 @@ typedef struct symbol_s{
     symbol_u u;
 }symbol;
 
-typedef struct ast_s {
-    symbol sym;
-    int node_type;
-    struct ast_s *left;
-    struct ast_s *right;
-}ast;
+typedef struct term_s{
+    int num;
+}term;
 
-ast* node_alloc();
-ast* node(symbol s, int node_t, ast* l, ast* r);
-void destruct_tree(ast* a);
-ast* leafnode(symbol s);
-void print_ast(ast* a, int n);
+typedef struct bin_op_s{
+    char op;
+    exp *lhs;
+    term *rhs;
+}bin_op;
+
+union exp_u{
+    term *t;
+    bin_op *b_op;
+};
+
+struct exp_s{
+    int tag;
+    union exp_u expr;
+};
+
+exp* exp_alloc();
+term* term_alloc();
+bin_op* bin_alloc();
+term* term_node(int n);
+
+exp* exp_opnode(char op, exp* lhs, term* rhs);
+exp* exp_termnode(term* t);
+void print_exp(exp* a, int n);
+void print_opnode(bin_op* b_op, int tabs);
+void print_term(term* t, int tabs);
+
+void destruct_tree(exp* a);
 void print_symbol(symbol s);
 void print_ntype(int n_type);
-
-
 
 #endif

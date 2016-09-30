@@ -10,7 +10,6 @@ int count_lines = 1, chars = 0;
 void yyerror(const char*);
 int yywrap();
 int yylex(void);
-// extern int yylval;
 %}
 
 
@@ -27,9 +26,7 @@ int yylex(void);
 %%
 line    
 : exp ';'
-    { print_ast($1, 0);
-    //printf("line %d:%d - val %d\n", count_lines, chars, $1);
-    }
+    { ast *a = $1; print_ast(a, 0); destruct_tree(a); }
 
 exp     
 : term                  

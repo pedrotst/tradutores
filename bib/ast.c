@@ -21,6 +21,17 @@ ast* node(symbol s, int node_t, ast* l, ast* r){
     return a;
 }
 
+void destruct_tree(ast* a){
+    ast *l, *r;
+    if(a!=NULL){
+        free(a);
+        l = a->left;
+        r = a->right;
+        destruct_tree(l);
+        destruct_tree(r);
+    }
+}
+
 ast* leafnode(symbol s){
     ast *a = node_alloc();
     a->node_type = TERM_T;

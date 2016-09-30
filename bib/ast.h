@@ -28,6 +28,7 @@ typedef struct ast_s {
 
 ast* node_alloc();
 ast* node(symbol s, int node_t, ast* l, ast* r);
+void destruct_tree(ast* a);
 ast* leafnode(symbol s);
 void print_ast(ast* a, int n);
 void print_symbol(symbol s);

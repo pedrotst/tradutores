@@ -15,6 +15,7 @@ typedef struct Program_s        Program;
 typedef struct ClassDecl_s      ClassDecl;
 typedef struct Constructor_s    Constructor;
 typedef struct MethodDecl_s     MethodDecl;
+typedef struct ClassMembers_s   ClassMembers;
 typedef struct ClassName_s      ClassName;
 typedef struct Assignment_s     Assignment;
 typedef struct Var_s            Var;
@@ -26,6 +27,7 @@ typedef struct VarDecl_s        VarDecl;
 typedef struct IdList_s         IdList;
 typedef struct Type_s           Type;
 typedef struct Exp_s            Exp;
+typedef struct Return_s         Return;
 typedef struct FieldAccess_s    FieldAccess;
 typedef struct MethodInvoc_s    MethodInvoc;
 typedef struct New_s            New;
@@ -35,11 +37,9 @@ typedef struct Stmt_s           Stmt;
 typedef struct MatchedStmt_s    MatchedStmt;
 
 struct ClassDecl_s{
-    char *className;
-    char *superName;
-    VarDecl *varDecls;
-    Constructor *construct;
-    MethodDecl *mdecl;
+    char *selfName;
+    ClassName *superName;
+    ClassMembers *cMembers;
     struct ClassDecl_s *nextClass;
 };
 
@@ -51,6 +51,12 @@ struct Program_s{
 
 
 Program* program_node(ClassDecl *classes, StmtList *stmts);
+ClassDecl* classDecl_node(char *Selfname, ClassName *superName, 
+    ClassMembers *cMembers, ClassDecl *nextClass);
+
+void print_program(Program* p);
+void print_class(ClassDecl *c);
+void print_stmt(StmtList *stmt);
 
 /*
 typedef struct exp_s exp;

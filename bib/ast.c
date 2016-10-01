@@ -12,6 +12,54 @@ Program* program_node(ClassDecl *classes, StmtList *stmts){
     return p;
 }
 
+ClassDecl* classDecl_node(char *selfName, ClassName *superName, 
+    ClassMembers *cMembers, ClassDecl *nextClass){
+
+    ClassDecl *c = (ClassDecl*) malloc(sizeof(ClassDecl));
+    if(c == NULL){
+        err(1, "Could not allocate memory for Class");
+        exit(1);
+    }
+    c->selfName = selfName;
+    c->superName = superName;
+    c->cMembers = cMembers;
+    c->nextClass = nextClass;
+    return c;
+}
+
+
+void print_program(Program* p){
+    printf("entrei\n");
+    ClassDecl *cdecl = p->classes;
+    StmtList *stmt = p->stmts;
+    while(cdecl != NULL){
+        print_class(cdecl);
+        cdecl = p->classes->nextClass;
+    }
+    while(stmt != NULL){
+        print_stmt(stmt);
+        stmt = p->stmts;
+    }
+}
+
+void print_class(ClassDecl *c){
+    ClassDecl *cdecl = c;
+    while(cdecl != NULL){
+        // printf("class %s extends %s{", cdecl->selfName, cdecl->superName);
+        printf("class %s extends {", cdecl->selfName);
+        //printf("\tfields: {");
+        // print_var(cdecl->varDecls);
+        printf("}");
+        // print_constructor();
+        // print_mdecl();
+        cdecl = c->nextClass;
+    }
+
+}
+
+void print_stmt(StmtList *stmt){
+}
+
 /*
 exp* exp_alloc(){
     exp *a = (exp*)malloc(sizeof(exp));

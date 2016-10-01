@@ -5,8 +5,13 @@
 
 extern int count_lines, chars;
 void parse_comment(char* yytext);
-// extern YYSTYPE yylval;
 extern int yywrap(void);
+
+/* 
+extern YYSTYPE yylval;
+"super"     {chars+=strlen(yytext); return SUPER;}
+*/
+
 
 %}
 
@@ -31,7 +36,6 @@ ID 	[A-z_][A-z_0-9]*
 "true"      {chars+=strlen(yytext); return TRUE;}
 "false"     {chars+=strlen(yytext); return FALSE;}
 "return"    {chars+=strlen(yytext); return RETURN;}
-"super"     {chars+=strlen(yytext); return SUPER;}
 "extends"   {chars+=strlen(yytext); return EXTENDS;}
 "if"        {chars+=strlen(yytext); return IF;}
 "else"      {chars+=strlen(yytext); return ELSE;}

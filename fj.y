@@ -41,6 +41,7 @@ term
     int num; 
     struct Program_s*       program_v;
     struct ClassDecl_s*     class_v;
+    struct ClassMembers_s*  classMembers_v;
     struct Constructor_s*   constructor_v; 
     struct MethodDecl_s*    methodDecl_v; 
     struct ClassName_s*     className_v; 
@@ -54,6 +55,7 @@ term
     struct IdList_s*        idList_v; 
     struct Type_s*          type_v; 
     struct Exp_s*           exp_v; 
+    struct Return_s*        return_v; 
     struct FieldAccess_s*   fieldAccess_v; 
     struct MethodInvoc_s*   methodInvoc_v; 
     struct New_s*           new_v; 
@@ -63,6 +65,7 @@ term
     struct MatchedStmt_s*   matchedStmt_v; 
 
 }
+%define parse.error verbose
 
 %token ID NUM COMMA SEMICOLON VAR_ATTRIBUITION L_PAREN R_PAREN
 %token L_BRACK R_BRACK DOT
@@ -76,11 +79,13 @@ term
 %right NOT
 %left BEQ BGE BLE BGT BLT
 
+%type <strs> ID
 %type <program_v> program
 %type <class_v> classDecl
 %type <constructor_v> constructor
 %type <methodDecl_v> methodDecl
 %type <className_v> className
+%type <classMembers_v> classMembers
 %type <assignment_v> assignment
 %type <var_v> var
 %type <suite_v> suite
@@ -88,9 +93,10 @@ term
 %type <argList_v> argList
 %type <formalArgs_v> formalArgs
 %type <varDecl_v> varDecl
-%type <idList_v> idList ID
+%type <idList_v> idList
 %type <type_v> type
 %type <exp_v> exp
+%type <return_v> return
 %type <fieldAccess_v> fieldAccess
 %type <methodInvoc_v> methodInvoc
 %type <new_v> new
@@ -101,112 +107,123 @@ term
 
 %%
 program 
-: classDecl stmtList    {
-    $$ = program_node($1, $2);
+: classDecl stmtList {
+    Program *p; p = program_node($1, $2); print_program(p);
+    $$ = p;
 }    
 
 classDecl
 : %empty {$$ = NULL;}
-| CLASS ID EXTENDS className L_BRACK varDecl constructor methodDecl R_BRACK classDecl{
-    $$ = NULL;
+| CLASS ID EXTENDS className L_BRACK classMembers R_BRACK classDecl{
+    $$ = classDecl_node($2, $4, $6, $8);
 }
 
+classMembers
+: %empty {$$ = NULL;}
+| varDecl classMembers {$$ = NULL;}
+| constructor classMembers {$$ = NULL;}
+| methodDecl classMembers {$$ = NULL;}
+
 constructor
-: ID L_PAREN formalArgs R_PAREN L_BRACK SUPER L_PAREN argList R_PAREN SEMICOLON suite R_BRACK {
-    }
+: ID L_PAREN formalArgs R_PAREN L_BRACK stmtList R_BRACK {$$=NULL; }
 
 methodDecl
-: %empty {$$ = NULL;}
-| type ID L_PAREN formalArgs R_PAREN L_BRACK suite RETURN L_PAREN exp R_PAREN R_BRACK methodDecl{
+: type ID L_PAREN formalArgs R_PAREN L_BRACK stmtList R_BRACK methodDecl{$$=NULL;
 }
 
 className
-: OBJECT {}
-| ID {}
+: OBJECT {$$=NULL;}
+| ID {$$=NULL;}
 
 assignment
-: ID VAR_ATTRIBUITION exp SEMICOLON{}
+: ID VAR_ATTRIBUITION exp SEMICOLON{$$=NULL;}
 
 var
-: THIS {}
-| ID {}
+: THIS {$$=NULL;}
+| ID {$$=NULL;}
 
 suite
-: L_BRACK stmtList R_BRACK {}
-| stmt SEMICOLON {}
+: L_BRACK stmtList R_BRACK {$$=NULL;}
+| stmt SEMICOLON {$$=NULL;}
 
 stmtList
 : %empty {$$ = NULL;}
-| stmt SEMICOLON stmtList {$$ = NULL;}
+| stmt stmtList {$$ = NULL;}
 
 argList
-: %empty {}
-| exp COMMA argList {}
+: %empty {$$=NULL;}
+| exp COMMA argList {$$=NULL;}
 
 
 formalArgs
-: %empty {$$ = NULL;}
-| type ID COMMA formalArgs{}
+: %empty {$$=NULL;}
+| type ID COMMA formalArgs{$$=NULL;}
 
 varDecl
-: type idList SEMICOLON {}
+: type idList SEMICOLON {$$=NULL;}
 
 idList
-: ID 
-| ID COMMA idList {}
+: ID {$$=NULL;}
+| idList COMMA ID {$$=NULL;}
 
 
 type
-: className {}
-| INT {}
-| BOOL {}
+: className {$$=NULL;}
+| INT {$$=NULL;}
+| BOOL {$$=NULL;}
 
 exp
-: var {}
-| fieldAccess {}
-| methodInvoc {}
-| new {}
-| assignment {}
-| int {}
-| bool {}
+: var {$$=NULL;}
+| fieldAccess {$$=NULL;}
+| methodInvoc {$$=NULL;}
+| new {$$=NULL;}
+| assignment {$$=NULL;}
+| return {$$=NULL;}
+| int {$$=NULL;}
+| bool {$$=NULL;}
+
+return
+: RETURN L_PAREN exp R_PAREN {$$=NULL;}
 
 fieldAccess
-: exp DOT ID {}
+: exp DOT ID {$$=NULL;}
 
 methodInvoc
-: exp DOT ID L_PAREN argList R_PAREN {}
+: exp DOT ID L_PAREN argList R_PAREN {$$=NULL;}
+| ID L_PAREN argList R_PAREN {$$=NULL;}
+
 
 new
-: NEW ID L_PAREN argList R_PAREN {}
+: NEW ID L_PAREN argList R_PAREN {$$=NULL;}
 
 int
-: int '+' int {}
-| int '-' int {}
-| int '*' int {}
-| int '/' int {}
-| NUM
+: int '+' int {$$=NULL;}
+| int '-' int {$$=NULL;}
+| int '*' int {$$=NULL;}
+| int '/' int {$$=NULL;}
+| NUM{$$=NULL;}
 
 bool
-: bool BOR bool
-| bool BAND bool
-| NOT bool
-| int BEQ int {}
-| int BLE int {}
-| int BGE int {}
-| int BLT int {}
-| int BGT int {}
-| TRUE 
-| FALSE
+: bool BOR bool{$$=NULL;}
+| bool BAND bool{$$=NULL;}
+| NOT bool{$$=NULL;}
+| int BEQ int {$$=NULL;}
+| int BLE int {$$=NULL;}
+| int BGE int {$$=NULL;}
+| int BLT int {$$=NULL;}
+| int BGT int {$$=NULL;}
+| TRUE {$$=NULL;}
+| FALSE{$$=NULL;}
 
 stmt
-: IF BOOL suite {}
-| matchedStmt {}
+: IF BOOL suite {$$=NULL;}
+| matchedStmt {$$=NULL;}
 
 matchedStmt
-: IF bool suite ELSE suite {}
-| WHILE bool suite {}
-| varDecl {}
-| exp SEMICOLON {} 
+: IF bool suite ELSE suite {$$=NULL;}
+| WHILE bool suite {$$=NULL;}
+| varDecl {$$=NULL;}
+| exp SEMICOLON {$$=NULL;} 
 
 
 %%
@@ -214,7 +231,7 @@ matchedStmt
 
 void yyerror(const char *str)
 {
-    fprintf(stderr,"error: %s\n",str);
+    fprintf(stderr,"error line: %d:%d: %s\n",count_lines, chars, str);
 }
 
 int yywrap() {return 1;};

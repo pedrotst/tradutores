@@ -9,16 +9,17 @@ int count_lines = 0, chars = 0;
 
 DIGIT   [0-9]
 NOPERATOR >>|<<|^|\*\*|\|
-KEYWORD	int|bool|this|Object|true|false|return|super|extends|if|else|while
 ID 	[A-z_][A-z_0-9]*
 
 %%
 
 {DIGIT}+{ID}|{DIGIT}+{KEYWORD} {printf("Line %d,%d: Malformed arithmethic expression\n", count_lines, chars); }
 {NOPERATOR}        {printf("Line %d,%d: Operator %s Not Supported\n", count_lines, chars, yytext);chars+=strlen(yytext);}
-{KEYWORD} {printf("KEYWORD: %s\n", yytext);chars+=strlen(yytext);}
 {ID} {printf("ID: %s\n", yytext);chars+=strlen(yytext);}
 {DIGIT}*    {printf("NUM: %s\n", yytext);chars+=strlen(yytext);}
+
+
+
 ","        {printf("COMMA\n");chars+=strlen(yytext);}
 ";"        {printf("SEMICOLON\n");chars+=strlen(yytext);}
 "="        {printf("VAR_ATTRIBUITION\n");chars+=strlen(yytext);}

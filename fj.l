@@ -18,14 +18,50 @@ ID 	[A-z_][A-z_0-9]*
 %%
 
 \/\*([^*]|[\n]|[\r\n]|(\*+([^*/]|[\n][\r\n])))*\*+\/   {parse_comment(yytext);/*Comentario*/}
-
 "//".*\n    {count_lines++; chars=0;/* Comentario */}
+
+
+
+"int"       {chars+=strlen(yytext); return INT;}
+"bool"      {chars+=strlen(yytext); return BOOL;}
+"this"      {chars+=strlen(yytext); return THIS;}
+"Object"    {chars+=strlen(yytext); return OBJECT;}
+"new"       {chars+=strlen(yytext); return NEW;}
+"class"     {chars+=strlen(yytext); return CLASS;}
+"true"      {chars+=strlen(yytext); return TRUE;}
+"false"     {chars+=strlen(yytext); return FALSE;}
+"return"    {chars+=strlen(yytext); return RETURN;}
+"super"     {chars+=strlen(yytext); return SUPER;}
+"extends"   {chars+=strlen(yytext); return EXTENDS;}
+"if"        {chars+=strlen(yytext); return IF;}
+"else"      {chars+=strlen(yytext); return ELSE;}
+"while"     {chars+=strlen(yytext); return WHILE;}
+
+{ID}        {yylval.strs=strdup(yytext);chars+=strlen(yytext);return ID;}       
+","         {chars+=strlen(yytext); return COMMA;} 
+";"         {chars+=strlen(yytext); return SEMICOLON;}
+"="         {chars+=strlen(yytext); return VAR_ATTRIBUITION;}
+"\("        {chars+=strlen(yytext); return L_PAREN;}
+"\)"        {chars+=strlen(yytext); return R_PAREN;}
+"\{"        {chars+=strlen(yytext); return L_BRACK;}
+"\}"        {chars+=strlen(yytext); return R_BRACK;}
+"."         {chars+=strlen(yytext); return DOT;}
+"+-*/"      {chars+=strlen(yytext); return yytext[0];}
+"~"         {chars+=strlen(yytext); return NOT;}
+"&&"        {chars+=strlen(yytext); return BAND;}
+"||"        {chars+=strlen(yytext); return BOR;}
+"=="        {chars+=strlen(yytext); return BEQ;}
+">="        {chars+=strlen(yytext); return BGE;}
+"<="        {chars+=strlen(yytext); return BLE;}
+">"         {chars+=strlen(yytext); return BGT;}
+"<"         {chars+=strlen(yytext); return BLT;}
+
 {DIGIT}*    {yylval.num = atoi(yytext); chars+=strlen(yytext); return NUM;}
 [+-;]        {return yytext[0];}
 [ \t\r]+      {chars+=strlen(yytext);}
 [\n]		{count_lines++;chars=0;}
+.	        {printf("Line %d, %d: Character %s not recognized\n", count_lines, chars, yytext);chars+=strlen(yytext);}
 
-.           ;
 %%
 
 void parse_comment(char* yytext){
@@ -37,32 +73,8 @@ void parse_comment(char* yytext){
 
 // int yywrap (void) {return 1;}
 
+//{KEYWORD}   {printf("KEYWORD: %s\n", yytext);chars+=strlen(yytext);}
 /*
-{KEYWORD}   {printf("KEYWORD: %s\n", yytext);chars+=strlen(yytext);}
-{ID}        {printf("ID: %s\n", yytext);chars+=strlen(yytext);}
-","         {printf("COMMA\n");chars+=strlen(yytext);}
-";"         {printf("SEMICOLON\n");chars+=strlen(yytext);}
-"="         {printf("VAR_ATTRIBUITION\n");chars+=strlen(yytext);}
-"\("        {printf("L_PAREN\n");chars+=strlen(yytext);}
-"\)"        {printf("R_PAREN\n");chars+=strlen(yytext);}
-"\{"        {printf("L_CURL_BRACKETS\n");chars+=strlen(yytext);}
-"\}"        {printf("R_CURL_BRACKETS\n");chars+=strlen(yytext);}
-"."         {printf("DOT\n");chars+=strlen(yytext);}
-"+"         {printf("PLUS\n");chars+=strlen(yytext);}
-"-"         {printf("MINUS\n");chars+=strlen(yytext);}
-"*"         {printf("MULT\n");chars+=strlen(yytext);}
-"/"         {printf("DIV\n");chars+=strlen(yytext);}
-"~"         {printf("NOT\n");chars+=strlen(yytext);}
-"&&"        {printf("BAND\n");chars+=strlen(yytext);}
-"||"        {printf("BOR\n");chars+=strlen(yytext);}
-"=="        {printf("BEQ\n");chars+=strlen(yytext);}
-">="        {printf("BGE\n");chars+=strlen(yytext);}
-"<="        {printf("BLE\n");chars+=strlen(yytext);}
-">"         {printf("BGT\n");chars+=strlen(yytext);}
-"<"         {printf("BLT\n");chars+=strlen(yytext);}
-[\n]		{count_lines++;chars=0;}
-.	        {printf("Line %d, %d: Character %s not recognized\n", count_lines, chars, yytext);chars+=strlen(yytext);
-
 //".*\n        { }
 
 tipo de comentário

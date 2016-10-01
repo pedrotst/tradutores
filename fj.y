@@ -42,10 +42,8 @@ term
 %token NOT BAND BOR BEQ BGE BLE BGT BLT PRINT
 %token INT BOOL THIS NEW CLASS OBJECT TRUE FALSE RETURN SUPER EXTENDS IF ELSE WHILE
 
-%left '+' 
-%left '-'
-%left '*' 
-%left '/'
+%left '+' '-'
+%left '*' '/'
 %left BAND
 %left BOR
 %right NOT
@@ -139,7 +137,6 @@ Int
 | Int '*' Int {}
 | Int '/' Int {}
 | NUM
-| Exp
 
 Bool
 : BOOL BOR BOOL
@@ -152,7 +149,6 @@ Bool
 | Int BGT Int {}
 | TRUE 
 | FALSE
-| Exp
 
 Stmt
 : IF BOOL Suite {}

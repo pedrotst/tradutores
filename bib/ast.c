@@ -1,5 +1,18 @@
 #include "ast.h"
 
+Program* program_node(ClassDecl *classes, StmtList *stmts){
+    Program *p = (Program*) malloc(sizeof(Program));
+    if(p == NULL){
+        err(1, "Could not allocate memory for program");
+        exit(1);
+    }
+    p->classes = classes;
+    p->stmts = stmts;
+
+    return p;
+}
+
+/*
 exp* exp_alloc(){
     exp *a = (exp*)malloc(sizeof(exp));
     if(a == NULL){
@@ -98,4 +111,4 @@ void print_opnode(bin_op* b_op, int tabs){
 
 }
 
-
+*/

@@ -35,7 +35,34 @@ term
 
 
 %start program
-%union {char c; char *strs; int num; struct exp_s* exp_v; struct term_s* term_v;}
+%union {
+    char c; 
+    char *strs;
+    int num; 
+    struct Program_s*       program_v;
+    struct ClassDecl_s*     class_v;
+    struct Constructor_s*   constructor_v; 
+    struct MethodDecl_s*    methodDecl_v; 
+    struct ClassName_s*     className_v; 
+    struct Assignment_s*    assignment_v; 
+    struct Var_s*           var_v; 
+    struct Suite_s*         suite_v; 
+    struct StmtList_s*      stmtList_v;
+    struct ArgList_s*       argList_v; 
+    struct FormalArgs_s*    formalArgs_v; 
+    struct VarDecl_s*       varDecl_v; 
+    struct IdList_s*        idList_v; 
+    struct Type_s*          type_v; 
+    struct Exp_s*           exp_v; 
+    struct FieldAccess_s*   fieldAccess_v; 
+    struct MethodInvoc_s*   methodInvoc_v; 
+    struct New_s*           new_v; 
+    struct Int_s*           int_v; 
+    struct Bool_s*          bool_v; 
+    struct Stmt_s*          stmt_v; 
+    struct MatchedStmt_s*   matchedStmt_v; 
+
+}
 
 %token ID NUM COMMA SEMICOLON VAR_ATTRIBUITION L_PAREN R_PAREN
 %token L_BRACK R_BRACK DOT
@@ -49,116 +76,137 @@ term
 %right NOT
 %left BEQ BGE BLE BGT BLT
 
-%type <num> NUM TRUE FALSE
-
-%type <strs> ID
+%type <program_v> program
+%type <class_v> classDecl
+%type <constructor_v> constructor
+%type <methodDecl_v> methodDecl
+%type <className_v> className
+%type <assignment_v> assignment
+%type <var_v> var
+%type <suite_v> suite
+%type <stmtList_v>stmtList
+%type <argList_v> argList
+%type <formalArgs_v> formalArgs
+%type <varDecl_v> varDecl
+%type <idList_v> idList ID
+%type <type_v> type
+%type <exp_v> exp
+%type <fieldAccess_v> fieldAccess
+%type <methodInvoc_v> methodInvoc
+%type <new_v> new
+%type <int_v> int NUM
+%type <bool_v> bool TRUE FALSE NOT
+%type <stmt_v> stmt
+%type <matchedStmt_v> matchedStmt
 
 %%
 program 
-: ClassDecl StmtList    {
-    }    
+: classDecl stmtList    {
+    $$ = program_node($1, $2);
+}    
 
-ClassDecl
-: %empty
-| CLASS ID EXTENDS ClassName L_BRACK VarDecl Constructor MethodDecl R_BRACK ClassDecl{
-    }
-
-Constructor
-: ID L_PAREN FormalArgs R_PAREN L_BRACK SUPER L_PAREN ArgList R_PAREN SEMICOLON Suite R_BRACK {
-    }
-
-MethodDecl
-: %empty
-| Type ID L_PAREN FormalArgs R_PAREN L_BRACK Suite RETURN L_PAREN Exp R_PAREN R_BRACK MethodDecl{
+classDecl
+: %empty {$$ = NULL;}
+| CLASS ID EXTENDS className L_BRACK varDecl constructor methodDecl R_BRACK classDecl{
+    $$ = NULL;
 }
 
-ClassName
+constructor
+: ID L_PAREN formalArgs R_PAREN L_BRACK SUPER L_PAREN argList R_PAREN SEMICOLON suite R_BRACK {
+    }
+
+methodDecl
+: %empty {$$ = NULL;}
+| type ID L_PAREN formalArgs R_PAREN L_BRACK suite RETURN L_PAREN exp R_PAREN R_BRACK methodDecl{
+}
+
+className
 : OBJECT {}
 | ID {}
 
-Assignment
-: ID VAR_ATTRIBUITION Exp SEMICOLON{}
+assignment
+: ID VAR_ATTRIBUITION exp SEMICOLON{}
 
-Var
+var
 : THIS {}
 | ID {}
 
-Suite
-: L_BRACK StmtList R_BRACK {}
-| Stmt SEMICOLON {}
+suite
+: L_BRACK stmtList R_BRACK {}
+| stmt SEMICOLON {}
 
-StmtList
-: %empty
-| Stmt SEMICOLON StmtList {}
+stmtList
+: %empty {$$ = NULL;}
+| stmt SEMICOLON stmtList {$$ = NULL;}
 
-ArgList
+argList
 : %empty {}
-| Exp COMMA ArgList {}
+| exp COMMA argList {}
 
 
-FormalArgs
-: %empty {}
-| Type ID COMMA FormalArgs{}
+formalArgs
+: %empty {$$ = NULL;}
+| type ID COMMA formalArgs{}
 
-VarDecl
-: Type IdList SEMICOLON {}
+varDecl
+: type idList SEMICOLON {}
 
-IdList
+idList
 : ID 
-| ID COMMA IdList {}
+| ID COMMA idList {}
 
 
-Type
-: ClassName {}
+type
+: className {}
 | INT {}
 | BOOL {}
 
-Exp
-: Var {}
-| FieldAccess {}
-| MethodInvoc {}
-| New {}
-| Assignment {}
-| Int {}
-| Bool {}
+exp
+: var {}
+| fieldAccess {}
+| methodInvoc {}
+| new {}
+| assignment {}
+| int {}
+| bool {}
 
-FieldAccess
-: Exp DOT ID {}
+fieldAccess
+: exp DOT ID {}
 
-MethodInvoc
-: Exp DOT ID L_PAREN ArgList R_PAREN {}
+methodInvoc
+: exp DOT ID L_PAREN argList R_PAREN {}
 
-New
-: NEW ID L_PAREN ArgList R_PAREN {}
+new
+: NEW ID L_PAREN argList R_PAREN {}
 
-Int
-: Int '+' Int {}
-| Int '-' Int {}
-| Int '*' Int {}
-| Int '/' Int {}
+int
+: int '+' int {}
+| int '-' int {}
+| int '*' int {}
+| int '/' int {}
 | NUM
 
-Bool
-: BOOL BOR BOOL
-| BOOL BAND BOOL
-| NOT BOOL
-| Int BEQ Int {}
-| Int BLE Int {}
-| Int BGE Int {}
-| Int BLT Int {}
-| Int BGT Int {}
+bool
+: bool BOR bool
+| bool BAND bool
+| NOT bool
+| int BEQ int {}
+| int BLE int {}
+| int BGE int {}
+| int BLT int {}
+| int BGT int {}
 | TRUE 
 | FALSE
 
-Stmt
-: IF BOOL Suite {}
-| MatchedStmt {}
+stmt
+: IF BOOL suite {}
+| matchedStmt {}
 
-MatchedStmt
-: IF Bool Suite ELSE Suite {}
-| WHILE Bool Suite {}
-| VarDecl {}
-| Exp SEMICOLON {} 
+matchedStmt
+: IF bool suite ELSE suite {}
+| WHILE bool suite {}
+| varDecl {}
+| exp SEMICOLON {} 
 
 
 %%

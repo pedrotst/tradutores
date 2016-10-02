@@ -122,11 +122,13 @@ classDecl
 classMembers
 : %empty {$$ = NULL;}
 | varDecl SEMICOLON classMembers {$$ = classMember_node(VAR_DECL, $1, NULL, $3);}
-| functionDecl classMembers {$$ = NULL;}
+| functionDecl classMembers {$$ = classMember_node(FUN_DECL, NULL, $1, $2);}
 
 functionDecl
-: ID L_PAREN formalArgs R_PAREN L_BRACK stmtList R_BRACK {$$=NULL; /*constructor*/}
-| type ID L_PAREN formalArgs R_PAREN L_BRACK stmtList R_BRACK {$$=NULL;/*method decl*/
+: ID L_PAREN formalArgs R_PAREN L_BRACK stmtList R_BRACK {
+    $$=functionDecl_node(1, $1, NULL, $3, $6); /*constructor*/}
+| type ID L_PAREN formalArgs R_PAREN L_BRACK stmtList R_BRACK{
+    $$=functionDecl_node(0, $2, $1, $4, $7);/*method decl*/
 }
 
 assignment

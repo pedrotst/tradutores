@@ -27,8 +27,8 @@ ClassDecl* classDecl_node(char *selfName, char *superName,
     return c;
 }
 
-ClassMembers* classMember_node(union_tag utype, VarDecl *varDecls, 
-    FunctionDecl *fundecls,    ClassMembers *nextMember){
+ClassMembers* classMember_node(tag utype, VarDecl *varDecls, 
+    FunctionDecl *fundecl,    ClassMembers *nextMember){
 
     ClassMembers *c = (ClassMembers*) malloc(sizeof(ClassMembers));
     if(c == NULL){
@@ -39,9 +39,11 @@ ClassMembers* classMember_node(union_tag utype, VarDecl *varDecls,
     switch(utype){
         case VAR_DECL:
             cmem->varDecls = varDecls;
-            c->member = cmem;
         break;
+        case FUN_DECL:
+            cmem->funDecl = fundecl;
         default:
+            c->member = cmem;
             c->utype = utype;
         break;
     }
@@ -65,6 +67,17 @@ IdList* idList_node(char *id, IdList *ids){
     return id_list;
 }
 
+FunctionDecl* functionDecl_node(int isConstructor, char *name, char *type,
+    FormalArgs *fargs, StmtList *stmtList){
+
+    FunctionDecl* f_decl = (FunctionDecl*)malloc(sizeof(FunctionDecl*));
+    f_decl->isConstructor = isConstructor;
+    f_decl->name = name;
+    f_decl->type = type;
+    f_decl->fargs = fargs;
+    f_decl->stmts = stmtList;
+    return f_decl;
+}
 
 void print_program(Program* p){
     ClassDecl *cdecl = p->classes;
@@ -88,22 +101,36 @@ void print_class(ClassDecl *c){
 }
 
 void print_classMembers(ClassMembers *cmember){
-   while(cmember != NULL){
-       switch(cmember->utype){
-           case VAR_DECL:
-               print_varDecl(cmember->member->varDecls);
-           break;
-           default:
-           break;
-       }
-       cmember = cmember->nextMember;
-   }
+    while(cmember != NULL){
+        switch(cmember->utype){
+            case VAR_DECL:
+                print_varDecl(cmember->member->varDecls);
+                break;
+            case FUN_DECL:
+                print_funDecl(cmember->member->funDecl);
+                break;
+            default:
+                break;
+        }
+        cmember = cmember->nextMember;
+    }
 }
 
 void print_varDecl(VarDecl *varDecls){
     printf("\t%s %s", varDecls->type, varDecls->id);
     print_idList(varDecls->idList);
     printf(";\n");
+}
+
+void print_funDecl(FunctionDecl *funDecl){
+    printf("\t");
+    if(funDecl->isConstructor == 1)
+        printf("%s ", funDecl->type);
+    printf("%s (", funDecl->name);
+    // print_argList();
+    printf(") {");
+    // print_stmtList();
+    printf("}\n");
 }
 
 void print_idList(IdList *ids){

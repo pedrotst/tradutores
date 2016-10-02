@@ -42,8 +42,9 @@ term
     struct Program_s*       program_v;
     struct ClassDecl_s*     class_v;
     struct ClassMembers_s*  classMembers_v;
-    struct Constructor_s*   constructor_v; 
-    struct MethodDecl_s*    methodDecl_v; 
+    struct FunctionDecl_s*   functionDecl_v; 
+    //struct Constructor_s*   constructor_v; 
+    //struct MethodDecl_s*    methodDecl_v; 
 //    struct ClassName_s*     className_v; 
     struct Assignment_s*    assignment_v; 
     struct Var_s*           var_v; 
@@ -62,6 +63,7 @@ term
     struct Bool_s*          bool_v; 
     struct Stmt_s*          stmt_v; 
     struct MatchedStmt_s*   matchedStmt_v; 
+    struct Object_s*        object_v; 
 
 }
 %define parse.error verbose
@@ -77,17 +79,15 @@ term
 %left BOR
 %right NOT
 %left BEQ BGE BLE BGT BLT
-%right FIELD
-%right METH
+%right VAR_ATTRIBUITION
 
 %type <strs> ID INT BOOL type
-%type <program_v> program
+%type <program_v> program 
 %type <class_v> classDecl
-%type <constructor_v> constructor
-%type <methodDecl_v> methodDecl
+%type <functionDecl_v> functionDecl
 %type <classMembers_v> classMembers
 %type <assignment_v> assignment
-%type <var_v> var
+%type <var_v> var 
 %type <suite_v> suite
 %type <stmtList_v>stmtList
 %type <argList_v> argList
@@ -95,6 +95,7 @@ term
 %type <varDecl_v> varDecl
 %type <idList_v> idList
 %type <exp_v> exp
+%type <object_v> object
 %type <return_v> return
 %type <fieldAccess_v> fieldAccess
 %type <methodInvoc_v> methodInvoc
@@ -119,15 +120,12 @@ classDecl
 
 classMembers
 : %empty {$$ = NULL;}
-| classMembers varDecl SEMICOLON {$$ = classMember_node(VAR_DECL, $2, NULL, NULL, $1);}
-| classMembers constructor {$$ = NULL;}
-| classMembers methodDecl {$$ = NULL;}
+| classMembers varDecl SEMICOLON {$$ = classMember_node(VAR_DECL, $2, NULL, $1);}
+| classMembers functionDecl {$$ = NULL;}
 
-constructor
-: ID L_PAREN formalArgs R_PAREN L_BRACK stmtList R_BRACK {$$=NULL; }
-
-methodDecl
-: type ID L_PAREN formalArgs R_PAREN L_BRACK stmtList R_BRACK methodDecl{$$=NULL;
+functionDecl
+: ID L_PAREN formalArgs R_PAREN L_BRACK stmtList R_BRACK {$$=NULL; /*constructor*/}
+| type ID L_PAREN formalArgs R_PAREN L_BRACK stmtList R_BRACK {$$=NULL;/*method decl*/
 }
 
 assignment
@@ -155,10 +153,12 @@ formalArgs
 | formalArgs type ID COMMA {$$=NULL;}
 
 varDecl
-: type idList {$$=varDecl_node($1, $2);}
+: type ID idList {$$=NULL;
+    //$$=varDecl_node($1, $2, $3);
+    }
 
 idList
-: ID {$$=idList_node($1, NULL);}
+: %empty {$$= NULL;}
 | idList COMMA ID {$$=idList_node($3, $1);}
 
 
@@ -168,24 +168,26 @@ type
 | BOOL {$$=$1;}
 
 exp
-: var {$$=NULL;}
-| fieldAccess %prec FIELD {$$=NULL;}
-| methodInvoc %prec METH  {$$=NULL;}
-| new {$$=NULL;}
-| assignment {$$=NULL;}
-| return {$$=NULL;}
+: object {$$=NULL;}
 | int {$$=NULL;}
 | bool {$$=NULL;}
+| assignment {$$=NULL;}
+
+object
+: var {$$=NULL;}
+| fieldAccess {$$=NULL;}
+| methodInvoc {$$=NULL;}
+| new {$$=NULL;}
 
 return
 : RETURN L_PAREN exp R_PAREN {$$=NULL;}
 
 methodInvoc
-: exp DOT ID L_PAREN argList R_PAREN {$$=NULL;}
+: object DOT ID L_PAREN argList R_PAREN {$$=NULL;}
 | ID L_PAREN argList R_PAREN {$$=NULL;}
 
 fieldAccess
-: exp DOT ID {$$=NULL;}
+: object DOT ID {$$=NULL;}
 
 new
 : NEW ID L_PAREN argList R_PAREN {$$=NULL;}
@@ -218,6 +220,7 @@ matchedStmt
 | WHILE bool suite {$$=NULL;}
 | varDecl {$$=NULL;}
 | exp SEMICOLON {$$=NULL;} 
+| return SEMICOLON {$$=NULL;}
 
 
 %%

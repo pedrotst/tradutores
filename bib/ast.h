@@ -12,8 +12,9 @@ typedef enum type_enum{
 
 typedef struct Program_s        Program;
 typedef struct ClassDecl_s      ClassDecl;
-typedef struct Constructor_s    Constructor;
-typedef struct MethodDecl_s     MethodDecl;
+typedef struct FunctionDecl_s     FunctionDecl;
+//typedef struct Constructor_s    Constructor;
+//typedef struct MethodDecl_s     MethodDecl;
 typedef struct ClassMembers_s   ClassMembers;
 //typedef struct ClassName_s      ClassName;
 typedef struct Assignment_s     Assignment;
@@ -25,6 +26,7 @@ typedef struct FormalArgs_s     FormalArgs;
 typedef struct VarDecl_s        VarDecl;
 typedef struct IdList_s         IdList;
 typedef struct Exp_s            Exp;
+typedef struct Object_s         Object;
 typedef struct IdList_s         IdList;
 typedef struct Return_s         Return;
 typedef struct FieldAccess_s    FieldAccess;
@@ -50,13 +52,13 @@ struct IdList_s{
 
 struct VarDecl_s{
     char *type;
+    char *id;
     IdList *idList;
 };
 
 typedef union ClassMembers__u{
     VarDecl *varDecls;
-    Constructor *constructor;
-    MethodDecl *methodDecls;
+    FunctionDecl *funDecls;
 }ClassMembers_u;
 
 struct ClassMembers_s{
@@ -77,9 +79,9 @@ ClassDecl* classDecl_node(char *Selfname, char *superName,
     ClassMembers *cMembers, ClassDecl *nextClass);
 
 ClassMembers* classMember_node(union_tag utype, VarDecl *varDecls, 
-    Constructor *constructors, MethodDecl *methodDecls, 
+    FunctionDecl *funDecls, 
     ClassMembers *nextMember);
-VarDecl* varDecl_node(char *type, IdList *ids);
+VarDecl* varDecl_node(char *type, char *id, IdList *ids);
 IdList* idList_node(char *id, IdList *ids);
 
 void print_program(Program* p);

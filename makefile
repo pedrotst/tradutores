@@ -4,7 +4,7 @@ all: yacc lex ast
 	gcc $(FLAGS) -o fj lex.yy.c y.tab.c ast.o
 
 yacc:
-	yacc -d -v fj.y
+	yacc -d --report=solved --report=lookahead -v fj.y
 
 lex:
 	lex fj.l 

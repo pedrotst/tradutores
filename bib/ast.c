@@ -28,8 +28,7 @@ ClassDecl* classDecl_node(char *selfName, char *superName,
 }
 
 ClassMembers* classMember_node(union_tag utype, VarDecl *varDecls, 
-    Constructor *constructors, MethodDecl *methodDecls, 
-    ClassMembers *nextMember){
+    FunctionDecl *fundecls,    ClassMembers *nextMember){
 
     ClassMembers *c = (ClassMembers*) malloc(sizeof(ClassMembers));
     if(c == NULL){
@@ -51,9 +50,10 @@ ClassMembers* classMember_node(union_tag utype, VarDecl *varDecls,
     return c;
 }
 
-VarDecl* varDecl_node(char *type, IdList *ids){
+VarDecl* varDecl_node(char *type, char *id, IdList *ids){
     VarDecl* v = (VarDecl*)malloc(sizeof(VarDecl*));
     v->type = type;
+    v->id = id;
     v->idList = ids;
     return v;
 }

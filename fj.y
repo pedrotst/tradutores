@@ -108,20 +108,21 @@ term
 %%
 program 
 : classDecl stmtList {
-    Program *p; p = program_node($1, $2); print_program(p);
+    Program *p; p = program_node($1, $2); 
+    print_program(p);
     $$ = p;
 }    
 
 classDecl
 : %empty {$$ = NULL;}
-| classDecl CLASS ID EXTENDS ID L_BRACK classMembers R_BRACK {
-    $$ = classDecl_node($3, $5, $7, $1);
+| CLASS ID EXTENDS ID L_BRACK classMembers R_BRACK classDecl {
+    $$ = classDecl_node($2, $4, $6, $8);
 }
 
 classMembers
 : %empty {$$ = NULL;}
-| classMembers varDecl SEMICOLON {$$ = classMember_node(VAR_DECL, $2, NULL, $1);}
-| classMembers functionDecl {$$ = NULL;}
+| varDecl SEMICOLON classMembers {$$ = classMember_node(VAR_DECL, $1, NULL, $3);}
+| functionDecl classMembers {$$ = NULL;}
 
 functionDecl
 : ID L_PAREN formalArgs R_PAREN L_BRACK stmtList R_BRACK {$$=NULL; /*constructor*/}
@@ -141,25 +142,23 @@ suite
 
 stmtList
 : %empty {$$ = NULL;}
-| stmtList stmt {$$ = NULL;}
+| stmt stmtList {$$ = NULL;}
 
 argList
 : %empty {$$=NULL;}
-| argList exp COMMA {$$=NULL;}
+| exp COMMA argList {$$=NULL;}
 
 
 formalArgs
 : %empty {$$=NULL;}
-| formalArgs type ID COMMA {$$=NULL;}
+| type ID COMMA formalArgs {$$=NULL;}
 
 varDecl
-: type ID idList {$$=NULL;
-    //$$=varDecl_node($1, $2, $3);
-    }
+: type ID idList {$$=varDecl_node($1, $2, $3); }
 
 idList
 : %empty {$$= NULL;}
-| idList COMMA ID {$$=idList_node($3, $1);}
+| COMMA ID idList {$$=idList_node($2, $3);}
 
 
 type

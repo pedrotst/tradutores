@@ -1,6 +1,6 @@
 
 class bar extends Object {
-    int a,b;
+    int u,b,c,d,e;
     bar(){
         super();
     }
@@ -10,7 +10,8 @@ class bar extends Object {
     }
 }
 
-class foo extends Object {
+class foo extends bar {
+    int x,k,c,d;
     foo(){
         super();
     }

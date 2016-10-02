@@ -80,7 +80,7 @@ void print_class(ClassDecl *c){
     while(cdecl != NULL){
         printf("class %s extends %s{\n", cdecl->selfName, cdecl->superName);
         // printf_fields("\tfields: {");
-        print_classMembers(c->cMembers);
+        print_classMembers(cdecl->cMembers);
         printf("}\n");
         cdecl = cdecl->nextClass;
     }
@@ -96,22 +96,21 @@ void print_classMembers(ClassMembers *cmember){
            default:
            break;
        }
+       cmember = cmember->nextMember;
    }
 }
 
 void print_varDecl(VarDecl *varDecls){
-    printf("%s ", varDecls->type);
+    printf("\t%s %s", varDecls->type, varDecls->id);
     print_idList(varDecls->idList);
+    printf(";\n");
 }
 
 void print_idList(IdList *ids){
-    printf("%s", ids->id);
-    ids = ids->nextId;
     while(ids!=NULL){
         printf(", %s", ids->id);
         ids = ids->nextId;
     }
-    printf(";\n");
 }
 
 void print_stmt(StmtList *stmt){

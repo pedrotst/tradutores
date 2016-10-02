@@ -1,3 +1,15 @@
+
+class bar extends Object {
+    int a,b;
+    bar(){
+        super();
+    }
+
+    int f(){
+        1+1;
+    }
+}
+
 class foo extends Object {
     foo(){
         super();

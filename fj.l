@@ -10,6 +10,7 @@ extern int yywrap(void);
 /* 
 extern YYSTYPE yylval;
 "super"     {chars+=strlen(yytext); return SUPER;}
+"Object"    {chars+=strlen(yytext); return OBJECT;}
 */
 
 
@@ -27,10 +28,9 @@ ID 	[A-z_][A-z_0-9]*
 
 
 
-"int"       {chars+=strlen(yytext); return INT;}
-"bool"      {chars+=strlen(yytext); return BOOL;}
+"int"       {yylval.strs=strdup("yytext");chars+=strlen(yytext); return INT;}
+"bool"      {yylval.strs=strdup("yytext");chars+=strlen(yytext); return BOOL;}
 "this"      {chars+=strlen(yytext); return THIS;}
-"Object"    {chars+=strlen(yytext); return OBJECT;}
 "new"       {chars+=strlen(yytext); return NEW;}
 "class"     {chars+=strlen(yytext); return CLASS;}
 "true"      {chars+=strlen(yytext); return TRUE;}

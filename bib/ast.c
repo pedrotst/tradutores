@@ -12,7 +12,7 @@ Program* program_node(ClassDecl *classes, StmtList *stmts){
     return p;
 }
 
-ClassDecl* classDecl_node(char *selfName, ClassName *superName, 
+ClassDecl* classDecl_node(char *selfName, char *superName, 
     ClassMembers *cMembers, ClassDecl *nextClass){
 
     ClassDecl *c = (ClassDecl*) malloc(sizeof(ClassDecl));
@@ -27,34 +27,91 @@ ClassDecl* classDecl_node(char *selfName, ClassName *superName,
     return c;
 }
 
+ClassMembers* classMember_node(union_tag utype, VarDecl *varDecls, 
+    Constructor *constructors, MethodDecl *methodDecls, 
+    ClassMembers *nextMember){
+
+    ClassMembers *c = (ClassMembers*) malloc(sizeof(ClassMembers));
+    if(c == NULL){
+        err(1, "Could not allocate memory for ClassMember");
+        exit(1);
+    }
+    ClassMembers_u *cmem = (ClassMembers_u*) malloc(sizeof(ClassMembers_u));
+    switch(utype){
+        case VAR_DECL:
+            cmem->varDecls = varDecls;
+            c->member = cmem;
+        break;
+        default:
+            c->utype = utype;
+        break;
+    }
+    c->nextMember = nextMember;
+
+    return c;
+}
+
+VarDecl* varDecl_node(char *type, IdList *ids){
+    VarDecl* v = (VarDecl*)malloc(sizeof(VarDecl*));
+    v->type = type;
+    v->idList = ids;
+    return v;
+}
+
+IdList* idList_node(char *id, IdList *ids){
+    IdList* id_list = (IdList*)malloc(sizeof(IdList*));
+    id_list->id = id;
+    id_list->nextId = ids;
+    return id_list;
+}
+
 
 void print_program(Program* p){
-    printf("entrei\n");
     ClassDecl *cdecl = p->classes;
     StmtList *stmt = p->stmts;
-    while(cdecl != NULL){
-        print_class(cdecl);
-        cdecl = p->classes->nextClass;
-    }
-    while(stmt != NULL){
-        print_stmt(stmt);
-        stmt = p->stmts;
-    }
+    print_class(cdecl);
+    cdecl = p->classes->nextClass;
+    print_stmt(stmt);
+    printf("\n");
 }
 
 void print_class(ClassDecl *c){
     ClassDecl *cdecl = c;
     while(cdecl != NULL){
-        // printf("class %s extends %s{", cdecl->selfName, cdecl->superName);
-        printf("class %s extends {", cdecl->selfName);
-        //printf("\tfields: {");
-        // print_var(cdecl->varDecls);
-        printf("}");
-        // print_constructor();
-        // print_mdecl();
-        cdecl = c->nextClass;
+        printf("class %s extends %s{\n", cdecl->selfName, cdecl->superName);
+        // printf_fields("\tfields: {");
+        print_classMembers(c->cMembers);
+        printf("}\n");
+        cdecl = cdecl->nextClass;
     }
 
+}
+
+void print_classMembers(ClassMembers *cmember){
+   while(cmember != NULL){
+       switch(cmember->utype){
+           case VAR_DECL:
+               print_varDecl(cmember->member->varDecls);
+           break;
+           default:
+           break;
+       }
+   }
+}
+
+void print_varDecl(VarDecl *varDecls){
+    printf("%s ", varDecls->type);
+    print_idList(varDecls->idList);
+}
+
+void print_idList(IdList *ids){
+    printf("%s", ids->id);
+    ids = ids->nextId;
+    while(ids!=NULL){
+        printf(", %s", ids->id);
+        ids = ids->nextId;
+    }
+    printf(";\n");
 }
 
 void print_stmt(StmtList *stmt){

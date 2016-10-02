@@ -44,7 +44,7 @@ term
     struct ClassMembers_s*  classMembers_v;
     struct Constructor_s*   constructor_v; 
     struct MethodDecl_s*    methodDecl_v; 
-    struct ClassName_s*     className_v; 
+//    struct ClassName_s*     className_v; 
     struct Assignment_s*    assignment_v; 
     struct Var_s*           var_v; 
     struct Suite_s*         suite_v; 
@@ -53,7 +53,6 @@ term
     struct FormalArgs_s*    formalArgs_v; 
     struct VarDecl_s*       varDecl_v; 
     struct IdList_s*        idList_v; 
-    struct Type_s*          type_v; 
     struct Exp_s*           exp_v; 
     struct Return_s*        return_v; 
     struct FieldAccess_s*   fieldAccess_v; 
@@ -68,7 +67,7 @@ term
 %define parse.error verbose
 
 %token ID NUM COMMA SEMICOLON VAR_ATTRIBUITION L_PAREN R_PAREN
-%token L_BRACK R_BRACK DOT
+%token L_BRACK R_BRACK DOT 
 %token NOT BAND BOR BEQ BGE BLE BGT BLT PRINT
 %token INT BOOL THIS NEW CLASS OBJECT TRUE FALSE RETURN SUPER EXTENDS IF ELSE WHILE
 
@@ -78,13 +77,14 @@ term
 %left BOR
 %right NOT
 %left BEQ BGE BLE BGT BLT
+%right FIELD
+%right METH
 
-%type <strs> ID
+%type <strs> ID INT BOOL type
 %type <program_v> program
 %type <class_v> classDecl
 %type <constructor_v> constructor
 %type <methodDecl_v> methodDecl
-%type <className_v> className
 %type <classMembers_v> classMembers
 %type <assignment_v> assignment
 %type <var_v> var
@@ -94,7 +94,6 @@ term
 %type <formalArgs_v> formalArgs
 %type <varDecl_v> varDecl
 %type <idList_v> idList
-%type <type_v> type
 %type <exp_v> exp
 %type <return_v> return
 %type <fieldAccess_v> fieldAccess
@@ -114,15 +113,15 @@ program
 
 classDecl
 : %empty {$$ = NULL;}
-| CLASS ID EXTENDS className L_BRACK classMembers R_BRACK classDecl{
-    $$ = classDecl_node($2, $4, $6, $8);
+| classDecl CLASS ID EXTENDS ID L_BRACK classMembers R_BRACK {
+    $$ = classDecl_node($3, $5, $7, $1);
 }
 
 classMembers
 : %empty {$$ = NULL;}
-| varDecl classMembers {$$ = NULL;}
-| constructor classMembers {$$ = NULL;}
-| methodDecl classMembers {$$ = NULL;}
+| classMembers varDecl SEMICOLON {$$ = classMember_node(VAR_DECL, $2, NULL, NULL, $1);}
+| classMembers constructor {$$ = NULL;}
+| classMembers methodDecl {$$ = NULL;}
 
 constructor
 : ID L_PAREN formalArgs R_PAREN L_BRACK stmtList R_BRACK {$$=NULL; }
@@ -131,12 +130,8 @@ methodDecl
 : type ID L_PAREN formalArgs R_PAREN L_BRACK stmtList R_BRACK methodDecl{$$=NULL;
 }
 
-className
-: OBJECT {$$=NULL;}
-| ID {$$=NULL;}
-
 assignment
-: ID VAR_ATTRIBUITION exp SEMICOLON{$$=NULL;}
+: ID VAR_ATTRIBUITION exp {$$=NULL;}
 
 var
 : THIS {$$=NULL;}
@@ -148,34 +143,34 @@ suite
 
 stmtList
 : %empty {$$ = NULL;}
-| stmt stmtList {$$ = NULL;}
+| stmtList stmt {$$ = NULL;}
 
 argList
 : %empty {$$=NULL;}
-| exp COMMA argList {$$=NULL;}
+| argList exp COMMA {$$=NULL;}
 
 
 formalArgs
 : %empty {$$=NULL;}
-| type ID COMMA formalArgs{$$=NULL;}
+| formalArgs type ID COMMA {$$=NULL;}
 
 varDecl
-: type idList SEMICOLON {$$=NULL;}
+: type idList {$$=varDecl_node($1, $2);}
 
 idList
-: ID {$$=NULL;}
-| idList COMMA ID {$$=NULL;}
+: ID {$$=idList_node($1, NULL);}
+| idList COMMA ID {$$=idList_node($3, $1);}
 
 
 type
-: className {$$=NULL;}
-| INT {$$=NULL;}
-| BOOL {$$=NULL;}
+: ID {$$=$1;}
+| INT {$$=$1;}
+| BOOL {$$=$1;}
 
 exp
 : var {$$=NULL;}
-| fieldAccess {$$=NULL;}
-| methodInvoc {$$=NULL;}
+| fieldAccess %prec FIELD {$$=NULL;}
+| methodInvoc %prec METH  {$$=NULL;}
 | new {$$=NULL;}
 | assignment {$$=NULL;}
 | return {$$=NULL;}
@@ -185,13 +180,12 @@ exp
 return
 : RETURN L_PAREN exp R_PAREN {$$=NULL;}
 
-fieldAccess
-: exp DOT ID {$$=NULL;}
-
 methodInvoc
 : exp DOT ID L_PAREN argList R_PAREN {$$=NULL;}
 | ID L_PAREN argList R_PAREN {$$=NULL;}
 
+fieldAccess
+: exp DOT ID {$$=NULL;}
 
 new
 : NEW ID L_PAREN argList R_PAREN {$$=NULL;}
@@ -240,6 +234,6 @@ int main()
 {
     yyparse();
     return 0;
-} 
+}
 
 

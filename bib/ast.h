@@ -5,10 +5,9 @@
 #include <stdlib.h>
 #include <err.h>
 
-#define TERM_T 1
-#define EXP_T 2
-#define LINE_T 3
-#define OPNODE_T 4
+typedef enum type_enum{
+    VAR_DECL
+}union_tag;
 
 
 typedef struct Program_s        Program;
@@ -16,7 +15,7 @@ typedef struct ClassDecl_s      ClassDecl;
 typedef struct Constructor_s    Constructor;
 typedef struct MethodDecl_s     MethodDecl;
 typedef struct ClassMembers_s   ClassMembers;
-typedef struct ClassName_s      ClassName;
+//typedef struct ClassName_s      ClassName;
 typedef struct Assignment_s     Assignment;
 typedef struct Var_s            Var;
 typedef struct Suite_s          Suite;
@@ -25,11 +24,12 @@ typedef struct ArgList_s        ArgList;
 typedef struct FormalArgs_s     FormalArgs;
 typedef struct VarDecl_s        VarDecl;
 typedef struct IdList_s         IdList;
-typedef struct Type_s           Type;
 typedef struct Exp_s            Exp;
+typedef struct IdList_s         IdList;
 typedef struct Return_s         Return;
 typedef struct FieldAccess_s    FieldAccess;
 typedef struct MethodInvoc_s    MethodInvoc;
+typedef struct IdList_s         IdList;
 typedef struct New_s            New;
 typedef struct Int_s            Int;
 typedef struct Bool_s           Bool;
@@ -38,11 +38,32 @@ typedef struct MatchedStmt_s    MatchedStmt;
 
 struct ClassDecl_s{
     char *selfName;
-    ClassName *superName;
+    char *superName;
     ClassMembers *cMembers;
     struct ClassDecl_s *nextClass;
 };
 
+struct IdList_s{
+    char *id;
+    IdList *nextId;
+};
+
+struct VarDecl_s{
+    char *type;
+    IdList *idList;
+};
+
+typedef union ClassMembers__u{
+    VarDecl *varDecls;
+    Constructor *constructor;
+    MethodDecl *methodDecls;
+}ClassMembers_u;
+
+struct ClassMembers_s{
+    union_tag utype;
+    ClassMembers_u *member;
+    struct ClassMembers_s *nextMember;
+};
 
 struct Program_s{
     ClassDecl *classes;
@@ -51,13 +72,23 @@ struct Program_s{
 
 
 Program* program_node(ClassDecl *classes, StmtList *stmts);
-ClassDecl* classDecl_node(char *Selfname, ClassName *superName, 
+
+ClassDecl* classDecl_node(char *Selfname, char *superName, 
     ClassMembers *cMembers, ClassDecl *nextClass);
+
+ClassMembers* classMember_node(union_tag utype, VarDecl *varDecls, 
+    Constructor *constructors, MethodDecl *methodDecls, 
+    ClassMembers *nextMember);
+VarDecl* varDecl_node(char *type, IdList *ids);
+IdList* idList_node(char *id, IdList *ids);
 
 void print_program(Program* p);
 void print_class(ClassDecl *c);
 void print_stmt(StmtList *stmt);
 
+void print_classMembers(ClassMembers *cmember);
+void print_idList(IdList *ids);
+void print_varDecl(VarDecl *varDecls);
 /*
 typedef struct exp_s exp;
 

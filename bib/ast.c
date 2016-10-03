@@ -89,15 +89,53 @@ ClassMember* classMember_node(tag utype, VarDecl *varDecls,
 }
 
 VarDecl* varDecl_node(char *type, char *id, IdList *ids){
-    VarDecl* v = (VarDecl*)malloc(sizeof(VarDecl*));
+    VarDecl* v = (VarDecl*)malloc(sizeof(VarDecl));
     v->type = type;
     v->id = id;
     v->idList = ids;
     return v;
 }
 
+StmtList* stmtList_node(Stmt *stmt, StmtList *head){
+    StmtList* stmt_list = (StmtList*)malloc(sizeof(StmtList));
+    stmt_list->stmt = stmt;
+    stmt_list->next= NULL;
+
+    if(head == NULL)
+        return stmt_list;
+
+    StmtList *current = head;
+    while(current->next != NULL){
+        current = current->next;
+    }
+
+    current->next = stmt_list;
+
+    return head;
+
+}
+
+
+Stmt* stmt_node(tag utype, VarDecl *varDecl, IfStmt *ifStmt,
+        WhileStmt *whileStmt, ReturnStmt *returnStmt){
+    Stmt *stmt = (Stmt*)malloc(sizeof(Stmt));
+    Stmt_u *stmt_u = (Stmt_u*)malloc(sizeof(Stmt_u));
+
+    switch(utype){
+        case VAR_DECL:
+            stmt_u->varDecl = varDecl;
+        break;
+        default:
+        break;
+    }
+    stmt->utype = utype;
+    stmt->stmt_u = stmt_u;
+
+    return stmt;
+}
+
 IdList* idList_node(char *id, IdList *head){
-    IdList* id_list = (IdList*)malloc(sizeof(IdList*));
+    IdList* id_list = (IdList*)malloc(sizeof(IdList));
     id_list->id = id;
     id_list->next= NULL;
 
@@ -116,7 +154,7 @@ IdList* idList_node(char *id, IdList *head){
 }
 
 FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head){
-    FormalArgs* fargs = (FormalArgs*)malloc(sizeof(FormalArgs*));
+    FormalArgs* fargs = (FormalArgs*)malloc(sizeof(FormalArgs));
     fargs->type = type;
     fargs->name = name;
     fargs->next = NULL;
@@ -158,11 +196,8 @@ FunctionDecl* functionDecl_node(char *type, char *name,
 }
 
 void print_program(Program* p){
-    ClassDecl *cdecl = p->classes;
-    StmtList *stmt = p->stmts;
-    print_class(cdecl);
-    cdecl = p->classes->next;
-    print_stmt(stmt);
+    print_class(p->classes);
+    print_stmt(p->stmts);
     printf("\n");
 }
 
@@ -184,7 +219,7 @@ void print_classMembers(ClassMembers *cmembers){
         if(cmember != NULL){
             switch(cmember->utype){
                 case VAR_DECL:
-                    print_varDecl(cmember->member->varDecls);
+                    print_varDecl(cmember->member->varDecls, 1);
                     break;
                 case FUN_DECL:
                     print_funDecl(cmember->member->funDecl);
@@ -200,8 +235,10 @@ void print_classMembers(ClassMembers *cmembers){
     }
 }
 
-void print_varDecl(VarDecl *varDecls){
-    printf("\t%s %s", varDecls->type, varDecls->id);
+void print_varDecl(VarDecl *varDecls, int tabs){
+    for(int i=0; i<tabs; i++)
+        printf("\t");
+    printf("%s %s", varDecls->type, varDecls->id);
     print_idList(varDecls->idList);
     printf(";\n");
 }
@@ -247,106 +284,19 @@ void print_idList(IdList *ids){
     }
 }
 
-void print_stmt(StmtList *stmt){
-}
-
-/*
-exp* exp_alloc(){
-    exp *a = (exp*)malloc(sizeof(exp));
-    if(a == NULL){
-        err(1, "Could not allocate memory for exp");
-        exit(1);
-    }
-    a->tag = -1;
-
-    return a;
-}
-
-bin_op* bin_alloc(){
-    bin_op *b_op = (bin_op*) malloc(sizeof(bin_op));
-    if(b_op == NULL){
-        err(1, "Could not allocate memory for exp");
-        exit(1);
-    }
-    b_op->lhs = NULL;
-    b_op->rhs = NULL;
-
-    return b_op;
-}
-
-term* term_alloc(){
-    term *t = (term*)malloc(sizeof(term));
-    if(t == NULL){
-        err(1, "Could not allocate memory for the tree");
-        exit(1);
-    }
-
-    return t;
-}
-
-term* term_node(int n){
-    term *t = term_alloc();
-    t->num = n;
-    return t;
-}
-
-exp* exp_opnode(char op, exp* lhs, term* rhs){
-    exp *a = exp_alloc();
-    bin_op *opbin = bin_alloc();
-    opbin->op = op;
-    opbin->lhs = lhs;
-    opbin->rhs = rhs;
-
-    a->tag = OPNODE_T;
-    a->expr.b_op = opbin;
-
-    return a;
-}
-
-
-exp* exp_termnode(term *t){
-    exp *e = exp_alloc();
-
-    e->tag = TERM_T;
-    e->expr.t = t;
-    return e;
-}
-
-void print_exp(exp* e, int tabs){
-    for(int i=0; i<tabs; i++)
-        printf("\t");
-    printf("EXP: {\n");
-    switch(e->tag){
-        case TERM_T:
-            print_term(e->expr.t, tabs+1);
+void print_stmt(StmtList *stmts){
+    Stmt *stmt;
+    while(stmts != NULL){
+        stmt = stmts->stmt;
+        switch(stmt->utype){
+            case VAR_DECL:
+                print_varDecl(stmt->stmt_u->varDecl, 0);
+                break;
+            default:
             break;
-        case OPNODE_T:
-            print_opnode(e->expr.b_op, tabs+1);
-            break;
-        default:
-            break;
+        }
+        stmts = stmts->next;
     }
-    for(int i=0; i<tabs; i++)
-        printf("\t");
-    printf("}\n");
-}
-
-void print_term(term* t, int tabs){
-    for(int i=0; i<tabs; i++)
-        printf("\t");
-    printf("TERM: { %d }\n", t->num);
-}
-
-void print_opnode(bin_op* b_op, int tabs){
-    for(int i=0; i<tabs; i++)
-        printf("\t");
-    printf("%c {\n", b_op->op);
-    print_exp(b_op->lhs, tabs+1);
-    print_term(b_op->rhs, tabs+1);
-    for(int i=0; i<tabs; i++)
-        printf("\t");
-    printf("}\n");
 
 }
 
-*/

@@ -38,8 +38,10 @@ typedef struct IdList_s             IdList;
 typedef struct New_s                New;
 typedef struct Int_s                Int;
 typedef struct Bool_s               Bool;
-typedef struct Stmt_s               Stmt;
-typedef struct MatchedStmt_s        MatchedStmt;
+typedef struct Stmt_s                Stmt;
+typedef struct IfStmt_s             IfStmt;
+typedef struct WhileStmt_s          WhileStmt;
+typedef struct ReturnStmt_s         ReturnStmt;
 
 struct ClassDecl_s{
     char *selfName;
@@ -47,6 +49,24 @@ struct ClassDecl_s{
     ClassMembers *cMembers;
     struct ClassDecl_s *next;
 };
+
+typedef union Stmt__u{
+    IfStmt *ifStmt;
+    WhileStmt *whileStmt;
+    ReturnStmt *returnStmt;
+    VarDecl *varDecl;
+}Stmt_u;
+
+struct Stmt_s{
+    tag utype;
+    Stmt_u *stmt_u;
+};
+
+struct StmtList_s{
+    Stmt *stmt;
+    struct StmtList_s *next;
+};
+
 
 struct IdList_s{
     char *id;
@@ -122,6 +142,11 @@ FunctionDecl* functionDecl_node(char *type, char *name,
     FormalArgs *fargs, StmtList *stmtList);
 FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head);
 
+StmtList* stmtList_node(Stmt *stmt, StmtList *head);
+
+Stmt* stmt_node(tag utype, VarDecl *varDecl, IfStmt *ifStmt,
+    WhileStmt *whileStmt, ReturnStmt *returnStmt);
+
 void print_program(Program* p);
 void print_class(ClassDecl *c);
 void print_stmt(StmtList *stmt);
@@ -129,7 +154,7 @@ void print_stmt(StmtList *stmt);
 void print_classMembers(ClassMembers *cmember);
 void print_idList(IdList *ids);
 void print_fargs(FormalArgs *fargs);
-void print_varDecl(VarDecl *varDecls);
+void print_varDecl(VarDecl *varDecls, int tabs);
 void print_funDecl(FunctionDecl *funDecl);
 void print_constrDecl(ConstrDecl *constrDecl);
 

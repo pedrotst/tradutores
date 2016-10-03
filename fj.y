@@ -36,7 +36,6 @@ int yylex(void);
     struct VarDecl_s*       varDecl_v; 
     struct IdList_s*        idList_v; 
     struct Exp_s*           exp_v; 
-    struct Return_s*        return_v; 
     struct FieldAccess_s*   fieldAccess_v; 
     struct MethodInvoc_s*   methodInvoc_v; 
     struct New_s*           new_v; 
@@ -78,15 +77,12 @@ int yylex(void);
 %type <idList_v> idList
 %type <exp_v> exp
 %type <object_v> object
-%type <return_v> return
 %type <fieldAccess_v> fieldAccess
 %type <methodInvoc_v> methodInvoc
 %type <new_v> new
 %type <int_v> int NUM
 %type <bool_v> bool TRUE FALSE NOT
 %type <stmt_v> stmt
-%nonassoc VARD
-%nonassoc FDECL
 %nonassoc ELSE
 
 %%
@@ -142,7 +138,7 @@ suite
 
 stmtList
 : %empty {$$ = NULL;}
-| stmtList stmt {$$ = NULL;}
+| stmtList stmt {$$ = stmtList_node($2, $1);}
 ;
 
 argList
@@ -188,10 +184,6 @@ object
 | new {$$=NULL;}
 ;
 
-return
-: RETURN '(' exp ')' {$$=NULL;}
-;
-
 methodInvoc
 : object DOT ID '(' argList ')' {$$=NULL;}
 | ID '(' argList ')' {$$=NULL;}
@@ -230,8 +222,8 @@ stmt
 : IF bool suite {$$=NULL;}
 | IF bool suite ELSE suite %prec ELSE{$$=NULL;}
 | WHILE bool suite {$$=NULL;}
-| varDecl ';' {$$=NULL;}
-| return ';' {$$=NULL;}
+| varDecl ';' { $$=stmt_node(VAR_DECL, $1, NULL, NULL, NULL); }
+| RETURN exp ';' {$$=NULL;}
 ;
 
 

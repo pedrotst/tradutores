@@ -9,11 +9,12 @@ Program* program_node(ClassDecl *classes, StmtList *stmts){
     p->classes = classes;
     p->stmts = stmts;
 
+
     return p;
 }
 
 ClassDecl* classDecl_node(char *selfName, char *superName, 
-    ClassMembers *cMembers, ClassDecl *nextClass){
+        ClassMembers *cMembers, ClassDecl *head){
 
     ClassDecl *c = (ClassDecl*) malloc(sizeof(ClassDecl));
     if(c == NULL){
@@ -23,31 +24,66 @@ ClassDecl* classDecl_node(char *selfName, char *superName,
     c->selfName = selfName;
     c->superName = superName;
     c->cMembers = cMembers;
-    c->nextClass = nextClass;
-    return c;
+    c->next= NULL;
+
+    if(head == NULL)
+        return c;
+
+    ClassDecl *current = head;
+    while(current->next != NULL){
+        current = current->next;
+    }
+
+    current->next = c;
+
+    return head;
 }
 
-ClassMembers* classMember_node(tag utype, VarDecl *varDecls, 
-    FunctionDecl *fundecl,    ClassMembers *nextMember){
+ClassMembers* classMembers_node(ClassMember *member, ClassMembers *head){
 
     ClassMembers *c = (ClassMembers*) malloc(sizeof(ClassMembers));
+    c->member = member;
+    c->next = NULL;
+
+    if(head == NULL)
+        return c;
+
+    ClassMembers *current = head;
+    while(current->next != NULL){
+        current = current->next;
+    }
+
+    current->next = c;
+
+    return head;
+}
+
+ClassMember* classMember_node(tag utype, VarDecl *varDecls, 
+    FunctionDecl *fundecl, ConstrDecl *constrDecl){
+
+    ClassMember *c = (ClassMember*) malloc(sizeof(ClassMember));
     if(c == NULL){
         err(1, "Could not allocate memory for ClassMember");
         exit(1);
     }
-    ClassMembers_u *cmem = (ClassMembers_u*) malloc(sizeof(ClassMembers_u));
+    ClassMember_u *cmem = (ClassMember_u*) malloc(sizeof(ClassMember_u));
     switch(utype){
         case VAR_DECL:
             cmem->varDecls = varDecls;
         break;
         case FUN_DECL:
             cmem->funDecl = fundecl;
+        break;
+        case CONSTR_DECL:
+            cmem->constrDecl = constrDecl;
+        break;
         default:
             c->member = cmem;
             c->utype = utype;
         break;
     }
-    c->nextMember = nextMember;
+    c->utype = utype;
+    c->member = cmem;
 
     return c;
 }
@@ -60,22 +96,47 @@ VarDecl* varDecl_node(char *type, char *id, IdList *ids){
     return v;
 }
 
-IdList* idList_node(char *id, IdList *ids){
+IdList* idList_node(char *id, IdList *head){
     IdList* id_list = (IdList*)malloc(sizeof(IdList*));
     id_list->id = id;
-    id_list->nextId = ids;
-    return id_list;
+    id_list->next= NULL;
+
+    if(head == NULL)
+        return id_list;
+
+    IdList *current = head;
+    while(current->next != NULL){
+        current = current->next;
+    }
+
+    current->next = id_list;
+
+    return head;
+
 }
 
-FunctionDecl* functionDecl_node(int isConstructor, char *name, char *type,
+ConstrDecl* constrDecl_node(char *name,
     FormalArgs *fargs, StmtList *stmtList){
 
-    FunctionDecl* f_decl = (FunctionDecl*)malloc(sizeof(FunctionDecl*));
-    f_decl->isConstructor = isConstructor;
+    ConstrDecl* c_decl = (ConstrDecl*)malloc(sizeof(ConstrDecl));
+
+    c_decl->name = name;
+    c_decl->fargs = fargs;
+    c_decl->stmts = stmtList;
+
+    return c_decl;
+}
+
+FunctionDecl* functionDecl_node(char *type, char *name,
+    FormalArgs *fargs, StmtList *stmtList){
+
+    FunctionDecl* f_decl = (FunctionDecl*)malloc(sizeof(FunctionDecl));
+
     f_decl->name = name;
     f_decl->type = type;
     f_decl->fargs = fargs;
     f_decl->stmts = stmtList;
+
     return f_decl;
 }
 
@@ -83,7 +144,7 @@ void print_program(Program* p){
     ClassDecl *cdecl = p->classes;
     StmtList *stmt = p->stmts;
     print_class(cdecl);
-    cdecl = p->classes->nextClass;
+    cdecl = p->classes->next;
     print_stmt(stmt);
     printf("\n");
 }
@@ -95,24 +156,31 @@ void print_class(ClassDecl *c){
         // printf_fields("\tfields: {");
         print_classMembers(cdecl->cMembers);
         printf("}\n");
-        cdecl = cdecl->nextClass;
+        cdecl = cdecl->next;
     }
 
 }
 
-void print_classMembers(ClassMembers *cmember){
-    while(cmember != NULL){
-        switch(cmember->utype){
-            case VAR_DECL:
-                print_varDecl(cmember->member->varDecls);
-                break;
-            case FUN_DECL:
-                print_funDecl(cmember->member->funDecl);
-                break;
-            default:
-                break;
+void print_classMembers(ClassMembers *cmembers){
+    ClassMember *cmember;
+    while(cmembers != NULL){
+        cmember = cmembers->member;
+        if(cmember != NULL){
+            switch(cmember->utype){
+                case VAR_DECL:
+                    print_varDecl(cmember->member->varDecls);
+                    break;
+                case FUN_DECL:
+                    print_funDecl(cmember->member->funDecl);
+                    break;
+                case CONSTR_DECL:
+                    print_constrDecl(cmember->member->constrDecl);
+                    break;
+                default:
+                    break;
+            }
         }
-        cmember = cmember->nextMember;
+        cmembers = cmembers->next;
     }
 }
 
@@ -122,21 +190,33 @@ void print_varDecl(VarDecl *varDecls){
     printf(";\n");
 }
 
+void print_constrDecl(ConstrDecl *constrDecl){
+    if(constrDecl != NULL){
+        printf("\t");
+        printf("%s (", constrDecl->name);
+        // print_argList();
+        printf(") {");
+        // print_stmtList();
+        printf("}\n");
+    }
+}
+
 void print_funDecl(FunctionDecl *funDecl){
-    printf("\t");
-    if(funDecl->isConstructor == 1)
+    if(funDecl != NULL){
+        printf("\t");
         printf("%s ", funDecl->type);
-    printf("%s (", funDecl->name);
-    // print_argList();
-    printf(") {");
-    // print_stmtList();
-    printf("}\n");
+        printf("%s (", funDecl->name);
+        // print_argList();
+        printf(") {");
+        // print_stmtList();
+        printf("}\n");
+    }
 }
 
 void print_idList(IdList *ids){
     while(ids!=NULL){
         printf(", %s", ids->id);
-        ids = ids->nextId;
+        ids = ids->next;
     }
 }
 

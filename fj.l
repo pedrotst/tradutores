@@ -20,7 +20,7 @@ DIGIT   [0-9]
 NOPERATOR >>|<<|^|\*\*|\|
 KEYWORD	int|bool|this|Object|class|new|true|false|return|super|extends|if|else|while
 ID 	[A-z_][A-z_0-9]*
-
+SEP	\(|\)|;|,|=|\{|\}
 %%
 
 \/\*([^*]|[\n]|[\r\n]|(\*+([^*/]|[\n][\r\n])))*\*+\/   {parse_comment(yytext);/*Comentario*/}
@@ -42,9 +42,8 @@ ID 	[A-z_][A-z_0-9]*
 "while"     {chars+=strlen(yytext); return WHILE;}
 
 {ID}        {yylval.strs=strdup(yytext);chars+=strlen(yytext);return ID;}       
-"\(\)\{\};,="  {chars+=strlen(yytext); return yytext[0];}
+{SEP}  {chars+=strlen(yytext); return yytext[0];}
 "."         {chars+=strlen(yytext); return DOT;}
-"+-*/"      {chars+=strlen(yytext); return yytext[0];}
 "~"         {chars+=strlen(yytext); return NOT;}
 "&&"        {chars+=strlen(yytext); return BAND;}
 "||"        {chars+=strlen(yytext); return BOR;}
@@ -55,7 +54,7 @@ ID 	[A-z_][A-z_0-9]*
 "<"         {chars+=strlen(yytext); return BLT;}
 
 {DIGIT}*    {yylval.num = atoi(yytext); chars+=strlen(yytext); return NUM;}
-[+-;]        {return yytext[0];}
+[+-;]        {chars+=strlen(yytext); return yytext[0];}
 [ \t\r]+      {chars+=strlen(yytext);}
 [\n]		{count_lines++;chars=0;}
 .	        {printf("Line %d, %d: Character %s not recognized\n", count_lines, chars, yytext);chars+=strlen(yytext);}

@@ -10,27 +10,6 @@ int count_lines = 1, chars = 0;
 void yyerror(const char*);
 int yywrap();
 int yylex(void);
-/*
-
-:line 
-: exp ';'
-    { exp *e = $1; print_exp(e, 0); destruct_tree(a); }
-
-exp     
-: term                  
-    {$$ = exp_termnode ($1);}
-| exp '+' term          
-    {$$ = exp_opnode ('-', $1 , $3);}
-| exp '-' term          
-    {$$ = exp_opnode ('-', $1 , $3);}
-;
-
-term    
-: NUM                   
-    {$$ = term_node($1);}
-;
-*/
-
 %}
 
 
@@ -42,7 +21,9 @@ term
     struct Program_s*       program_v;
     struct ClassDecl_s*     class_v;
     struct ClassMembers_s*  classMembers_v;
-    struct FunctionDecl_s*   functionDecl_v; 
+    struct ClassMember_s*        classMember_v;
+    struct ConstrDecl_s*        constrDecl_v;
+    struct FunctionDecl_s*       functionDecl_v;
     //struct Constructor_s*   constructor_v; 
     //struct MethodDecl_s*    methodDecl_v; 
 //    struct ClassName_s*     className_v; 
@@ -81,9 +62,12 @@ term
 %right VAR_ATTRIBUITION
 
 %type <strs> ID INT BOOL type
-%type <program_v> program methodDeclarator constructorDeclarator
+%type <program_v> program 
 %type <class_v> classDecl
 %type <classMembers_v> classMembers
+%type <classMember_v> classMember
+%type <constrDecl_v> constrDecl
+%type <functionDecl_v> functionDecl
 %type <assignment_v> assignment
 %type <var_v> var 
 %type <suite_v> suite
@@ -108,49 +92,39 @@ term
 %%
 program 
 : classDecl stmtList {
-    /*Program *p; p = program_node($1, $2); 
+    Program *p; p = program_node($1, $2); 
     print_program(p);
-    $$ = p;*/
+    $$ = p;
 }    
 ;
 
 classDecl
 : %empty {$$ = NULL;}
 | classDecl CLASS ID EXTENDS ID '{' classMembers '}' {
-    //$$ = classDecl_node($3, $5, $7, $1);
+    $$ = classDecl_node($3, $5, $7, $1);
 }
 | classDecl CLASS ID EXTENDS ID '{' '}' {
-    //$$ = classDecl_node($3, $5, $7, NULL);
+    $$ = classDecl_node($3, $5, NULL, $1);
 }
 
 
 classMembers
-: classMember {$$ = NULL;}
-| classMembers classMember {$$ = NULL;}
+: classMember {$$ = classMembers_node($1, NULL);}
+| classMembers classMember {$$ = classMembers_node($2, $1);}
 
 classMember
-: variableDeclaration
-| constrDecl
-| functionDecl
-
-variableDeclaration 
-: varDecl ';' {}
-;
+: varDecl ';' {$$ = classMember_node(VAR_DECL, $1, NULL, NULL);}
+| constrDecl {$$ = classMember_node(CONSTR_DECL, NULL, NULL, $1);}
+| functionDecl {$$ = classMember_node(FUN_DECL, NULL, $1, NULL);}
 
 constrDecl
-: constructorDeclarator '{' stmtList '}' { }
+:  ID '(' formalArgs ')' '{' stmtList '}' {$$ = constrDecl_node($1, $3, $6); }
 ;
 
 functionDecl
-: methodDeclarator '{' stmtList '}' {}
+: type ID '(' formalArgs ')' '{' stmtList '}' {$$ = functionDecl_node ($1, $2, $4, $7);}
 ;
 
-
-methodDeclarator
-: type ID '(' formalArgs ')'  {$$ = NULL;}
-
-constructorDeclarator
-: ID '(' formalArgs ')' {$$ = NULL;}
 
 assignment
 : ID '=' exp {$$=NULL;}
@@ -183,7 +157,7 @@ formalArgs
 ;
 
 varDecl
-: type ID idList {$$=NULL; /*varDecl_node($2, $3, $1);*/ }
+: type ID idList {$$ = varDecl_node($1, $2, $3);}
 ;
 
 idList

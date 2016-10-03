@@ -1,17 +1,19 @@
 class bar extends Object {
     int u,b,c,d,e;
-    bar(){
-        super();
-    }
 
     int f(){
-        1+1;
     }
 }
+
 
 class foo extends bar {
     int x,k,c,d;
     foo(){
-        super();
     }
 }
+
+
+class a extends Object{}
+
+
+

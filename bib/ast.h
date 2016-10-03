@@ -7,18 +7,21 @@
 
 /*tags serão utilizadas para tipagem das unions*/
 typedef enum type_enum{
-    VAR_DECL, FUN_DECL
+    VAR_DECL, FUN_DECL, CONSTR_DECL
 }tag;
 
 
 typedef struct Program_s            Program;
 typedef struct ClassDecl_s          ClassDecl;
 typedef struct FunctionDecl_s       FunctionDecl;
-typedef struct FunctionList_s       FunctionList;
-typedef struct ConstructorList_s    ConstructorList;
-//typedef struct Constructor_s      Constructor;
+typedef struct Constructor_s      Constructor;
 //typedef struct MethodDecl_s       MethodDecl;
 typedef struct ClassMembers_s       ClassMembers;
+typedef struct ClassMember_s        ClassMember;
+typedef struct ConstrDecl_s         ConstrDecl;
+typedef struct FunctionDecl_s       FunctionDecl;
+typedef struct MethodDeclarator_s   MethodDeclarator;
+typedef struct ConstructorDeclarator_s  ConstructorDeclarator;
 //typedef struct ClassName_s        ClassName;
 typedef struct Assignment_s         Assignment;
 typedef struct Var_s                Var;
@@ -45,12 +48,12 @@ struct ClassDecl_s{
     char *selfName;
     char *superName;
     ClassMembers *cMembers;
-    struct ClassDecl_s *nextClass;
+    struct ClassDecl_s *next;
 };
 
 struct IdList_s{
     char *id;
-    IdList *nextId;
+    IdList *next;
 };
 
 struct VarDecl_s{
@@ -59,28 +62,33 @@ struct VarDecl_s{
     IdList *idList;
 };
 
+struct ConstrDecl_s{
+    char *name;
+    FormalArgs *fargs;
+    StmtList *stmts;
+};
+
 struct FunctionDecl_s{
-    int isConstructor;
     char *name;
     char *type;
     FormalArgs *fargs;
     StmtList *stmts;
 };
 
-union FunctionDecl_u{
-    FunctionList *fun;
-    ConstructorList *constr;
-};
-
-typedef union ClassMembers__u{
+typedef union ClassMember__u{
     VarDecl *varDecls;
     FunctionDecl *funDecl;
-}ClassMembers_u;
+    ConstrDecl *constrDecl;
+}ClassMember_u;
 
 struct ClassMembers_s{
+    ClassMember *member;
+    ClassMembers *next;
+};
+
+struct ClassMember_s{
     tag utype;
-    ClassMembers_u *member;
-    struct ClassMembers_s *nextMember;
+    ClassMember_u *member;
 };
 
 struct Program_s{
@@ -92,17 +100,22 @@ struct Program_s{
 Program* program_node(ClassDecl *classes, StmtList *stmts);
 
 ClassDecl* classDecl_node(char *Selfname, char *superName, 
-    ClassMembers *cMembers, ClassDecl *nextClass);
+    ClassMembers *cMembers, ClassDecl *next);
 
-ClassMembers* classMember_node(tag utype, VarDecl *varDecls, 
-    FunctionDecl *funDecls, 
-    ClassMembers *nextMember);
+ClassMembers* classMembers_node(ClassMember *member,
+    ClassMembers *head);
+
+ClassMember* classMember_node(tag utype, VarDecl *varDecl, 
+    FunctionDecl *funDecl, ConstrDecl *constrDecl);
 
 VarDecl* varDecl_node(char *type, char *id, IdList *ids);
 
-IdList* idList_node(char *id, IdList *ids);
+IdList* idList_node(char *id, IdList *head);
 
-FunctionDecl* functionDecl_node(int isConstructor, char *name, char *type,
+ConstrDecl* constrDecl_node(char *name,
+    FormalArgs *fargs, StmtList *stmtList);
+
+FunctionDecl* functionDecl_node(char *type, char *name,
     FormalArgs *fargs, StmtList *stmtList);
 
 void print_program(Program* p);
@@ -113,52 +126,7 @@ void print_classMembers(ClassMembers *cmember);
 void print_idList(IdList *ids);
 void print_varDecl(VarDecl *varDecls);
 void print_funDecl(FunctionDecl *funDecl);
-/*
-typedef struct exp_s exp;
+void print_constrDecl(ConstrDecl *constrDecl);
 
-typedef union symbol_un {
-    char op;
-    int num;
-}symbol_u;
-
-typedef struct symbol_s{
-    int tag;
-    symbol_u u;
-}symbol;
-
-typedef struct term_s{
-    int num;
-}term;
-
-typedef struct bin_op_s{
-    char op;
-    exp *lhs;
-    term *rhs;
-}bin_op;
-
-union exp_u{
-    term *t;
-    bin_op *b_op;
-};
-
-struct exp_s{
-    int tag;
-    union exp_u expr;
-};
-exp* exp_alloc();
-term* term_alloc();
-bin_op* bin_alloc();
-term* term_node(int n);
-
-exp* exp_opnode(char op, exp* lhs, term* rhs);
-exp* exp_termnode(term* t);
-void print_exp(exp* a, int n);
-void print_opnode(bin_op* b_op, int tabs);
-void print_term(term* t, int tabs);
-
-void destruct_tree(exp* a);
-void print_symbol(symbol s);
-void print_ntype(int n_type);
-*/
 
 #endif

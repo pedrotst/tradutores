@@ -1,14 +1,14 @@
 class bar extends Object {
     int u,b,c,d,e;
 
-    int f(){
+    int f(int a){
     }
 }
 
 
 class foo extends bar {
     int x,k,c,d;
-    foo(){
+    foo(int a, boolean c, xit b){
     }
 }
 

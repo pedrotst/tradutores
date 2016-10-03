@@ -115,6 +115,23 @@ IdList* idList_node(char *id, IdList *head){
 
 }
 
+FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head){
+    FormalArgs* fargs = (FormalArgs*)malloc(sizeof(FormalArgs*));
+    fargs->type = type;
+    fargs->name = name;
+    fargs->next = NULL;
+
+    if(head == NULL)
+        return fargs;
+
+    FormalArgs* current = head;
+    while(current->next != NULL)
+        current = current->next;
+    current->next = fargs;
+
+    return head;
+}
+
 ConstrDecl* constrDecl_node(char *name,
     FormalArgs *fargs, StmtList *stmtList){
 
@@ -153,7 +170,6 @@ void print_class(ClassDecl *c){
     ClassDecl *cdecl = c;
     while(cdecl != NULL){
         printf("class %s extends %s{\n", cdecl->selfName, cdecl->superName);
-        // printf_fields("\tfields: {");
         print_classMembers(cdecl->cMembers);
         printf("}\n");
         cdecl = cdecl->next;
@@ -194,7 +210,7 @@ void print_constrDecl(ConstrDecl *constrDecl){
     if(constrDecl != NULL){
         printf("\t");
         printf("%s (", constrDecl->name);
-        // print_argList();
+        print_fargs(constrDecl->fargs);
         printf(") {");
         // print_stmtList();
         printf("}\n");
@@ -206,10 +222,21 @@ void print_funDecl(FunctionDecl *funDecl){
         printf("\t");
         printf("%s ", funDecl->type);
         printf("%s (", funDecl->name);
-        // print_argList();
+        print_fargs(funDecl->fargs);
         printf(") {");
         // print_stmtList();
         printf("}\n");
+    }
+}
+
+void print_fargs(FormalArgs *fargs){
+    if(fargs != NULL)
+        printf("%s %s", fargs->type, fargs->name);
+    fargs = fargs->next;
+
+    while(fargs != NULL){
+        printf(", %s %s", fargs->type, fargs->name);
+        fargs = fargs->next;
     }
 }
 

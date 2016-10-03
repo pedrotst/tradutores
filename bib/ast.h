@@ -14,14 +14,11 @@ typedef enum type_enum{
 typedef struct Program_s            Program;
 typedef struct ClassDecl_s          ClassDecl;
 typedef struct FunctionDecl_s       FunctionDecl;
-typedef struct Constructor_s      Constructor;
 //typedef struct MethodDecl_s       MethodDecl;
 typedef struct ClassMembers_s       ClassMembers;
 typedef struct ClassMember_s        ClassMember;
 typedef struct ConstrDecl_s         ConstrDecl;
 typedef struct FunctionDecl_s       FunctionDecl;
-typedef struct MethodDeclarator_s   MethodDeclarator;
-typedef struct ConstructorDeclarator_s  ConstructorDeclarator;
 //typedef struct ClassName_s        ClassName;
 typedef struct Assignment_s         Assignment;
 typedef struct Var_s                Var;
@@ -60,6 +57,12 @@ struct VarDecl_s{
     char *type;
     char *id;
     IdList *idList;
+};
+
+struct FormalArgs_s{
+    char *type;
+    char *name;
+    struct FormalArgs_s *next;
 };
 
 struct ConstrDecl_s{
@@ -117,6 +120,7 @@ ConstrDecl* constrDecl_node(char *name,
 
 FunctionDecl* functionDecl_node(char *type, char *name,
     FormalArgs *fargs, StmtList *stmtList);
+FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head);
 
 void print_program(Program* p);
 void print_class(ClassDecl *c);
@@ -124,6 +128,7 @@ void print_stmt(StmtList *stmt);
 
 void print_classMembers(ClassMembers *cmember);
 void print_idList(IdList *ids);
+void print_fargs(FormalArgs *fargs);
 void print_varDecl(VarDecl *varDecls);
 void print_funDecl(FunctionDecl *funDecl);
 void print_constrDecl(ConstrDecl *constrDecl);

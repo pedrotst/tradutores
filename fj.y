@@ -43,13 +43,13 @@ int yylex(void);
     struct Int_s*           int_v; 
     struct Bool_s*          bool_v; 
     struct Stmt_s*          stmt_v; 
-    struct MatchedStmt_s*   matchedStmt_v; 
+    //struct MatchedStmt_s*   matchedStmt_v; 
     struct Object_s*        object_v; 
 
 }
 %define parse.error verbose
 
-%token ID NUM COMMA DOT
+%token ID NUM COMMA DOT 
 %token NOT BAND BOR BEQ BGE BLE BGT BLT PRINT
 %token INT BOOL THIS NEW CLASS OBJECT TRUE FALSE RETURN SUPER EXTENDS IF ELSE WHILE
 
@@ -85,9 +85,9 @@ int yylex(void);
 %type <int_v> int NUM
 %type <bool_v> bool TRUE FALSE NOT
 %type <stmt_v> stmt
-%type <matchedStmt_v> matchedStmt
 %nonassoc VARD
 %nonassoc FDECL
+%nonassoc ELSE
 
 %%
 program 
@@ -153,7 +153,8 @@ argList
 
 formalArgs
 : %empty {$$=NULL;}
-| formalArgs type ID ',' {$$=NULL;}
+| type ID {$$=formalArgs_node($1, $2, NULL);}
+| formalArgs ',' type ID {$$=formalArgs_node($3, $4, $1);}
 ;
 
 varDecl
@@ -177,6 +178,7 @@ exp
 | int {$$=NULL;}
 | bool {$$=NULL;}
 | assignment {$$=NULL;}
+| '(' exp ')' {$$=NULL;}
 ;
 
 object
@@ -225,12 +227,8 @@ bool
 ;
 
 stmt
-: IF BOOL suite {$$=NULL;}
-| matchedStmt {$$=NULL;}
-;
-
-matchedStmt
-: IF bool suite ELSE suite {$$=NULL;}
+: IF bool suite {$$=NULL;}
+| IF bool suite ELSE suite %prec ELSE{$$=NULL;}
 | WHILE bool suite {$$=NULL;}
 | varDecl ';' {$$=NULL;}
 | return ';' {$$=NULL;}

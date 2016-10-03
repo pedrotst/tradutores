@@ -68,8 +68,7 @@ term
 }
 %define parse.error verbose
 
-%token ID NUM COMMA SEMICOLON VAR_ATTRIBUITION L_PAREN R_PAREN
-%token L_BRACK R_BRACK DOT 
+%token ID NUM COMMA DOT
 %token NOT BAND BOR BEQ BGE BLE BGT BLT PRINT
 %token INT BOOL THIS NEW CLASS OBJECT TRUE FALSE RETURN SUPER EXTENDS IF ELSE WHILE
 
@@ -82,9 +81,8 @@ term
 %right VAR_ATTRIBUITION
 
 %type <strs> ID INT BOOL type
-%type <program_v> program 
+%type <program_v> program methodDeclarator constructorDeclarator
 %type <class_v> classDecl
-%type <functionDecl_v> functionDecl
 %type <classMembers_v> classMembers
 %type <assignment_v> assignment
 %type <var_v> var 
@@ -104,101 +102,140 @@ term
 %type <bool_v> bool TRUE FALSE NOT
 %type <stmt_v> stmt
 %type <matchedStmt_v> matchedStmt
+%nonassoc VARD
+%nonassoc FDECL
 
 %%
 program 
 : classDecl stmtList {
-    Program *p; p = program_node($1, $2); 
+    /*Program *p; p = program_node($1, $2); 
     print_program(p);
-    $$ = p;
+    $$ = p;*/
 }    
+;
 
 classDecl
 : %empty {$$ = NULL;}
-| CLASS ID EXTENDS ID L_BRACK classMembers R_BRACK classDecl {
-    $$ = classDecl_node($2, $4, $6, $8);
+| classDecl CLASS ID EXTENDS ID '{' classMembers '}' {
+    //$$ = classDecl_node($3, $5, $7, $1);
 }
+| classDecl CLASS ID EXTENDS ID '{' '}' {
+    //$$ = classDecl_node($3, $5, $7, NULL);
+}
+
 
 classMembers
-: %empty {$$ = NULL;}
-| varDecl SEMICOLON classMembers {$$ = classMember_node(VAR_DECL, $1, NULL, $3);}
-| functionDecl classMembers {$$ = classMember_node(FUN_DECL, NULL, $1, $2);}
+: classMember {$$ = NULL;}
+| classMembers classMember {$$ = NULL;}
+
+classMember
+: variableDeclaration
+| constrDecl
+| functionDecl
+
+variableDeclaration 
+: varDecl ';' {}
+;
+
+constrDecl
+: constructorDeclarator '{' stmtList '}' { }
+;
 
 functionDecl
-: ID L_PAREN formalArgs R_PAREN L_BRACK stmtList R_BRACK {
-    $$=functionDecl_node(1, $1, NULL, $3, $6); /*constructor*/}
-| type ID L_PAREN formalArgs R_PAREN L_BRACK stmtList R_BRACK{
-    $$=functionDecl_node(0, $2, $1, $4, $7);/*method decl*/
-}
+: methodDeclarator '{' stmtList '}' {}
+;
+
+
+methodDeclarator
+: type ID '(' formalArgs ')'  {$$ = NULL;}
+
+constructorDeclarator
+: ID '(' formalArgs ')' {$$ = NULL;}
 
 assignment
-: ID VAR_ATTRIBUITION exp {$$=NULL;}
+: ID '=' exp {$$=NULL;}
+;
 
 var
 : THIS {$$=NULL;}
 | ID {$$=NULL;}
+;
 
 suite
-: L_BRACK stmtList R_BRACK {$$=NULL;}
-| stmt SEMICOLON {$$=NULL;}
+: '{' stmtList '}' {$$=NULL;}
+| stmt ';' {$$=NULL;}
+;
 
 stmtList
 : %empty {$$ = NULL;}
-| stmt stmtList {$$ = NULL;}
+| stmtList stmt {$$ = NULL;}
+;
 
 argList
 : %empty {$$=NULL;}
-| exp COMMA argList {$$=NULL;}
+| argList exp ',' {$$=NULL;}
+;
 
 
 formalArgs
 : %empty {$$=NULL;}
-| type ID COMMA formalArgs {$$=NULL;}
+| formalArgs type ID ',' {$$=NULL;}
+;
 
 varDecl
-: type ID idList {$$=varDecl_node($1, $2, $3); }
+: type ID idList {$$=NULL; /*varDecl_node($2, $3, $1);*/ }
+;
 
 idList
 : %empty {$$= NULL;}
-| COMMA ID idList {$$=idList_node($2, $3);}
+| idList ',' ID {$$=idList_node($3, $1);}
+;
 
 
 type
 : ID {$$=$1;}
 | INT {$$=$1;}
 | BOOL {$$=$1;}
+;
 
 exp
 : object {$$=NULL;}
 | int {$$=NULL;}
 | bool {$$=NULL;}
 | assignment {$$=NULL;}
+;
 
 object
 : var {$$=NULL;}
 | fieldAccess {$$=NULL;}
 | methodInvoc {$$=NULL;}
 | new {$$=NULL;}
+;
 
 return
-: RETURN L_PAREN exp R_PAREN {$$=NULL;}
+: RETURN '(' exp ')' {$$=NULL;}
+;
 
 methodInvoc
-: object DOT ID L_PAREN argList R_PAREN {$$=NULL;}
-| ID L_PAREN argList R_PAREN {$$=NULL;}
+: object DOT ID '(' argList ')' {$$=NULL;}
+| ID '(' argList ')' {$$=NULL;}
+;
 
 fieldAccess
 : object DOT ID {$$=NULL;}
+;
 
 new
-: NEW ID L_PAREN argList R_PAREN {$$=NULL;}
+: NEW ID '(' argList ')' {$$=NULL;}
+;
 
 int
 : int '+' int {$$=NULL;}
 | int '-' int {$$=NULL;}
 | int '*' int {$$=NULL;}
 | int '/' int {$$=NULL;}
-| NUM{$$=NULL;}
+| NUM {$$=NULL;}
+;
 
 bool
 : bool BOR bool{$$=NULL;}
@@ -211,17 +248,19 @@ bool
 | int BGT int {$$=NULL;}
 | TRUE {$$=NULL;}
 | FALSE{$$=NULL;}
+;
 
 stmt
 : IF BOOL suite {$$=NULL;}
 | matchedStmt {$$=NULL;}
+;
 
 matchedStmt
 : IF bool suite ELSE suite {$$=NULL;}
 | WHILE bool suite {$$=NULL;}
-| varDecl {$$=NULL;}
-| exp SEMICOLON {$$=NULL;} 
-| return SEMICOLON {$$=NULL;}
+| varDecl ';' {$$=NULL;}
+| return ';' {$$=NULL;}
+;
 
 
 %%

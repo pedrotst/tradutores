@@ -42,13 +42,7 @@ ID 	[A-z_][A-z_0-9]*
 "while"     {chars+=strlen(yytext); return WHILE;}
 
 {ID}        {yylval.strs=strdup(yytext);chars+=strlen(yytext);return ID;}       
-","         {chars+=strlen(yytext); return COMMA;} 
-";"         {chars+=strlen(yytext); return SEMICOLON;}
-"="         {chars+=strlen(yytext); return VAR_ATTRIBUITION;}
-"\("        {chars+=strlen(yytext); return L_PAREN;}
-"\)"        {chars+=strlen(yytext); return R_PAREN;}
-"\{"        {chars+=strlen(yytext); return L_BRACK;}
-"\}"        {chars+=strlen(yytext); return R_BRACK;}
+"\(\)\{\};,="  {chars+=strlen(yytext); return yytext[0];}
 "."         {chars+=strlen(yytext); return DOT;}
 "+-*/"      {chars+=strlen(yytext); return yytext[0];}
 "~"         {chars+=strlen(yytext); return NOT;}

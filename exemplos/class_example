@@ -1,4 +1,3 @@
-
 class bar extends Object {
     int u,b,c,d,e;
     bar(){

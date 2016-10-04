@@ -117,14 +117,23 @@ StmtList* stmtList_node(Stmt *stmt, StmtList *head){
 
 
 Stmt* stmt_node(tag utype, VarDecl *varDecl, IfStmt *ifStmt,
-        WhileStmt *whileStmt, ReturnStmt *returnStmt){
+        WhileStmt *whileStmt, Exp *returnExp){
     Stmt *stmt = (Stmt*)malloc(sizeof(Stmt));
     Stmt_u *stmt_u = (Stmt_u*)malloc(sizeof(Stmt_u));
 
     switch(utype){
         case VAR_DECL:
             stmt_u->varDecl = varDecl;
-        break;
+            break;
+        case IF_STMT:
+            stmt_u->ifStmt = ifStmt;
+            break;
+        case RET_STMT:
+            stmt_u->returnExp = returnExp;
+            break;
+        case WHILE_STMT:
+            stmt_u->whileStmt = whileStmt;
+            break;
         default:
         break;
     }
@@ -151,6 +160,15 @@ IdList* idList_node(char *id, IdList *head){
 
     return head;
 
+}
+
+IfStmt* if_node(Exp *cond, StmtList *then, StmtList *els){
+    IfStmt *i = (IfStmt*)malloc(sizeof(IfStmt*));
+    i->cond = cond;
+    i->then = then;
+    i->els = els;
+
+    return i;
 }
 
 FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head){
@@ -197,7 +215,7 @@ FunctionDecl* functionDecl_node(char *type, char *name,
 
 void print_program(Program* p){
     print_class(p->classes);
-    print_stmt(p->stmts);
+    print_stmt(p->stmts, 0);
     printf("\n");
 }
 
@@ -248,9 +266,9 @@ void print_constrDecl(ConstrDecl *constrDecl){
         printf("\t");
         printf("%s (", constrDecl->name);
         print_fargs(constrDecl->fargs);
-        printf(") {");
-        // print_stmtList();
-        printf("}\n");
+        printf(") {\n");
+        print_stmt(constrDecl->stmts, 2);
+        printf("\t}\n");
     }
 }
 
@@ -260,9 +278,9 @@ void print_funDecl(FunctionDecl *funDecl){
         printf("%s ", funDecl->type);
         printf("%s (", funDecl->name);
         print_fargs(funDecl->fargs);
-        printf(") {");
-        // print_stmtList();
-        printf("}\n");
+        printf(") {\n");
+        print_stmt(funDecl->stmts, 2);
+        printf("\t}\n");
     }
 }
 
@@ -284,13 +302,16 @@ void print_idList(IdList *ids){
     }
 }
 
-void print_stmt(StmtList *stmts){
+void print_stmt(StmtList *stmts, int tabs){
     Stmt *stmt;
     while(stmts != NULL){
         stmt = stmts->stmt;
         switch(stmt->utype){
             case VAR_DECL:
-                print_varDecl(stmt->stmt_u->varDecl, 0);
+                print_varDecl(stmt->stmt_u->varDecl, tabs);
+                break;
+            case RET_STMT:
+                print_return(stmt->stmt_u->returnExp, tabs);
                 break;
             default:
             break;
@@ -298,5 +319,13 @@ void print_stmt(StmtList *stmts){
         stmts = stmts->next;
     }
 
+}
+
+void print_return(Exp *e, int tabs){
+    for(int i=0; i<tabs; i++)
+        printf("\t");
+    printf("return ");
+    // print_exp();
+    printf(";\n");
 }
 

@@ -7,7 +7,8 @@
 
 /*tags serão utilizadas para tipagem das unions*/
 typedef enum type_enum{
-    VAR_DECL, FUN_DECL, CONSTR_DECL
+    VAR_DECL, FUN_DECL, CONSTR_DECL,
+    IF_STMT, RET_STMT, WHILE_STMT
 }tag;
 
 
@@ -50,10 +51,15 @@ struct ClassDecl_s{
     struct ClassDecl_s *next;
 };
 
+struct IfStmt_s {
+    Exp *cond;
+    StmtList *then, *els; // when els != NULL we have and else suite
+};
+
 typedef union Stmt__u{
     IfStmt *ifStmt;
     WhileStmt *whileStmt;
-    ReturnStmt *returnStmt;
+    Exp *returnExp;
     VarDecl *varDecl;
 }Stmt_u;
 
@@ -145,11 +151,13 @@ FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head);
 StmtList* stmtList_node(Stmt *stmt, StmtList *head);
 
 Stmt* stmt_node(tag utype, VarDecl *varDecl, IfStmt *ifStmt,
-    WhileStmt *whileStmt, ReturnStmt *returnStmt);
+    WhileStmt *whileStmt, Exp *returnStmt);
+
+IfStmt* if_node(Exp *cond, StmtList *then, StmtList *els);
 
 void print_program(Program* p);
 void print_class(ClassDecl *c);
-void print_stmt(StmtList *stmt);
+void print_stmt(StmtList *stmt, int tabs);
 
 void print_classMembers(ClassMembers *cmember);
 void print_idList(IdList *ids);
@@ -157,6 +165,7 @@ void print_fargs(FormalArgs *fargs);
 void print_varDecl(VarDecl *varDecls, int tabs);
 void print_funDecl(FunctionDecl *funDecl);
 void print_constrDecl(ConstrDecl *constrDecl);
+void print_return(Exp *e, int tabs);
 
 
 #endif

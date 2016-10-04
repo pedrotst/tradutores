@@ -1,4 +1,5 @@
 *.swp
+*.swo
 *.tab.c
 *.tab.h
 *.o

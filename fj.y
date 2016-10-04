@@ -29,7 +29,6 @@ int yylex(void);
 //    struct ClassName_s*     className_v; 
     struct Assignment_s*    assignment_v; 
     struct Var_s*           var_v; 
-    struct Suite_s*         suite_v; 
     struct StmtList_s*      stmtList_v;
     struct ArgList_s*       argList_v; 
     struct FormalArgs_s*    formalArgs_v; 
@@ -58,10 +57,10 @@ int yylex(void);
 %left BOR
 %right NOT
 %left BEQ BGE BLE BGT BLT
-%right VAR_ATTRIBUITION
+%right '='
 
 %type <strs> ID INT BOOL type
-%type <program_v> program 
+%type <program_v> program binOp
 %type <class_v> classDecl
 %type <classMembers_v> classMembers
 %type <classMember_v> classMember
@@ -69,8 +68,7 @@ int yylex(void);
 %type <functionDecl_v> functionDecl
 %type <assignment_v> assignment
 %type <var_v> var 
-%type <suite_v> suite
-%type <stmtList_v>stmtList
+%type <stmtList_v>stmtList suite
 %type <argList_v> argList
 %type <formalArgs_v> formalArgs
 %type <varDecl_v> varDecl
@@ -121,21 +119,6 @@ functionDecl
 : type ID '(' formalArgs ')' '{' stmtList '}' {$$ = functionDecl_node ($1, $2, $4, $7);}
 ;
 
-
-assignment
-: ID '=' exp {$$=NULL;}
-;
-
-var
-: THIS {$$=NULL;}
-| ID {$$=NULL;}
-;
-
-suite
-: '{' stmtList '}' {$$=NULL;}
-| stmt ';' {$$=NULL;}
-;
-
 stmtList
 : %empty {$$ = NULL;}
 | stmtList stmt {$$ = stmtList_node($2, $1);}
@@ -145,7 +128,6 @@ argList
 : %empty {$$=NULL;}
 | argList exp ',' {$$=NULL;}
 ;
-
 
 formalArgs
 : %empty {$$=NULL;}
@@ -170,27 +152,40 @@ type
 ;
 
 exp
-: object {$$=NULL;}
-| int {$$=NULL;}
-| bool {$$=NULL;}
+: var {$$=NULL;}
+| binOp {$$=NULL;}
 | assignment {$$=NULL;}
 | '(' exp ')' {$$=NULL;}
+
+
+binOp
+: int {$$=NULL;}
+| bool {$$=NULL;}
+;
+
+assignment
+: var '=' exp {$$=NULL;}
+;
+
+var
+: THIS {$$=NULL;}
+| ID {$$=NULL;}
+| object {$$=NULL;}
 ;
 
 object
-: var {$$=NULL;}
-| fieldAccess {$$=NULL;}
+: fieldAccess {$$=NULL;}
 | methodInvoc {$$=NULL;}
 | new {$$=NULL;}
 ;
 
 methodInvoc
-: object DOT ID '(' argList ')' {$$=NULL;}
+: var DOT ID '(' argList ')' {$$=NULL;}
 | ID '(' argList ')' {$$=NULL;}
 ;
 
 fieldAccess
-: object DOT ID {$$=NULL;}
+: var DOT ID {$$=NULL;}
 ;
 
 new
@@ -198,32 +193,43 @@ new
 ;
 
 int
-: int '+' int {$$=NULL;}
-| int '-' int {$$=NULL;}
-| int '*' int {$$=NULL;}
-| int '/' int {$$=NULL;}
+: exp '+' exp {$$=NULL;}
+| exp '-' exp {$$=NULL;}
+| exp '*' exp {$$=NULL;}
+| exp '/' exp {$$=NULL;}
 | NUM {$$=NULL;}
 ;
 
 bool
-: bool BOR bool{$$=NULL;}
-| bool BAND bool{$$=NULL;}
-| NOT bool{$$=NULL;}
-| int BEQ int {$$=NULL;}
-| int BLE int {$$=NULL;}
-| int BGE int {$$=NULL;}
-| int BLT int {$$=NULL;}
-| int BGT int {$$=NULL;}
+: exp BOR exp {$$=NULL;}
+| exp BAND exp{$$=NULL;}
+| NOT exp {$$=NULL;}
+| exp BEQ exp {$$=NULL;}
+| exp BLE exp {$$=NULL;}
+| exp BGE exp {$$=NULL;}
+| exp BLT exp {$$=NULL;}
+| exp BGT exp {$$=NULL;}
 | TRUE {$$=NULL;}
 | FALSE{$$=NULL;}
 ;
 
 stmt
-: IF bool suite {$$=NULL;}
-| IF bool suite ELSE suite %prec ELSE{$$=NULL;}
-| WHILE bool suite {$$=NULL;}
+: IF exp suite {
+    IfStmt *a = if_node($2, $3, NULL);
+    $$=stmt_node(IF_STMT, NULL, a, NULL, NULL);
+    }
+| IF exp suite ELSE suite %prec ELSE{
+    IfStmt *a = if_node($2, $3, $5);
+    $$=stmt_node(IF_STMT, NULL, a, NULL, NULL);
+    }
+| WHILE exp suite {$$=NULL;}
 | varDecl ';' { $$=stmt_node(VAR_DECL, $1, NULL, NULL, NULL); }
-| RETURN exp ';' {$$=NULL;}
+| RETURN exp ';' {$$=stmt_node(RET_STMT, NULL, NULL, NULL, $2);}
+;
+
+suite
+: '{' stmtList '}' {$$=$2;}
+| stmt ';' { $$=stmtList_node($1, NULL);}
 ;
 
 

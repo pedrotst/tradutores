@@ -2,6 +2,7 @@ class bar extends Object {
     int u,b,c,d,e;
 
     int f(int a){
+        return a;
     }
 }
 

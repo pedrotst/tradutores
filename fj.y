@@ -24,9 +24,7 @@ int yylex(void);
     struct ClassMember_s*        classMember_v;
     struct ConstrDecl_s*        constrDecl_v;
     struct FunctionDecl_s*       functionDecl_v;
-    //struct Constructor_s*   constructor_v; 
-    //struct MethodDecl_s*    methodDecl_v; 
-//    struct ClassName_s*     className_v; 
+    struct BinOp_s*              binOp_v;
     struct Assignment_s*    assignment_v; 
     struct Var_s*           var_v; 
     struct StmtList_s*      stmtList_v;
@@ -41,7 +39,6 @@ int yylex(void);
     struct Int_s*           int_v; 
     struct Bool_s*          bool_v; 
     struct Stmt_s*          stmt_v; 
-    //struct MatchedStmt_s*   matchedStmt_v; 
     struct Object_s*        object_v; 
 
 }
@@ -60,7 +57,7 @@ int yylex(void);
 %right '='
 
 %type <strs> ID INT BOOL type
-%type <program_v> program binOp
+%type <program_v> program 
 %type <class_v> classDecl
 %type <classMembers_v> classMembers
 %type <classMember_v> classMember
@@ -74,6 +71,7 @@ int yylex(void);
 %type <varDecl_v> varDecl
 %type <idList_v> idList
 %type <exp_v> exp
+%type <binOp_v> binOp
 %type <object_v> object
 %type <fieldAccess_v> fieldAccess
 %type <methodInvoc_v> methodInvoc
@@ -154,7 +152,6 @@ type
 exp
 : var {$$=NULL;}
 | binOp {$$=NULL;}
-| assignment {$$=NULL;}
 | '(' exp ')' {$$=NULL;}
 
 
@@ -164,13 +161,12 @@ binOp
 ;
 
 assignment
-: var '=' exp {$$=NULL;}
+: var '=' exp {$$=assignment_node($1, $3);}
 ;
 
 var
-: THIS {$$=NULL;}
-| ID {$$=NULL;}
-| object {$$=NULL;}
+: ID {$$=var_node(ID_VAR, $1, NULL);}
+| object {$$=var_node(OBJ_VAR, NULL, $1);}
 ;
 
 object
@@ -216,15 +212,18 @@ bool
 stmt
 : IF exp suite {
     IfStmt *a = if_node($2, $3, NULL);
-    $$=stmt_node(IF_STMT, NULL, a, NULL, NULL);
+    $$=stmt_node(IF_STMT, NULL, a, NULL, NULL, NULL);
     }
 | IF exp suite ELSE suite %prec ELSE{
     IfStmt *a = if_node($2, $3, $5);
-    $$=stmt_node(IF_STMT, NULL, a, NULL, NULL);
+    $$=stmt_node(IF_STMT, NULL, a, NULL, NULL, NULL);
     }
-| WHILE exp suite {$$=NULL;}
-| varDecl ';' { $$=stmt_node(VAR_DECL, $1, NULL, NULL, NULL); }
-| RETURN exp ';' {$$=stmt_node(RET_STMT, NULL, NULL, NULL, $2);}
+| WHILE exp suite {
+    WhileStmt *w = while_node($2, $3);
+    $$=stmt_node(WHILE_STMT, NULL, NULL, w, NULL, NULL);}
+| varDecl ';' { $$=stmt_node(VAR_DECL, $1, NULL, NULL, NULL, NULL); }
+| assignment ';' {$$ = stmt_node(ASSGN_STMT, NULL, NULL, NULL, NULL, $1);}
+| RETURN exp ';' {$$=stmt_node(RET_STMT, NULL, NULL, NULL, $2, NULL);}
 ;
 
 suite

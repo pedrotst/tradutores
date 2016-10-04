@@ -8,19 +8,18 @@
 /*tags serão utilizadas para tipagem das unions*/
 typedef enum type_enum{
     VAR_DECL, FUN_DECL, CONSTR_DECL,
-    IF_STMT, RET_STMT, WHILE_STMT
+    IF_STMT, RET_STMT, WHILE_STMT, ASSGN_STMT,
+    ID_VAR, OBJ_VAR,
 }tag;
 
 
 typedef struct Program_s            Program;
 typedef struct ClassDecl_s          ClassDecl;
 typedef struct FunctionDecl_s       FunctionDecl;
-//typedef struct MethodDecl_s       MethodDecl;
 typedef struct ClassMembers_s       ClassMembers;
 typedef struct ClassMember_s        ClassMember;
 typedef struct ConstrDecl_s         ConstrDecl;
 typedef struct FunctionDecl_s       FunctionDecl;
-//typedef struct ClassName_s        ClassName;
 typedef struct Assignment_s         Assignment;
 typedef struct Var_s                Var;
 typedef struct Suite_s              Suite;
@@ -30,6 +29,7 @@ typedef struct FormalArgs_s         FormalArgs;
 typedef struct VarDecl_s            VarDecl;
 typedef struct IdList_s             IdList;
 typedef struct Exp_s                Exp;
+typedef struct BinOp_s              BinOp;
 typedef struct Object_s             Object;
 typedef struct IdList_s             IdList;
 typedef struct Return_s             Return;
@@ -56,11 +56,43 @@ struct IfStmt_s {
     StmtList *then, *els; // when els != NULL we have and else suite
 };
 
+struct WhileStmt_s {
+    Exp *cond;
+    StmtList *loop; // when els != NULL we have and else suite
+};
+
+typedef union Exp__u{
+    Var *var;
+    BinOp *binOp;
+    Exp *parenthesis;
+}Exp_u;
+
+struct Exp_s{
+    tag utype;
+    Exp_u *exp_u;
+};
+
+typedef union Var__u{
+    char *id;
+    Object *obj;
+}Var_u;
+
+struct Var_s{
+    tag utype;
+    Var_u *var_u;
+};
+
+struct Assignment_s{
+    Var *lhs;
+    Exp *rhs;
+};
+
 typedef union Stmt__u{
     IfStmt *ifStmt;
     WhileStmt *whileStmt;
     Exp *returnExp;
     VarDecl *varDecl;
+    Assignment *assgn;
 }Stmt_u;
 
 struct Stmt_s{
@@ -151,9 +183,15 @@ FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head);
 StmtList* stmtList_node(Stmt *stmt, StmtList *head);
 
 Stmt* stmt_node(tag utype, VarDecl *varDecl, IfStmt *ifStmt,
-    WhileStmt *whileStmt, Exp *returnStmt);
+    WhileStmt *whileStmt, Exp *returnStmt, Assignment *assgn);
 
 IfStmt* if_node(Exp *cond, StmtList *then, StmtList *els);
+WhileStmt* while_node(Exp *cond, StmtList *loop);
+
+Assignment* assignment_node(Var *lhs, Exp *rhs);
+Var* var_node(tag utype, char *id, Object *obj);
+Exp* exp_node(tag utype, Var *var, BinOp *binOp,
+    Assignment *assgn, Exp *parenthesis);
 
 void print_program(Program* p);
 void print_class(ClassDecl *c);
@@ -166,6 +204,14 @@ void print_varDecl(VarDecl *varDecls, int tabs);
 void print_funDecl(FunctionDecl *funDecl);
 void print_constrDecl(ConstrDecl *constrDecl);
 void print_return(Exp *e, int tabs);
+void print_var(Var *v);
+
+void print_if(IfStmt *i, int tabs);
+void print_while(WhileStmt *w, int tabs);
+void print_exp(Exp *e, int tabs);
+void print_assignment(Assignment *assgn, int tabs);
+
+void print_tabs(int tabs);
 
 
 #endif

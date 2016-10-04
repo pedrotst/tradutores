@@ -117,7 +117,7 @@ StmtList* stmtList_node(Stmt *stmt, StmtList *head){
 
 
 Stmt* stmt_node(tag utype, VarDecl *varDecl, IfStmt *ifStmt,
-        WhileStmt *whileStmt, Exp *returnExp){
+        WhileStmt *whileStmt, Exp *returnExp, Assignment *assgn){
     Stmt *stmt = (Stmt*)malloc(sizeof(Stmt));
     Stmt_u *stmt_u = (Stmt_u*)malloc(sizeof(Stmt_u));
 
@@ -130,6 +130,9 @@ Stmt* stmt_node(tag utype, VarDecl *varDecl, IfStmt *ifStmt,
             break;
         case RET_STMT:
             stmt_u->returnExp = returnExp;
+            break;
+        case ASSGN_STMT:
+            stmt_u->assgn = assgn;
             break;
         case WHILE_STMT:
             stmt_u->whileStmt = whileStmt;
@@ -160,6 +163,14 @@ IdList* idList_node(char *id, IdList *head){
 
     return head;
 
+}
+
+WhileStmt* while_node(Exp *cond, StmtList *loop){
+    WhileStmt *w = (WhileStmt*)malloc(sizeof(WhileStmt*));
+    w->cond = cond;
+    w->loop = loop;
+
+    return w;
 }
 
 IfStmt* if_node(Exp *cond, StmtList *then, StmtList *els){
@@ -213,6 +224,41 @@ FunctionDecl* functionDecl_node(char *type, char *name,
     return f_decl;
 }
 
+Assignment* assignment_node(Var *lhs, Exp *rhs){
+    Assignment *a = (Assignment*)malloc(sizeof(Assignment));
+    a->lhs = lhs;
+    a->rhs = rhs;
+
+    return a;
+}
+
+Var* var_node(tag utype, char *id, Object *obj){
+    Var *v = (Var*)malloc(sizeof(Var));
+    Var_u *var = (Var_u*)malloc(sizeof(Var_u));
+    v->utype = utype;
+    if(utype == ID_VAR)
+        var->id = id;
+    else if(utype == OBJ_VAR)
+        var->obj = obj;
+
+    v->var_u = var;
+    return v;
+
+}
+
+Exp* exp_node(tag utype, Var *var, BinOp *binOp,
+        Assignment *assgn, Exp *parenthesis){
+    Exp *e = (Exp*)malloc(sizeof(Exp));
+    Exp_u *exp = (Exp_u*)malloc(sizeof(Exp_u));
+    e->utype = utype;
+    if(utype == VAR_DECL)
+        exp->var = var;
+
+    e->exp_u = exp;
+    return e;
+}
+
+
 void print_program(Program* p){
     print_class(p->classes);
     print_stmt(p->stmts, 0);
@@ -238,6 +284,7 @@ void print_classMembers(ClassMembers *cmembers){
             switch(cmember->utype){
                 case VAR_DECL:
                     print_varDecl(cmember->member->varDecls, 1);
+                    printf(";\n");
                     break;
                 case FUN_DECL:
                     print_funDecl(cmember->member->funDecl);
@@ -254,11 +301,9 @@ void print_classMembers(ClassMembers *cmembers){
 }
 
 void print_varDecl(VarDecl *varDecls, int tabs){
-    for(int i=0; i<tabs; i++)
-        printf("\t");
+    print_tabs(tabs);
     printf("%s %s", varDecls->type, varDecls->id);
     print_idList(varDecls->idList);
-    printf(";\n");
 }
 
 void print_constrDecl(ConstrDecl *constrDecl){
@@ -309,9 +354,21 @@ void print_stmt(StmtList *stmts, int tabs){
         switch(stmt->utype){
             case VAR_DECL:
                 print_varDecl(stmt->stmt_u->varDecl, tabs);
+                printf(";\n");
                 break;
             case RET_STMT:
                 print_return(stmt->stmt_u->returnExp, tabs);
+                printf(";\n");
+                break;
+            case ASSGN_STMT:
+                print_assignment(stmt->stmt_u->assgn, tabs);
+                printf(";\n");
+                break;
+            case WHILE_STMT:
+                print_while(stmt->stmt_u->whileStmt, tabs);
+                break;
+            case IF_STMT:
+                print_if(stmt->stmt_u->ifStmt, tabs);
                 break;
             default:
             break;
@@ -321,11 +378,55 @@ void print_stmt(StmtList *stmts, int tabs){
 
 }
 
-void print_return(Exp *e, int tabs){
-    for(int i=0; i<tabs; i++)
-        printf("\t");
-    printf("return ");
+void print_if(IfStmt *i, int tabs){
+    print_tabs(tabs);
+    printf("if ");
     // print_exp();
-    printf(";\n");
+    printf("{\n");
+    print_stmt(i->then, tabs+1);
+    printf("}\n");
+    if(i->els != NULL){
+        printf("else{\n");
+        print_tabs(tabs);
+        print_stmt(i->els, tabs+1);
+        printf("}\n");
+    }
+}
+void print_while(WhileStmt *w, int tabs){
+    print_tabs(tabs);
+    printf("while ");
+    // print_exp(w->cond);
+    printf("{\n");
+    print_stmt(w->loop, tabs+1);
+    printf("}\n");
 }
 
+void print_return(Exp *e, int tabs){
+    print_tabs(tabs);
+    printf("return ");
+    // print_exp();
+}
+
+void print_exp(Exp *e, int tabs){
+}
+
+void print_assignment(Assignment *assgn, int tabs){
+    if(assgn != NULL){
+        print_tabs(tabs);
+        print_var(assgn->lhs);
+        printf(" = ");
+        // print_exp(assgn->rhs);
+    }
+}
+
+void print_var(Var *var){
+    if(var != NULL){
+        if(var->utype == ID_VAR)
+            printf("%s", var->var_u->id);
+    }
+}
+
+void print_tabs(int tabs){
+    for(int i=0; i<tabs; i++)
+        printf("\t");
+}

@@ -30,7 +30,6 @@ SEP	\(|\)|;|,|=|\{|\}
 
 "int"       {yylval.strs=strdup(yytext);chars+=strlen(yytext); return INT;}
 "bool"      {yylval.strs=strdup(yytext);chars+=strlen(yytext); return BOOL;}
-"this"      {chars+=strlen(yytext); return THIS;}
 "new"       {chars+=strlen(yytext); return NEW;}
 "class"     {chars+=strlen(yytext); return CLASS;}
 "true"      {chars+=strlen(yytext); return TRUE;}

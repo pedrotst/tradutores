@@ -30,3 +30,7 @@ else{
 while asasdfsdaf{
     u = asdf;
 }
+
+a = new A();
+x = a.foo();
+d = c.u;

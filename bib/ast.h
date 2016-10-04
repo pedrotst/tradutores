@@ -10,6 +10,8 @@ typedef enum type_enum{
     VAR_DECL, FUN_DECL, CONSTR_DECL,
     IF_STMT, RET_STMT, WHILE_STMT, ASSGN_STMT,
     ID_VAR, OBJ_VAR,
+    FIELD_OBJ, METH_OBJ, NEW_OBJ,
+    VAR_EXP, BINOP_EXP, PAR_EXP
 }tag;
 
 
@@ -70,6 +72,33 @@ typedef union Exp__u{
 struct Exp_s{
     tag utype;
     Exp_u *exp_u;
+};
+
+typedef union Object__u{
+    FieldAccess *field;
+    MethodInvoc *meth;
+    New *newObj;
+}Object_u;
+
+struct Object_s{
+    tag utype;
+    Object_u *obj_u;
+};
+
+struct MethodInvoc_s{
+    Var *obj; // sera sempre feita com this.meth();
+    char *mname;
+    ArgList *args;
+};
+
+struct FieldAccess_s{
+    Var *obj;
+    char *fname;
+};
+
+struct New_s{
+    char *cname;
+    ArgList *args;
 };
 
 typedef union Var__u{
@@ -189,9 +218,18 @@ IfStmt* if_node(Exp *cond, StmtList *then, StmtList *els);
 WhileStmt* while_node(Exp *cond, StmtList *loop);
 
 Assignment* assignment_node(Var *lhs, Exp *rhs);
+
+Object* object_node(tag utype, FieldAccess *field, 
+    MethodInvoc *meth, New *newObj);
+
 Var* var_node(tag utype, char *id, Object *obj);
 Exp* exp_node(tag utype, Var *var, BinOp *binOp,
-    Assignment *assgn, Exp *parenthesis);
+    Exp *parenthesis);
+
+MethodInvoc* methodInvoc_node(Var *obj, char *mname, ArgList *args);
+FieldAccess* fieldAccess_node(Var *obj, char *fname);
+New* new_node(char *cname, ArgList *args);
+
 
 void print_program(Program* p);
 void print_class(ClassDecl *c);
@@ -208,8 +246,13 @@ void print_var(Var *v);
 
 void print_if(IfStmt *i, int tabs);
 void print_while(WhileStmt *w, int tabs);
-void print_exp(Exp *e, int tabs);
+void print_exp(Exp *e);
 void print_assignment(Assignment *assgn, int tabs);
+
+void print_obj(Object *obj);
+void print_methodInvoc(MethodInvoc *minvok);
+void print_fieldAccess(FieldAccess *faccess);
+void print_new(New *n);
 
 void print_tabs(int tabs);
 

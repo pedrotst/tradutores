@@ -232,6 +232,23 @@ Assignment* assignment_node(Var *lhs, Exp *rhs){
     return a;
 }
 
+
+Object* object_node(tag utype, FieldAccess *field, 
+    MethodInvoc *meth, New *newObj){
+    Object *o = (Object*)malloc(sizeof(Object));
+    Object_u *obj = (Object_u*)malloc(sizeof(Var_u));
+    o->utype = utype;
+    if(utype == FIELD_OBJ)
+        obj->field = field;
+    else if(utype == METH_OBJ)
+        obj->meth = meth;
+    else if(utype == NEW_OBJ)
+        obj->newObj = newObj;
+
+    o->obj_u = obj;
+    return o;
+}
+
 Var* var_node(tag utype, char *id, Object *obj){
     Var *v = (Var*)malloc(sizeof(Var));
     Var_u *var = (Var_u*)malloc(sizeof(Var_u));
@@ -246,12 +263,33 @@ Var* var_node(tag utype, char *id, Object *obj){
 
 }
 
-Exp* exp_node(tag utype, Var *var, BinOp *binOp,
-        Assignment *assgn, Exp *parenthesis){
+MethodInvoc* methodInvoc_node(Var *obj, char *mname, ArgList *args){
+    MethodInvoc* m = (MethodInvoc*)malloc(sizeof(MethodInvoc));
+    m->obj = obj;
+    m->mname = mname;
+    m->args = args;
+    return m;
+}
+
+FieldAccess* fieldAccess_node(Var *obj, char *fname){
+    FieldAccess* f = (FieldAccess*)malloc(sizeof(FieldAccess));
+    f->obj = obj;
+    f->fname = fname;
+    return f;
+}
+
+New* new_node(char *cname, ArgList *args){
+    New* n = (New*)malloc(sizeof(New));
+    n->cname = cname;
+    n->args = args;
+    return n;
+}
+
+Exp* exp_node(tag utype, Var *var, BinOp *binOp, Exp *parenthesis){
     Exp *e = (Exp*)malloc(sizeof(Exp));
     Exp_u *exp = (Exp_u*)malloc(sizeof(Exp_u));
     e->utype = utype;
-    if(utype == VAR_DECL)
+    if(utype == VAR_EXP)
         exp->var = var;
 
     e->exp_u = exp;
@@ -381,7 +419,7 @@ void print_stmt(StmtList *stmts, int tabs){
 void print_if(IfStmt *i, int tabs){
     print_tabs(tabs);
     printf("if ");
-    // print_exp();
+    print_exp(i->cond);
     printf("{\n");
     print_stmt(i->then, tabs+1);
     printf("}\n");
@@ -395,7 +433,7 @@ void print_if(IfStmt *i, int tabs){
 void print_while(WhileStmt *w, int tabs){
     print_tabs(tabs);
     printf("while ");
-    // print_exp(w->cond);
+    print_exp(w->cond);
     printf("{\n");
     print_stmt(w->loop, tabs+1);
     printf("}\n");
@@ -404,10 +442,14 @@ void print_while(WhileStmt *w, int tabs){
 void print_return(Exp *e, int tabs){
     print_tabs(tabs);
     printf("return ");
-    // print_exp();
+    print_exp(e);
 }
 
-void print_exp(Exp *e, int tabs){
+void print_exp(Exp *e){
+    if(e != NULL){
+        if(e->utype == VAR_EXP)
+            print_var(e->exp_u->var);
+    }
 }
 
 void print_assignment(Assignment *assgn, int tabs){
@@ -415,7 +457,7 @@ void print_assignment(Assignment *assgn, int tabs){
         print_tabs(tabs);
         print_var(assgn->lhs);
         printf(" = ");
-        // print_exp(assgn->rhs);
+        print_exp(assgn->rhs);
     }
 }
 
@@ -423,8 +465,49 @@ void print_var(Var *var){
     if(var != NULL){
         if(var->utype == ID_VAR)
             printf("%s", var->var_u->id);
+        if(var->utype == OBJ_VAR)
+            print_obj(var->var_u->obj);
     }
 }
+
+void print_obj(Object *obj){
+    if(obj != NULL){
+        if(obj->utype == NEW_OBJ)
+            print_new(obj->obj_u->newObj);
+
+        else if(obj->utype == METH_OBJ)
+            print_methodInvoc(obj->obj_u->meth);
+
+        else if(obj->utype == FIELD_OBJ)
+            print_fieldAccess(obj->obj_u->field);
+    }
+}
+
+void print_methodInvoc(MethodInvoc *minvok){
+    if(minvok != NULL){
+        print_var(minvok->obj);
+        printf(".%s(", minvok->mname);
+        // print_arg
+        printf(")");
+    }
+}
+
+void print_fieldAccess(FieldAccess *faccess){
+    if(faccess != NULL){
+        print_var(faccess->obj);
+        printf(".%s", faccess->fname);
+    }
+}
+
+void print_new(New *n){
+    if(n != NULL){
+        printf("new %s", n->cname);
+        printf("(");
+        // print_args();
+        printf(")");
+    }
+}
+
 
 void print_tabs(int tabs){
     for(int i=0; i<tabs; i++)

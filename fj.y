@@ -150,7 +150,7 @@ type
 ;
 
 exp
-: var {$$=NULL;}
+: var {$$=exp_node(VAR_EXP, $1, NULL, NULL);}
 | binOp {$$=NULL;}
 | '(' exp ')' {$$=NULL;}
 
@@ -167,25 +167,24 @@ assignment
 var
 : ID {$$=var_node(ID_VAR, $1, NULL);}
 | object {$$=var_node(OBJ_VAR, NULL, $1);}
-;
+
 
 object
-: fieldAccess {$$=NULL;}
-| methodInvoc {$$=NULL;}
-| new {$$=NULL;}
-;
+: fieldAccess {$$=object_node(FIELD_OBJ, $1, NULL, NULL);}
+| methodInvoc {$$=object_node(METH_OBJ, NULL, $1, NULL);}
+| new {$$=object_node(NEW_OBJ, NULL, NULL, $1);}
+
 
 methodInvoc
-: var DOT ID '(' argList ')' {$$=NULL;}
-| ID '(' argList ')' {$$=NULL;}
+: var DOT ID '(' argList ')' {$$=methodInvoc_node($1, $3, $5);}
 ;
 
 fieldAccess
-: var DOT ID {$$=NULL;}
+: var DOT ID {$$=fieldAccess_node($1, $3);}
 ;
 
 new
-: NEW ID '(' argList ')' {$$=NULL;}
+: NEW ID '(' argList ')' {$$=new_node($2, $4);}
 ;
 
 int

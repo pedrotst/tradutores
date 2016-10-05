@@ -20,7 +20,7 @@ DIGIT   [0-9]
 NOPERATOR >>|<<|^|\*\*|\|
 KEYWORD	int|bool|this|Object|class|new|true|false|return|super|extends|if|else|while
 ID 	[A-z_][A-z_0-9]*
-SEP	\(|\)|;|,|=|\{|\}
+SEP	\(|\)|;|,|=|\{|\}|\*|\/|\+|-
 %%
 
 \/\*([^*]|[\n]|[\r\n]|(\*+([^*/]|[\n][\r\n])))*\*+\/   {parse_comment(yytext);/*Comentario*/}
@@ -32,8 +32,8 @@ SEP	\(|\)|;|,|=|\{|\}
 "bool"      {yylval.strs=strdup(yytext);chars+=strlen(yytext); return BOOL;}
 "new"       {chars+=strlen(yytext); return NEW;}
 "class"     {chars+=strlen(yytext); return CLASS;}
-"true"      {yylval.num = 1; chars+=strlen(yytext); return TRUE;}
-"false"     {yylval.num = 0; chars+=strlen(yytext); return FALSE;}
+"true"      {chars+=strlen(yytext); return TRUE;}
+"false"     {chars+=strlen(yytext); return FALSE;}
 "return"    {chars+=strlen(yytext); return RETURN;}
 "extends"   {chars+=strlen(yytext); return EXTENDS;}
 "if"        {chars+=strlen(yytext); return IF;}
@@ -53,7 +53,6 @@ SEP	\(|\)|;|,|=|\{|\}
 "<"         {chars+=strlen(yytext); return BLT;}
 
 {DIGIT}*    {yylval.num = atoi(yytext); chars+=strlen(yytext); return NUM;}
-[+-;]        {chars+=strlen(yytext); return yytext[0];}
 [ \t\r]+      {chars+=strlen(yytext);}
 [\n]		{count_lines++;chars=0;}
 .	        {printf("Line %d, %d: Character %s not recognized\n", count_lines, chars, yytext);chars+=strlen(yytext);}

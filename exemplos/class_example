@@ -4,6 +4,14 @@ class bar extends Object {
     int f(int a){
         return a;
     }
+
+    bar(Bool a){
+        return a + d;
+        int c, d;
+        a = b <= d;
+        c = this.f(1,2,i);
+        u = f(a, b, 32 + (new U(new A()) * 44));
+    }
 }
 
 
@@ -28,9 +36,10 @@ else{
 }
 
 while asasdfsdaf{
-    u = asdf + 32;
+    u = asdf && 32;
 }
 
-a = new A();
-x = a.foo();
+a = new A(1, 2, c);
+x = a.foo(12);
 d = (c.u);
+

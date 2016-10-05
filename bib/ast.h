@@ -62,7 +62,7 @@ struct IfStmt_s {
 
 struct WhileStmt_s {
     Exp *cond;
-    StmtList *loop; // when els != NULL we have and else suite
+    StmtList *loop; 
 };
 
 struct BinOp_s{
@@ -98,8 +98,13 @@ struct Object_s{
     Object_u *obj_u;
 };
 
+struct ArgList_s{
+    Exp *arg;
+    struct ArgList_s *next;
+};
+
 struct MethodInvoc_s{
-    Var *obj; // sera sempre feita com this.meth();
+    Var *obj; // quando obj == NULL esta chamando um metodo interno
     char *mname;
     ArgList *args;
 };
@@ -243,6 +248,8 @@ MethodInvoc* methodInvoc_node(Var *obj, char *mname, ArgList *args);
 FieldAccess* fieldAccess_node(Var *obj, char *fname);
 New* new_node(char *cname, ArgList *args);
 
+ArgList* argList_node(Exp *arg, ArgList *head);
+
 BinOp* binOp_node(char op, Exp *lhs, Exp *rhs);
 Primary* primary_node(tag type, int val);
 
@@ -272,6 +279,7 @@ void print_methodInvoc(MethodInvoc *minvok);
 void print_fieldAccess(FieldAccess *faccess);
 void print_new(New *n);
 void print_prim(Primary *prim);
+void print_argList(ArgList *args);
 
 void print_tabs(int tabs);
 

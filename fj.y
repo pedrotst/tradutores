@@ -125,7 +125,8 @@ stmtList
 
 argList
 : %empty {$$=NULL;}
-| argList exp ',' {$$=NULL;}
+| exp {$$ = argList_node($1, NULL);}
+| argList ',' exp {$$=argList_node($3, $1);}
 ;
 
 formalArgs
@@ -173,6 +174,7 @@ object
 
 methodInvoc
 : var DOT ID '(' argList ')' {$$=methodInvoc_node($1, $3, $5);}
+| ID '(' argList ')' {$$=methodInvoc_node(NULL, $1, $3);}
 ;
 
 fieldAccess

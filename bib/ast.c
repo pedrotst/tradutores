@@ -146,6 +146,21 @@ Stmt* stmt_node(tag utype, VarDecl *varDecl, IfStmt *ifStmt,
     return stmt;
 }
 
+ArgList* argList_node(Exp *arg, ArgList *head){
+    ArgList *arg_list = (ArgList*)malloc(sizeof(ArgList));
+    arg_list->arg = arg;
+    arg_list->next = NULL;
+    
+    if(head == NULL)
+        return arg_list;
+
+    ArgList *current = head;
+    while(current->next != NULL)
+        current = current->next;
+    current->next = arg_list;
+    return head;
+}
+
 IdList* idList_node(char *id, IdList *head){
     IdList* id_list = (IdList*)malloc(sizeof(IdList));
     id_list->id = id;
@@ -499,9 +514,48 @@ void print_prim(Primary *prim){
 
 void print_binOp(BinOp *b){
     if(b != NULL){
-        print_exp(b->lhs);
-        printf(" %c ", b->op);
-        print_exp(b->rhs);
+        switch(b->op){
+            case '!':
+                printf("~");
+                print_exp(b->lhs);
+                break;
+            case '|':
+                print_exp(b->lhs);
+                printf(" || ");
+                print_exp(b->rhs);
+                break;
+
+            case '&':
+                print_exp(b->lhs);
+                printf(" && ");
+                print_exp(b->rhs);
+                break;
+
+            case '=':
+                print_exp(b->lhs);
+                printf(" == ");
+                print_exp(b->rhs);
+                break;
+
+            case '(':
+                print_exp(b->lhs);
+                printf(" <= ");
+                print_exp(b->rhs);
+                break;
+
+            case ')':
+                print_exp(b->lhs);
+                printf(" >= ");
+                print_exp(b->rhs);
+                break;
+
+            default:
+                print_exp(b->lhs);
+                printf(" %c ", b->op);
+                print_exp(b->rhs);
+                break;
+
+        }
     }
 }
 
@@ -542,8 +596,10 @@ void print_obj(Object *obj){
 void print_methodInvoc(MethodInvoc *minvok){
     if(minvok != NULL){
         print_var(minvok->obj);
-        printf(".%s(", minvok->mname);
-        // print_arg
+        if(minvok->obj != NULL) 
+            printf(".");
+        printf("%s(", minvok->mname);
+        print_argList(minvok->args);
         printf(")");
     }
 }
@@ -559,11 +615,19 @@ void print_new(New *n){
     if(n != NULL){
         printf("new %s", n->cname);
         printf("(");
-        // print_args();
+        print_argList(n->args);
         printf(")");
     }
 }
 
+void print_argList(ArgList *args){
+    if(args != NULL){
+        print_exp(args->arg);
+        if(args->next!=NULL)
+            printf(", ");
+        print_argList(args->next);
+    }
+}
 
 void print_tabs(int tabs){
     for(int i=0; i<tabs; i++)

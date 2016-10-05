@@ -71,13 +71,11 @@ int yylex(void);
 %type <varDecl_v> varDecl
 %type <idList_v> idList
 %type <exp_v> exp
-%type <binOp_v> binOp
+%type <binOp_v> binOp NUM TRUE FALSE NOT
 %type <object_v> object
 %type <fieldAccess_v> fieldAccess
 %type <methodInvoc_v> methodInvoc
 %type <new_v> new
-%type <int_v> int NUM
-%type <bool_v> bool TRUE FALSE NOT
 %type <stmt_v> stmt
 %nonassoc ELSE
 
@@ -151,14 +149,8 @@ type
 
 exp
 : var {$$=exp_node(VAR_EXP, $1, NULL, NULL);}
-| binOp {$$=NULL;}
-| '(' exp ')' {$$=NULL;}
-
-
-binOp
-: int {$$=NULL;}
-| bool {$$=NULL;}
-;
+| binOp {$$=exp_node(BINOP_EXP, NULL, $1, NULL);}
+| '(' exp ')' {$$=exp_node(PAR_EXP, NULL, NULL, $2);}
 
 assignment
 : var '=' exp {$$=assignment_node($1, $3);}
@@ -187,25 +179,25 @@ new
 : NEW ID '(' argList ')' {$$=new_node($2, $4);}
 ;
 
-int
+binOp
 : exp '+' exp {$$=NULL;}
 | exp '-' exp {$$=NULL;}
 | exp '*' exp {$$=NULL;}
 | exp '/' exp {$$=NULL;}
-| NUM {$$=NULL;}
-;
-
-bool
-: exp BOR exp {$$=NULL;}
-| exp BAND exp{$$=NULL;}
 | NOT exp {$$=NULL;}
+| exp BOR exp {$$=NULL;}
+| exp BAND exp{$$=NULL;}
 | exp BEQ exp {$$=NULL;}
 | exp BLE exp {$$=NULL;}
 | exp BGE exp {$$=NULL;}
 | exp BLT exp {$$=NULL;}
 | exp BGT exp {$$=NULL;}
-| TRUE {$$=NULL;}
+| primary
+
+primary
+: TRUE {$$=NULL;}
 | FALSE{$$=NULL;}
+| NUM {$$=NULL;}
 ;
 
 stmt

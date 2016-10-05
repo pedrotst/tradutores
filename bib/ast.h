@@ -11,7 +11,8 @@ typedef enum type_enum{
     IF_STMT, RET_STMT, WHILE_STMT, ASSGN_STMT,
     ID_VAR, OBJ_VAR,
     FIELD_OBJ, METH_OBJ, NEW_OBJ,
-    VAR_EXP, BINOP_EXP, PAR_EXP
+    VAR_EXP, BINOP_EXP, PAR_EXP,
+    
 }tag;
 
 
@@ -61,6 +62,21 @@ struct IfStmt_s {
 struct WhileStmt_s {
     Exp *cond;
     StmtList *loop; // when els != NULL we have and else suite
+};
+
+typedef union BinOp__u{
+    int primary;
+    Operator *binOp;
+}BinOp_u;
+
+typedef struct Operator_s{
+    char op;
+    Exp *lhs, *rhs;
+}Operator;
+
+struct BinOp_s{
+    tag utype;
+    BinOp_u *binOp_u;
 };
 
 typedef union Exp__u{
@@ -230,6 +246,7 @@ MethodInvoc* methodInvoc_node(Var *obj, char *mname, ArgList *args);
 FieldAccess* fieldAccess_node(Var *obj, char *fname);
 New* new_node(char *cname, ArgList *args);
 
+BinOp* binOp_node(tag utype, Int *integer, Bool *boolean);
 
 void print_program(Program* p);
 void print_class(ClassDecl *c);
@@ -247,6 +264,9 @@ void print_var(Var *v);
 void print_if(IfStmt *i, int tabs);
 void print_while(WhileStmt *w, int tabs);
 void print_exp(Exp *e);
+void print_binOp(BinOp *binOp);
+void print_int(Int *i);
+void print_bool(Bool *b);
 void print_assignment(Assignment *assgn, int tabs);
 
 void print_obj(Object *obj);

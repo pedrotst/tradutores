@@ -291,11 +291,25 @@ Exp* exp_node(tag utype, Var *var, BinOp *binOp, Exp *parenthesis){
     e->utype = utype;
     if(utype == VAR_EXP)
         exp->var = var;
-
+    else if(utype == BINOP_EXP)
+        exp->binOp = binOp;
+    else if(utype == PAR_EXP)
+        exp->parenthesis = parenthesis;
     e->exp_u = exp;
     return e;
 }
 
+BinOp* binOp_node(tag utype, Int *integer, Bool *boolean){
+    BinOp *binOp = (BinOp*)malloc(sizeof(BinOp));
+    BinOp_u *binOp_u = (BinOp_u*)malloc(sizeof(BinOp));
+    binOp->utype = utype;
+    if(utype == INT_OP)
+        binOp_u->integer = integer;
+    else if(utype == BOOL_OP)
+        binOp_u->boolean = boolean;
+    binOp->binOp_u = binOp_u;
+    return binOp;
+}
 
 void print_program(Program* p){
     print_class(p->classes);
@@ -449,8 +463,27 @@ void print_exp(Exp *e){
     if(e != NULL){
         if(e->utype == VAR_EXP)
             print_var(e->exp_u->var);
+        else if(e->utype == BINOP_EXP)
+            print_binOp(e->exp_u->binOp);
+        else if(e->utype == PAR_EXP){
+            printf("(");
+            print_exp(e->exp_u->parenthesis);
+            printf(")");
+        }
     }
 }
+
+void print_binOp(BinOp *b){
+    if(b != NULL){
+        if(b->utype = INT_OP)
+            print_int(b->binOp_u->integer);
+        else if(b->utype = BOOL_OP)
+            print_bool(b->binOp_u->boolean);
+    }
+}
+
+void print_int(Int *i){}
+void print_bool(Bool *b){}
 
 void print_assignment(Assignment *assgn, int tabs){
     if(assgn != NULL){

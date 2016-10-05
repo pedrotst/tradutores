@@ -33,4 +33,4 @@ while asasdfsdaf{
 
 a = new A();
 x = a.foo();
-d = c.u;
+d = (c.u);

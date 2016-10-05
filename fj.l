@@ -66,35 +66,4 @@ void parse_comment(char* yytext){
     }
 }
 
-// int yywrap (void) {return 1;}
-
-//{KEYWORD}   {printf("KEYWORD: %s\n", yytext);chars+=strlen(yytext);}
-/*
-//".*\n        { }
-
-tipo de comentário
-regras de erro:
-5 erros lexicos - ex 
-falar a linha do erro
-ler a espec
-para compilar e rodar:
-lex exemplo.lex && gcc lex.yy.c -lfl && ./a.out
- 
-}
-
-
-
-main( argc, argv )
-int argc;
-char **argv;
-    {
-    ++argv, --argc;  // skip over program name
-    if ( argc > 0 )
-            yyin = fopen( argv[0], "r" );
-    else
-            yyin = stdin;
-
-    yylex();
-    }
-*/
 

@@ -11,8 +11,8 @@ typedef enum type_enum{
     IF_STMT, RET_STMT, WHILE_STMT, ASSGN_STMT,
     ID_VAR, OBJ_VAR,
     FIELD_OBJ, METH_OBJ, NEW_OBJ,
-    VAR_EXP, BINOP_EXP, PAR_EXP,
-    
+    VAR_EXP, BINOP_EXP, PAR_EXP, PRIM_EXP,
+    BOOL_PRIM, INT_PRIM
 }tag;
 
 
@@ -46,6 +46,7 @@ typedef struct Stmt_s                Stmt;
 typedef struct IfStmt_s             IfStmt;
 typedef struct WhileStmt_s          WhileStmt;
 typedef struct ReturnStmt_s         ReturnStmt;
+typedef struct Primary_s         Primary;
 
 struct ClassDecl_s{
     char *selfName;
@@ -64,26 +65,22 @@ struct WhileStmt_s {
     StmtList *loop; // when els != NULL we have and else suite
 };
 
-typedef union BinOp__u{
-    int primary;
-    Operator *binOp;
-}BinOp_u;
-
-typedef struct Operator_s{
+struct BinOp_s{
     char op;
     Exp *lhs, *rhs;
-}Operator;
-
-struct BinOp_s{
-    tag utype;
-    BinOp_u *binOp_u;
 };
 
 typedef union Exp__u{
     Var *var;
     BinOp *binOp;
     Exp *parenthesis;
+    Primary *primary;
 }Exp_u;
+
+struct Primary_s{
+    tag type;
+    int val;
+};
 
 struct Exp_s{
     tag utype;
@@ -240,13 +237,14 @@ Object* object_node(tag utype, FieldAccess *field,
 
 Var* var_node(tag utype, char *id, Object *obj);
 Exp* exp_node(tag utype, Var *var, BinOp *binOp,
-    Exp *parenthesis);
+    Exp *parenthesis, Primary *primary);
 
 MethodInvoc* methodInvoc_node(Var *obj, char *mname, ArgList *args);
 FieldAccess* fieldAccess_node(Var *obj, char *fname);
 New* new_node(char *cname, ArgList *args);
 
-BinOp* binOp_node(tag utype, Int *integer, Bool *boolean);
+BinOp* binOp_node(char op, Exp *lhs, Exp *rhs);
+Primary* primary_node(tag type, int val);
 
 void print_program(Program* p);
 void print_class(ClassDecl *c);
@@ -273,6 +271,7 @@ void print_obj(Object *obj);
 void print_methodInvoc(MethodInvoc *minvok);
 void print_fieldAccess(FieldAccess *faccess);
 void print_new(New *n);
+void print_prim(Primary *prim);
 
 void print_tabs(int tabs);
 

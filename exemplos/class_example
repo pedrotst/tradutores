@@ -20,7 +20,7 @@ class a extends Object{}
 
 int a,fjd,fodassse,d;
 a=b;
-if asdf{
+if true{
     a = b;
 }
 else{
@@ -28,7 +28,7 @@ else{
 }
 
 while asasdfsdaf{
-    u = asdf;
+    u = asdf + 32;
 }
 
 a = new A();

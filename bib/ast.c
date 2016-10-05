@@ -285,7 +285,8 @@ New* new_node(char *cname, ArgList *args){
     return n;
 }
 
-Exp* exp_node(tag utype, Var *var, BinOp *binOp, Exp *parenthesis){
+Exp* exp_node(tag utype, Var *var, BinOp *binOp, 
+        Exp *parenthesis, Primary *primary){
     Exp *e = (Exp*)malloc(sizeof(Exp));
     Exp_u *exp = (Exp_u*)malloc(sizeof(Exp_u));
     e->utype = utype;
@@ -295,21 +296,28 @@ Exp* exp_node(tag utype, Var *var, BinOp *binOp, Exp *parenthesis){
         exp->binOp = binOp;
     else if(utype == PAR_EXP)
         exp->parenthesis = parenthesis;
+    else if(utype == PRIM_EXP)
+        exp->primary = primary;
     e->exp_u = exp;
     return e;
 }
 
-BinOp* binOp_node(tag utype, Int *integer, Bool *boolean){
+BinOp* binOp_node(char op, Exp *lhs, Exp *rhs){
     BinOp *binOp = (BinOp*)malloc(sizeof(BinOp));
-    BinOp_u *binOp_u = (BinOp_u*)malloc(sizeof(BinOp));
-    binOp->utype = utype;
-    if(utype == INT_OP)
-        binOp_u->integer = integer;
-    else if(utype == BOOL_OP)
-        binOp_u->boolean = boolean;
-    binOp->binOp_u = binOp_u;
+    binOp->op = op;
+    binOp->lhs = lhs;
+    binOp->rhs = rhs;
+
     return binOp;
 }
+
+Primary* primary_node(tag type, int val){
+    Primary *primary = (Primary*)malloc(sizeof(Primary));
+    primary->type = type;
+    primary->val = val;
+    return primary;
+}
+
 
 void print_program(Program* p){
     print_class(p->classes);
@@ -470,15 +478,30 @@ void print_exp(Exp *e){
             print_exp(e->exp_u->parenthesis);
             printf(")");
         }
+        else if(e->utype == PRIM_EXP)
+            print_prim(e->exp_u->primary);
     }
 }
 
+void print_prim(Primary *prim){
+    if(prim != NULL){
+        if(prim->type == BOOL_PRIM){
+            if(prim->val == 1)
+                printf("true");
+            else
+                printf("false");
+        }
+        else if(prim->type == INT_PRIM)
+            printf("%d", prim->val);
+    }
+}
+
+
 void print_binOp(BinOp *b){
     if(b != NULL){
-        if(b->utype = INT_OP)
-            print_int(b->binOp_u->integer);
-        else if(b->utype = BOOL_OP)
-            print_bool(b->binOp_u->boolean);
+        print_exp(b->lhs);
+        printf(" %c ", b->op);
+        print_exp(b->rhs);
     }
 }
 

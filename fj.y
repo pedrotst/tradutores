@@ -40,6 +40,7 @@ int yylex(void);
     struct Bool_s*          bool_v; 
     struct Stmt_s*          stmt_v; 
     struct Object_s*        object_v; 
+    struct Primary_s*       prim_v;
 
 }
 %define parse.error verbose
@@ -56,6 +57,8 @@ int yylex(void);
 %left BEQ BGE BLE BGT BLT
 %right '='
 
+%type <num> NUM TRUE FALSE 
+%type <prim_v> primary
 %type <strs> ID INT BOOL type
 %type <program_v> program 
 %type <class_v> classDecl
@@ -70,8 +73,8 @@ int yylex(void);
 %type <formalArgs_v> formalArgs
 %type <varDecl_v> varDecl
 %type <idList_v> idList
-%type <exp_v> exp
-%type <binOp_v> binOp NUM TRUE FALSE NOT
+%type <exp_v> exp 
+%type <binOp_v> binOp NOT
 %type <object_v> object
 %type <fieldAccess_v> fieldAccess
 %type <methodInvoc_v> methodInvoc
@@ -148,9 +151,10 @@ type
 ;
 
 exp
-: var {$$=exp_node(VAR_EXP, $1, NULL, NULL);}
-| binOp {$$=exp_node(BINOP_EXP, NULL, $1, NULL);}
-| '(' exp ')' {$$=exp_node(PAR_EXP, NULL, NULL, $2);}
+: var {$$=exp_node(VAR_EXP, $1, NULL, NULL, NULL);}
+| binOp {$$=exp_node(BINOP_EXP, NULL, $1, NULL, NULL);}
+| '(' exp ')' {$$=exp_node(PAR_EXP, NULL, NULL, $2, NULL);}
+| primary {$$ = exp_node(PRIM_EXP, NULL, NULL, NULL, $1);}
 
 assignment
 : var '=' exp {$$=assignment_node($1, $3);}
@@ -180,24 +184,23 @@ new
 ;
 
 binOp
-: exp '+' exp {$$=NULL;}
-| exp '-' exp {$$=NULL;}
-| exp '*' exp {$$=NULL;}
-| exp '/' exp {$$=NULL;}
-| NOT exp {$$=NULL;}
-| exp BOR exp {$$=NULL;}
-| exp BAND exp{$$=NULL;}
-| exp BEQ exp {$$=NULL;}
-| exp BLE exp {$$=NULL;}
-| exp BGE exp {$$=NULL;}
-| exp BLT exp {$$=NULL;}
-| exp BGT exp {$$=NULL;}
-| primary
+: exp '+' exp {$$=binOp_node('+', $1, $3);}
+| exp '-' exp {$$=binOp_node('-', $1, $3);}
+| exp '*' exp {$$=binOp_node('*', $1, $3);}
+| exp '/' exp {$$=binOp_node('/', $1, $3);}
+| NOT exp {$$=binOp_node('!', $2, NULL);}
+| exp BOR exp {$$=binOp_node('|', $1, $3);}
+| exp BAND exp{$$=binOp_node('&', $1, $3);}
+| exp BEQ exp {$$=binOp_node('=', $1, $3);}
+| exp BLE exp {$$=binOp_node('(', $1, $3);}
+| exp BGE exp {$$=binOp_node(')', $1, $3);}
+| exp BLT exp {$$=binOp_node('<', $1, $3);}
+| exp BGT exp {$$=binOp_node('>', $1, $3);}
 
 primary
-: TRUE {$$=NULL;}
-| FALSE{$$=NULL;}
-| NUM {$$=NULL;}
+: TRUE { $$ = primary_node(BOOL_PRIM, 1);}
+| FALSE{$$ = primary_node(BOOL_PRIM, 0);}
+| NUM {$$ = primary_node(INT_PRIM, $1);}
 ;
 
 stmt

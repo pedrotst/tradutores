@@ -32,8 +32,8 @@ SEP	\(|\)|;|,|=|\{|\}
 "bool"      {yylval.strs=strdup(yytext);chars+=strlen(yytext); return BOOL;}
 "new"       {chars+=strlen(yytext); return NEW;}
 "class"     {chars+=strlen(yytext); return CLASS;}
-"true"      {chars+=strlen(yytext); return TRUE;}
-"false"     {chars+=strlen(yytext); return FALSE;}
+"true"      {yylval.num = 1; chars+=strlen(yytext); return TRUE;}
+"false"     {yylval.num = 0; chars+=strlen(yytext); return FALSE;}
 "return"    {chars+=strlen(yytext); return RETURN;}
 "extends"   {chars+=strlen(yytext); return EXTENDS;}
 "if"        {chars+=strlen(yytext); return IF;}

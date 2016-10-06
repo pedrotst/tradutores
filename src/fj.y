@@ -4,12 +4,18 @@
 #include <stdlib.h>
 #include <err.h>
 #include "bib/ast.h"
+#include "bib/symbol_table.h"
 
 int count_lines = 1, chars = 0;
 
 void yyerror(const char*);
 int yywrap();
 int yylex(void);
+
+// Global Vars
+Program *p; 
+SymbolTable st;
+
 %}
 
 
@@ -80,13 +86,15 @@ int yylex(void);
 %type <methodInvoc_v> methodInvoc
 %type <new_v> new
 %type <stmt_v> stmt
+%nonassoc IF
 %nonassoc ELSE
 
 %%
 program 
 : classDecl stmtList {
-    Program *p; p = program_node($1, $2); 
-    print_program(p);
+    p = program_node($1, $2); 
+    if(yynerrs == 0) // So printa se o parse foi ok
+        print_program(p);
     $$ = p;
 }    
 ;
@@ -220,11 +228,12 @@ stmt
 | varDecl ';' { $$=stmt_node(VAR_DECL, $1, NULL, NULL, NULL, NULL); }
 | assignment ';' {$$ = stmt_node(ASSGN_STMT, NULL, NULL, NULL, NULL, $1);}
 | RETURN exp ';' {$$=stmt_node(RET_STMT, NULL, NULL, NULL, $2, NULL);}
+| error ';' {yyerrok;$$ = NULL;}
 ;
 
 suite
 : '{' stmtList '}' {$$=$2;}
-| stmt ';' { $$=stmtList_node($1, NULL);}
+| stmt { $$=stmtList_node($1, NULL);}
 ;
 
 
@@ -233,10 +242,11 @@ suite
 
 void yyerror(const char *str)
 {
-    fprintf(stderr,"error line: %d:%d: %s\n",count_lines, chars, str);
+    fprintf(stderr,"Error line %d:%d: %s\n",count_lines, chars, str);
 }
 
 int yywrap() {return 1;};
+
 
 int main()
 {

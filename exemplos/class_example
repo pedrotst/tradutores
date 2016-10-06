@@ -1,5 +1,15 @@
+class foo extends bar {
+    int x,k,c,d;
+    foo(int a, boolean c, xit b){
+        a = b;
+    }
+    int fx () {}
+}
+
 class bar extends Object {
     int u,b,c,d,e;
+
+    bool qk(At x){}
 
     int f(int a){
         return a;
@@ -14,19 +24,13 @@ class bar extends Object {
     }
 }
 
-
-class foo extends bar {
-    int x,k,c,d;
-    foo(int a, boolean c, xit b){
-        a = b;
-    }
-}
-
-
+/*
 class a extends Object{}
 
 
 int a,fjd,fodassse,d;
+Foo f;
+
 a=b;
 if true{
     a = b;
@@ -43,3 +47,4 @@ a = new A(1, 2, c);
 x = a.foo(12);
 d = (c.u);
 
+*/

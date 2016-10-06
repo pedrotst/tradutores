@@ -14,7 +14,7 @@ Program* program_node(ClassDecl *classes, StmtList *stmts){
 }
 
 ClassDecl* classDecl_node(char *selfName, char *superName, 
-        ClassMembers *cMembers, ClassDecl *head){
+        ClassMembers *cMembers, ClassDecl *head, ClassTable **ctable){
 
     ClassDecl *c = (ClassDecl*) malloc(sizeof(ClassDecl));
     if(c == NULL){
@@ -26,6 +26,20 @@ ClassDecl* classDecl_node(char *selfName, char *superName,
     c->cMembers = cMembers;
     c->next= NULL;
 
+    ClassTable *ct_aux, *ct_node = (ClassTable*)malloc(sizeof(ClassTable));
+    ct_node->selfName = selfName;
+    ct_node->superName = superName;
+    ct_node->next = NULL;
+
+    if (*ctable==NULL)
+        *ctable = ct_node;
+    else{
+        ct_aux = *ctable;
+        while(ct_aux->next!=NULL)
+            ct_aux = ct_aux->next;
+        ct_aux->next = ct_node;
+    }
+
     if(head == NULL)
         return c;
 
@@ -35,6 +49,8 @@ ClassDecl* classDecl_node(char *selfName, char *superName,
     }
 
     current->next = c;
+
+ 
 
     return head;
 }
@@ -88,11 +104,41 @@ ClassMember* classMember_node(tag utype, VarDecl *varDecls,
     return c;
 }
 
-VarDecl* varDecl_node(char *type, char *id, IdList *ids){
+VarDecl* varDecl_node(char *type, char *id, IdList *ids, 
+        VariableTable **vtable){
     VarDecl* v = (VarDecl*)malloc(sizeof(VarDecl));
     v->type = type;
     v->id = id;
     v->idList = ids;
+    
+    VariableTable *vt_aux, *vt_next, *vt_node = (VariableTable*)malloc(sizeof(VariableTable));
+    vt_node->type = type;
+    vt_node->name = id;
+    vt_node->next = NULL;
+    vt_aux = vt_node;
+
+    IdList *vnames = v->idList;
+    while(vnames != NULL){
+        vt_next = (VariableTable*)malloc(sizeof(VariableTable));
+        vt_next->name = vnames->id;
+        vt_next->type = type;
+        vt_next->next = NULL;
+
+        vt_aux->next = vt_next;
+        vt_aux = vt_next;
+
+        vnames = vnames->next;
+    }
+
+    if (*vtable==NULL)
+        *vtable = vt_node;
+    else{
+        vt_aux = *vtable;
+        while(vt_aux->next!=NULL)
+            vt_aux = vt_aux->next;
+        vt_aux->next = vt_node;
+    }
+
     return v;
 }
 
@@ -227,7 +273,7 @@ ConstrDecl* constrDecl_node(char *name,
 }
 
 FunctionDecl* functionDecl_node(char *type, char *name,
-    FormalArgs *fargs, StmtList *stmtList){
+    FormalArgs *fargs, StmtList *stmtList, FunctionTable **ftable){
 
     FunctionDecl* f_decl = (FunctionDecl*)malloc(sizeof(FunctionDecl));
 
@@ -235,6 +281,22 @@ FunctionDecl* functionDecl_node(char *type, char *name,
     f_decl->type = type;
     f_decl->fargs = fargs;
     f_decl->stmts = stmtList;
+ 
+    FunctionTable *ft_aux, *ft_node = (FunctionTable*)malloc(sizeof(FunctionTable));
+    ft_node->type = type;
+    ft_node->name = name;
+    ft_node->fargs = fargs;
+    ft_node->next = NULL;
+    ft_aux = ft_node;
+
+    if (*ftable==NULL)
+        *ftable = ft_node;
+    else{
+        ft_aux = *ftable;
+        while(ft_aux->next!=NULL)
+            ft_aux = ft_aux->next;
+        ft_aux->next = ft_node;
+    }
 
     return f_decl;
 }
@@ -405,9 +467,10 @@ void print_funDecl(FunctionDecl *funDecl){
 }
 
 void print_fargs(FormalArgs *fargs){
-    if(fargs != NULL)
+    if(fargs != NULL){
         printf("%s %s", fargs->type, fargs->name);
-    fargs = fargs->next;
+        fargs = fargs->next;
+    }
 
     while(fargs != NULL){
         printf(", %s %s", fargs->type, fargs->name);
@@ -558,9 +621,6 @@ void print_binOp(BinOp *b){
         }
     }
 }
-
-void print_int(Int *i){}
-void print_bool(Bool *b){}
 
 void print_assignment(Assignment *assgn, int tabs){
     if(assgn != NULL){

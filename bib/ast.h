@@ -1,10 +1,8 @@
 #ifndef __ast_h
 #define __ast_h
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <err.h>
-
 /*tags serão utilizadas para tipagem das unions*/
 typedef enum type_enum{
     VAR_DECL, FUN_DECL, CONSTR_DECL,
@@ -47,6 +45,8 @@ typedef struct IfStmt_s             IfStmt;
 typedef struct WhileStmt_s          WhileStmt;
 typedef struct ReturnStmt_s         ReturnStmt;
 typedef struct Primary_s         Primary;
+
+#include "symbol_table.h"
 
 struct ClassDecl_s{
     char *selfName;
@@ -205,10 +205,12 @@ struct Program_s{
 };
 
 
+
+
 Program* program_node(ClassDecl *classes, StmtList *stmts);
 
 ClassDecl* classDecl_node(char *Selfname, char *superName, 
-    ClassMembers *cMembers, ClassDecl *next);
+    ClassMembers *cMembers, ClassDecl *next, ClassTable **ctable);
 
 ClassMembers* classMembers_node(ClassMember *member,
     ClassMembers *head);
@@ -216,7 +218,8 @@ ClassMembers* classMembers_node(ClassMember *member,
 ClassMember* classMember_node(tag utype, VarDecl *varDecl, 
     FunctionDecl *funDecl, ConstrDecl *constrDecl);
 
-VarDecl* varDecl_node(char *type, char *id, IdList *ids);
+VarDecl* varDecl_node(char *type, char *id, IdList *ids, 
+    VariableTable **vtable);
 
 IdList* idList_node(char *id, IdList *head);
 
@@ -224,7 +227,7 @@ ConstrDecl* constrDecl_node(char *name,
     FormalArgs *fargs, StmtList *stmtList);
 
 FunctionDecl* functionDecl_node(char *type, char *name,
-    FormalArgs *fargs, StmtList *stmtList);
+    FormalArgs *fargs, StmtList *stmtList, FunctionTable **ftable);
 FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head);
 
 StmtList* stmtList_node(Stmt *stmt, StmtList *head);

@@ -1,6 +1,6 @@
 FLAGS = -g 
 
-all: lex yacc sTable ast linkAll moveObjs 	
+all: lex yacc ast sTable linkAll moveObjs 	
 
 linkAll:
 	gcc $(FLAGS) -o fj lex.yy.c y.tab.c ast.o symbol_table.o
@@ -15,10 +15,11 @@ ast:
 	gcc $(FLAGS) -c ./bib/ast.c
 
 sTable:
-	gcc $(FLAGS) -c ./bib/symbol_table.c
+	gcc $(FLAGS) -c ./bib/symbol_table.c 
 
 moveObjs:
 	mkdir -p obj
+	@echo "-- Movendo arquivos objeto para pasta ./obj"
 	mv lex.yy.c ./obj/lex.yy.c
 	mv y.tab.c ./obj/y.tab.c
 	mv symbol_table.o ./obj/symbol_table.o

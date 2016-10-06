@@ -14,7 +14,8 @@ Program* program_node(ClassDecl *classes, StmtList *stmts){
 }
 
 ClassDecl* classDecl_node(char *selfName, char *superName, 
-        ClassMembers *cMembers, ClassDecl *head, ClassTable **ctable){
+        ClassMembers *cMembers, ClassDecl *head, ClassTable **ctable,
+        int line, int chbegin){
 
     ClassDecl *c = (ClassDecl*) malloc(sizeof(ClassDecl));
     if(c == NULL){
@@ -29,6 +30,8 @@ ClassDecl* classDecl_node(char *selfName, char *superName,
     ClassTable *ct_aux, *ct_node = (ClassTable*)malloc(sizeof(ClassTable));
     ct_node->selfName = selfName;
     ct_node->superName = superName;
+    ct_node->line = line;
+    ct_node->chbegin = chbegin;
     ct_node->next = NULL;
 
     if (*ctable==NULL)
@@ -105,7 +108,7 @@ ClassMember* classMember_node(tag utype, VarDecl *varDecls,
 }
 
 VarDecl* varDecl_node(char *type, char *id, IdList *ids, 
-        VariableTable **vtable){
+        VariableTable **vtable, int line, int chbegin){
     VarDecl* v = (VarDecl*)malloc(sizeof(VarDecl));
     v->type = type;
     v->id = id;
@@ -122,6 +125,8 @@ VarDecl* varDecl_node(char *type, char *id, IdList *ids,
         vt_next = (VariableTable*)malloc(sizeof(VariableTable));
         vt_next->name = vnames->id;
         vt_next->type = type;
+        vt_next->line = line;
+        vt_next->chbegin = chbegin;
         vt_next->next = NULL;
 
         vt_aux->next = vt_next;
@@ -134,8 +139,9 @@ VarDecl* varDecl_node(char *type, char *id, IdList *ids,
         *vtable = vt_node;
     else{
         vt_aux = *vtable;
-        while(vt_aux->next!=NULL)
+        while(vt_aux->next!=NULL){
             vt_aux = vt_aux->next;
+        }
         vt_aux->next = vt_node;
     }
 
@@ -273,7 +279,8 @@ ConstrDecl* constrDecl_node(char *name,
 }
 
 FunctionDecl* functionDecl_node(char *type, char *name,
-    FormalArgs *fargs, StmtList *stmtList, FunctionTable **ftable){
+    FormalArgs *fargs, StmtList *stmtList, FunctionTable **ftable,
+    int line, int chbegin){
 
     FunctionDecl* f_decl = (FunctionDecl*)malloc(sizeof(FunctionDecl));
 
@@ -286,6 +293,8 @@ FunctionDecl* functionDecl_node(char *type, char *name,
     ft_node->type = type;
     ft_node->name = name;
     ft_node->fargs = fargs;
+    ft_node->line = line;
+    ft_node->chbegin = chbegin;
     ft_node->next = NULL;
     ft_aux = ft_node;
 

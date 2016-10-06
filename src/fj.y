@@ -102,10 +102,10 @@ program
 classDecl
 : %empty {$$ = NULL;}
 | classDecl CLASS ID EXTENDS ID '{' classMembers '}' {
-    $$ = classDecl_node($3, $5, $7, $1, &classTable);
+    $$ = classDecl_node($3, $5, $7, $1, &classTable, count_lines, chars);
 }
 | classDecl CLASS ID EXTENDS ID '{' '}' {
-    $$ = classDecl_node($3, $5, NULL, $1, &classTable);
+    $$ = classDecl_node($3, $5, NULL, $1, &classTable, count_lines, chars);
 }
 
 
@@ -123,7 +123,7 @@ constrDecl
 ;
 
 functionDecl
-: type ID '(' formalArgs ')' '{' stmtList '}' {$$ = functionDecl_node ($1, $2, $4, $7, &funTable);}
+: type ID '(' formalArgs ')' '{' stmtList '}' {$$ = functionDecl_node ($1, $2, $4, $7, &funTable, count_lines, chars);}
 ;
 
 stmtList
@@ -144,7 +144,7 @@ formalArgs
 ;
 
 varDecl
-: type ID idList {$$ = varDecl_node($1, $2, $3, &varTable);}
+: type ID idList {$$ = varDecl_node($1, $2, $3, &varTable, count_lines, chars);}
 ;
 
 idList

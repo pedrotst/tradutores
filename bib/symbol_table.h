@@ -16,12 +16,14 @@ typedef struct VariableTable_s VariableTable;
 struct VariableTable_s{
     char *name;
     char *type;
+    int line, chbegin;
     struct VariableTable_s *next;
 };
 
 struct FunctionTable_s{
     char *name;
     char *type;
+    int line, chbegin;
     FormalArgs *fargs;
     struct FunctionTable_s *next;
 };
@@ -29,6 +31,7 @@ struct FunctionTable_s{
 struct ClassTable_s{
     char *selfName;
     char *superName;
+    int line, chbegin;
     FunctionTable *functions;
     VariableTable *variables;
     struct ClassTable_s *next;

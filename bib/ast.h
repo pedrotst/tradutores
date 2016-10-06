@@ -210,7 +210,8 @@ struct Program_s{
 Program* program_node(ClassDecl *classes, StmtList *stmts);
 
 ClassDecl* classDecl_node(char *Selfname, char *superName, 
-    ClassMembers *cMembers, ClassDecl *next, ClassTable **ctable);
+    ClassMembers *cMembers, ClassDecl *next, ClassTable **ctable,
+    int line, int chbegin);
 
 ClassMembers* classMembers_node(ClassMember *member,
     ClassMembers *head);
@@ -219,7 +220,7 @@ ClassMember* classMember_node(tag utype, VarDecl *varDecl,
     FunctionDecl *funDecl, ConstrDecl *constrDecl);
 
 VarDecl* varDecl_node(char *type, char *id, IdList *ids, 
-    VariableTable **vtable);
+    VariableTable **vtable, int line, int chbegin);
 
 IdList* idList_node(char *id, IdList *head);
 
@@ -227,7 +228,8 @@ ConstrDecl* constrDecl_node(char *name,
     FormalArgs *fargs, StmtList *stmtList);
 
 FunctionDecl* functionDecl_node(char *type, char *name,
-    FormalArgs *fargs, StmtList *stmtList, FunctionTable **ftable);
+    FormalArgs *fargs, StmtList *stmtList, FunctionTable **ftable, 
+    int line, int chbegin);
 FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head);
 
 StmtList* stmtList_node(Stmt *stmt, StmtList *head);

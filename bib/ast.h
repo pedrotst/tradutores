@@ -20,7 +20,6 @@ typedef struct FunctionDecl_s       FunctionDecl;
 typedef struct ClassMembers_s       ClassMembers;
 typedef struct ClassMember_s        ClassMember;
 typedef struct ConstrDecl_s         ConstrDecl;
-typedef struct FunctionDecl_s       FunctionDecl;
 typedef struct Assignment_s         Assignment;
 typedef struct Var_s                Var;
 typedef struct Suite_s              Suite;
@@ -28,11 +27,9 @@ typedef struct StmtList_s           StmtList;
 typedef struct ArgList_s            ArgList;
 typedef struct FormalArgs_s         FormalArgs;
 typedef struct VarDecl_s            VarDecl;
-typedef struct IdList_s             IdList;
 typedef struct Exp_s                Exp;
 typedef struct BinOp_s              BinOp;
 typedef struct Object_s             Object;
-typedef struct IdList_s             IdList;
 typedef struct Return_s             Return;
 typedef struct FieldAccess_s        FieldAccess;
 typedef struct MethodInvoc_s        MethodInvoc;
@@ -62,7 +59,7 @@ struct IfStmt_s {
 
 struct WhileStmt_s {
     Exp *cond;
-    StmtList *loop; 
+    StmtList *loop;
 };
 
 struct BinOp_s{
@@ -209,17 +206,17 @@ struct Program_s{
 
 Program* program_node(ClassDecl *classes, StmtList *stmts);
 
-ClassDecl* classDecl_node(char *Selfname, char *superName, 
+ClassDecl* classDecl_node(char *Selfname, char *superName,
     ClassMembers *cMembers, ClassDecl *next, ClassTable **ctable,
     int line, int chbegin);
 
 ClassMembers* classMembers_node(ClassMember *member,
     ClassMembers *head);
 
-ClassMember* classMember_node(tag utype, VarDecl *varDecl, 
+ClassMember* classMember_node(tag utype, VarDecl *varDecl,
     FunctionDecl *funDecl, ConstrDecl *constrDecl);
 
-VarDecl* varDecl_node(char *type, char *id, IdList *ids, 
+VarDecl* varDecl_node(char *type, char *id, IdList *ids,
     VariableTable **vtable, int line, int chbegin);
 
 IdList* idList_node(char *id, IdList *head);
@@ -228,7 +225,7 @@ ConstrDecl* constrDecl_node(char *name,
     FormalArgs *fargs, StmtList *stmtList);
 
 FunctionDecl* functionDecl_node(char *type, char *name,
-    FormalArgs *fargs, StmtList *stmtList, FunctionTable **ftable, 
+    FormalArgs *fargs, StmtList *stmtList, FunctionTable **ftable,
     int line, int chbegin);
 FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head);
 
@@ -242,7 +239,7 @@ WhileStmt* while_node(Exp *cond, StmtList *loop);
 
 Assignment* assignment_node(Var *lhs, Exp *rhs);
 
-Object* object_node(tag utype, FieldAccess *field, 
+Object* object_node(tag utype, FieldAccess *field,
     MethodInvoc *meth, New *newObj);
 
 Var* var_node(tag utype, char *id, Object *obj);
@@ -261,7 +258,6 @@ Primary* primary_node(tag type, int val);
 void print_program(Program* p);
 void print_class(ClassDecl *c);
 void print_stmt(StmtList *stmt, int tabs);
-
 void print_classMembers(ClassMembers *cmember);
 void print_idList(IdList *ids);
 void print_fargs(FormalArgs *fargs);
@@ -270,7 +266,6 @@ void print_funDecl(FunctionDecl *funDecl);
 void print_constrDecl(ConstrDecl *constrDecl);
 void print_return(Exp *e, int tabs);
 void print_var(Var *v);
-
 void print_if(IfStmt *i, int tabs);
 void print_while(WhileStmt *w, int tabs);
 void print_exp(Exp *e);
@@ -278,15 +273,36 @@ void print_binOp(BinOp *binOp);
 void print_int(Int *i);
 void print_bool(Bool *b);
 void print_assignment(Assignment *assgn, int tabs);
-
 void print_obj(Object *obj);
 void print_methodInvoc(MethodInvoc *minvok);
 void print_fieldAccess(FieldAccess *faccess);
 void print_new(New *n);
 void print_prim(Primary *prim);
 void print_argList(ArgList *args);
-
 void print_tabs(int tabs);
 
+void destruct_program(Program *p);
+void destruct_classDecl(ClassDecl *cDecl);
+void destruct_stmtList(StmtList *sl);
+void destruct_stmt(Stmt *stmt);
+void destruct_classMembers(ClassMembers *cMems);
+void destruct_classMember(ClassMember *cMem);
+void destruct_VarDecl(VarDecl *vars);
+void destruct_functionDecl(FunctionDecl *funs);
+void destruct_constrDecl(ConstrDecl *constrs);
+void destruct_idList(IdList *ids);
+void destruct_formalArgs(FormalArgs *fargs);
+void destruct_ifStmt(IfStmt *ifStmt);
+void destruct_whileStmt(WhileStmt *whileStmt);
+void destruct_exp(Exp *e);
+void destruct_varDecl(VarDecl *vDecl);
+void destruct_assignment(Assignment *assgn);
+void destruct_var(Var *v);
+void destruct_object(Object *obj);
+void destruct_fieldAccess(FieldAccess *fAcess);
+void destruct_methodInvoc(MethodInvoc *mInvok);
+void destruct_new(New *new);
+void destruct_BinOp(BinOp *op);
+void destruct_Primary(Primary *prim);
 
 #endif

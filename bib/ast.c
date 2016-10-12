@@ -1,5 +1,9 @@
 #include "ast.h"
 
+/**
+     --------------------- # Tree Allocation # ---------------------
+*/
+
 Program* program_node(ClassDecl *classes, StmtList *stmts){
     Program *p = (Program*) malloc(sizeof(Program));
     if(p == NULL){
@@ -13,7 +17,7 @@ Program* program_node(ClassDecl *classes, StmtList *stmts){
     return p;
 }
 
-ClassDecl* classDecl_node(char *selfName, char *superName, 
+ClassDecl* classDecl_node(char *selfName, char *superName,
         ClassMembers *cMembers, ClassDecl *head, ClassTable **ctable,
         int line, int chbegin){
 
@@ -53,7 +57,7 @@ ClassDecl* classDecl_node(char *selfName, char *superName,
 
     current->next = c;
 
- 
+
 
     return head;
 }
@@ -77,7 +81,7 @@ ClassMembers* classMembers_node(ClassMember *member, ClassMembers *head){
     return head;
 }
 
-ClassMember* classMember_node(tag utype, VarDecl *varDecls, 
+ClassMember* classMember_node(tag utype, VarDecl *varDecls,
     FunctionDecl *fundecl, ConstrDecl *constrDecl){
 
     ClassMember *c = (ClassMember*) malloc(sizeof(ClassMember));
@@ -107,13 +111,13 @@ ClassMember* classMember_node(tag utype, VarDecl *varDecls,
     return c;
 }
 
-VarDecl* varDecl_node(char *type, char *id, IdList *ids, 
+VarDecl* varDecl_node(char *type, char *id, IdList *ids,
         VariableTable **vtable, int line, int chbegin){
     VarDecl* v = (VarDecl*)malloc(sizeof(VarDecl));
     v->type = type;
     v->id = id;
     v->idList = ids;
-    
+
     VariableTable *vt_aux, *vt_next, *vt_node = (VariableTable*)malloc(sizeof(VariableTable));
     vt_node->type = type;
     vt_node->name = id;
@@ -202,7 +206,7 @@ ArgList* argList_node(Exp *arg, ArgList *head){
     ArgList *arg_list = (ArgList*)malloc(sizeof(ArgList));
     arg_list->arg = arg;
     arg_list->next = NULL;
-    
+
     if(head == NULL)
         return arg_list;
 
@@ -288,7 +292,7 @@ FunctionDecl* functionDecl_node(char *type, char *name,
     f_decl->type = type;
     f_decl->fargs = fargs;
     f_decl->stmts = stmtList;
- 
+
     FunctionTable *ft_aux, *ft_node = (FunctionTable*)malloc(sizeof(FunctionTable));
     ft_node->type = type;
     ft_node->name = name;
@@ -319,7 +323,7 @@ Assignment* assignment_node(Var *lhs, Exp *rhs){
 }
 
 
-Object* object_node(tag utype, FieldAccess *field, 
+Object* object_node(tag utype, FieldAccess *field,
     MethodInvoc *meth, New *newObj){
     Object *o = (Object*)malloc(sizeof(Object));
     Object_u *obj = (Object_u*)malloc(sizeof(Var_u));
@@ -371,7 +375,7 @@ New* new_node(char *cname, ArgList *args){
     return n;
 }
 
-Exp* exp_node(tag utype, Var *var, BinOp *binOp, 
+Exp* exp_node(tag utype, Var *var, BinOp *binOp,
         Exp *parenthesis, Primary *primary){
     Exp *e = (Exp*)malloc(sizeof(Exp));
     Exp_u *exp = (Exp_u*)malloc(sizeof(Exp_u));
@@ -404,6 +408,36 @@ Primary* primary_node(tag type, int val){
     return primary;
 }
 
+/**
+     --------------------- # Tree Destruction # ---------------------
+*/
+void destruct_program(Program *p);
+void destruct_classDecl(ClassDecl *cDecl);
+void destruct_stmtList(StmtList *sl);
+void destruct_stmt(Stmt *stmt);
+void destruct_classMembers(ClassMembers *cMems);
+void destruct_classMember(ClassMember *cMem);
+void destruct_VarDecl(VarDecl *vars);
+void destruct_functionDecl(FunctionDecl *funs);
+void destruct_constrDecl(ConstrDecl *constrs);
+void destruct_idList(IdList *ids);
+void destruct_formalArgs(FormalArgs *fargs);
+void destruct_ifStmt(IfStmt *ifStmt);
+void destruct_whileStmt(WhileStmt *whileStmt);
+void destruct_exp(Exp *e);
+void destruct_varDecl(VarDecl *vDecl);
+void destruct_assignment(Assignment *assgn);
+void destruct_var(Var *v);
+void destruct_object(Object *obj);
+void destruct_fieldAccess(FieldAccess *fAcess);
+void destruct_methodInvoc(MethodInvoc *mInvok);
+void destruct_new(New *new);
+void destruct_BinOp(BinOp *op);
+void destruct_Primary(Primary *prim);
+
+/**
+     --------------------- # Tree Print # ---------------------
+*/
 
 void print_program(Program* p){
     print_class(p->classes);
@@ -665,7 +699,7 @@ void print_obj(Object *obj){
 void print_methodInvoc(MethodInvoc *minvok){
     if(minvok != NULL){
         print_var(minvok->obj);
-        if(minvok->obj != NULL) 
+        if(minvok->obj != NULL)
             printf(".");
         printf("%s(", minvok->mname);
         print_argList(minvok->args);
@@ -702,3 +736,5 @@ void print_tabs(int tabs){
     for(int i=0; i<tabs; i++)
         printf("\t");
 }
+
+

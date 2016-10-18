@@ -299,10 +299,11 @@ void destruct_varDecl(VarDecl *vDecl);
 void destruct_assignment(Assignment *assgn);
 void destruct_var(Var *v);
 void destruct_object(Object *obj);
-void destruct_fieldAccess(FieldAccess *fAcess);
+void destruct_fieldAccess(FieldAccess *fAccess);
 void destruct_methodInvoc(MethodInvoc *mInvok);
 void destruct_new(New *new);
-void destruct_BinOp(BinOp *op);
-void destruct_Primary(Primary *prim);
+void destruct_binOp(BinOp *op);
+void destruct_primary(Primary *prim);
+void destruct_argList(ArgList *args);
 
 #endif

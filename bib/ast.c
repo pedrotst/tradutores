@@ -121,6 +121,8 @@ VarDecl* varDecl_node(char *type, char *id, IdList *ids,
     VariableTable *vt_aux, *vt_next, *vt_node = (VariableTable*)malloc(sizeof(VariableTable));
     vt_node->type = type;
     vt_node->name = id;
+    vt_node->line = line;
+    vt_node->chbegin = chbegin;
     vt_node->next = NULL;
     vt_aux = vt_node;
 
@@ -139,11 +141,11 @@ VarDecl* varDecl_node(char *type, char *id, IdList *ids,
         vnames = vnames->next;
     }
 
-    if (*vtable==NULL)
+    if (*vtable == NULL)
         *vtable = vt_node;
     else{
         vt_aux = *vtable;
-        while(vt_aux->next!=NULL){
+        while(vt_aux->next != NULL){
             vt_aux = vt_aux->next;
         }
         vt_aux->next = vt_node;
@@ -437,13 +439,13 @@ void destruct_stmtList(StmtList *sl){
 }
 void destruct_stmt(Stmt *stmt){
     if(stmt != NULL){
-        if(stmt_utype == IF_STMT)
+        if(stmt->utype == IF_STMT)
             free(stmt->stmt_u->ifStmt);
-        else if(stmt_utype == RET_STMT)
+        else if(stmt->utype == RET_STMT)
             free(stmt->stmt_u->returnExp);
-        else if(stmt_utype == WHILE_STMT)
+        else if(stmt->utype == WHILE_STMT)
             free(stmt->stmt_u->varDecl);
-        else if(stmt_utype == ASSGN_STMT)
+        else if(stmt->utype == ASSGN_STMT)
             free(stmt->stmt_u->assgn);
 
         free(stmt->stmt_u);
@@ -472,15 +474,6 @@ void destruct_classMember(ClassMember *cMem){
     }
 }
 
-void destruct_varDecl(VarDecl *vars){
-    if(vars != NULL){
-        destruct_idList(vars->idList);
-        free(vars->type);
-        free(vars->id);
-        free(vars);
-    }
-}
-
 void destruct_functionDecl(FunctionDecl *funs){
     if(funs != NULL){
         free(funs->name);
@@ -493,7 +486,7 @@ void destruct_functionDecl(FunctionDecl *funs){
 
 void destruct_constrDecl(ConstrDecl *constrs){
     if(constrs != NULL){
-        free(constrs->name)
+        free(constrs->name);
         destruct_formalArgs(constrs->fargs);
         destruct_stmtList(constrs->stmts);
         free(constrs);
@@ -537,24 +530,99 @@ void destruct_exp(Exp *e){
         if(e->utype == VAR_EXP)
             destruct_var(e->exp_u->var);
         else if(e->utype == BINOP_EXP)
-            destruct_var(e->exp_u->binOp);
+            destruct_binOp(e->exp_u->binOp);
         else if(e->utype == PAR_EXP)
-            destruct_var(e->exp_u->parenthesis);
+            destruct_exp(e->exp_u->parenthesis);
         else if(e->utype == PRIM_EXP)
-            destruct_var(e->exp_u->primary);
+            destruct_primary(e->exp_u->primary);
         free(e->exp_u);
     }
 }
 
-void destruct_varDecl(VarDecl *vDecl);
-void destruct_assignment(Assignment *assgn);
-void destruct_var(Var *v);
-void destruct_object(Object *obj);
-void destruct_fieldAccess(FieldAccess *fAcess);
-void destruct_methodInvoc(MethodInvoc *mInvok);
-void destruct_new(New *new);
-void destruct_BinOp(BinOp *op);
-void destruct_Primary(Primary *prim);
+void destruct_varDecl(VarDecl *vDecl){
+    if(vDecl != NULL){
+        free(vDecl->type);
+        free(vDecl->id);
+        destruct_idList(vDecl->idList);
+    }
+}
+
+void destruct_assignment(Assignment *assgn){
+    if(assgn != NULL){
+       destruct_var(assgn->lhs);
+       destruct_exp(assgn->rhs);
+       free(assgn);
+    }
+}
+
+void destruct_var(Var *v){
+    if(v != NULL){
+        if(v->utype == ID_VAR)
+            free(v->var_u->id);
+        else if(v->utype == OBJ_VAR)
+            destruct_object(v->var_u->obj);
+        free(v);
+    }
+}
+
+void destruct_object(Object *obj){
+    if(obj != NULL){
+        if(obj->utype == FIELD_OBJ)
+            destruct_fieldAccess(obj->obj_u->field);
+        else if(obj->utype == METH_OBJ)
+            destruct_methodInvoc(obj->obj_u->meth);
+        else if(obj->utype == NEW_OBJ)
+            destruct_new(obj->obj_u->newObj);
+        free(obj);
+    }
+}
+
+void destruct_fieldAccess(FieldAccess *fAccess){
+    if(fAccess != NULL){
+        destruct_var(fAccess->obj);
+        free(fAccess->fname);
+        free(fAccess);
+    }
+}
+
+void destruct_methodInvoc(MethodInvoc *mInvok){
+    if(mInvok != NULL){
+        destruct_var(mInvok->obj);
+        free(mInvok->mname);
+        destruct_argList(mInvok->args);
+        free(mInvok);
+    }
+}
+
+void destruct_new(New *new){
+    if(new != NULL){
+        free(new->cname);
+        destruct_argList(new->args);
+        free(new);
+    }
+}
+
+void destruct_binOp(BinOp *op){
+    if(op != NULL){
+        destruct_exp(op->lhs);
+        destruct_exp(op->rhs);
+    }
+}
+
+void destruct_primary(Primary *prim){
+    if(prim != NULL){
+        free(prim);
+    }
+}
+
+void destruct_argList(ArgList *args){
+    if(args != NULL){
+        destruct_exp(args->arg);
+        destruct_argList(args);
+        free(args);
+    }
+}
+
 
 /**
      --------------------- # Tree Print # ---------------------

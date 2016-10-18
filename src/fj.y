@@ -260,6 +260,8 @@ int main()
         print_funTable(funTable);
         print_classTable(classTable);
     }
+
+    destruct_program(p);
     return 0;
 }
 

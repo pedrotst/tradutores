@@ -5,7 +5,7 @@
 void print_varTable(VariableTable *varTable){
     printf("### --- Variable Table --- ###\n");
     printf("name\t\ttype\t\tline\t\tcollum\n");
-    printf("-----------------------------\n");
+    printf("---------------------------------------------------------------------------\n");
     while(varTable != NULL){
         printf("%s\t\t%s\t\t%d\t\t%d\n", varTable->name, varTable->type,varTable->line, varTable->chbegin);
         varTable = varTable->next;

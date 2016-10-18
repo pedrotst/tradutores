@@ -411,20 +411,141 @@ Primary* primary_node(tag type, int val){
 /**
      --------------------- # Tree Destruction # ---------------------
 */
-void destruct_program(Program *p);
-void destruct_classDecl(ClassDecl *cDecl);
-void destruct_stmtList(StmtList *sl);
-void destruct_stmt(Stmt *stmt);
-void destruct_classMembers(ClassMembers *cMems);
-void destruct_classMember(ClassMember *cMem);
-void destruct_VarDecl(VarDecl *vars);
-void destruct_functionDecl(FunctionDecl *funs);
-void destruct_constrDecl(ConstrDecl *constrs);
-void destruct_idList(IdList *ids);
-void destruct_formalArgs(FormalArgs *fargs);
-void destruct_ifStmt(IfStmt *ifStmt);
-void destruct_whileStmt(WhileStmt *whileStmt);
-void destruct_exp(Exp *e);
+void destruct_program(Program *p){
+    if(p != NULL){
+        destruct_classDecl(p->classes);
+        destruct_stmtList(p->stmts);
+        free(p);
+    }
+}
+
+void destruct_classDecl(ClassDecl *cDecl){
+    if(cDecl != NULL){
+        destruct_classMembers(cDecl->cMembers);
+        destruct_classDecl(cDecl->next);
+        free(cDecl);
+    }
+}
+
+void destruct_stmtList(StmtList *sl){
+    if(sl != NULL){
+        destruct_stmt(sl->stmt);
+        destruct_stmtList(sl->next);
+        free(sl);
+    }
+
+}
+void destruct_stmt(Stmt *stmt){
+    if(stmt != NULL){
+        if(stmt_utype == IF_STMT)
+            free(stmt->stmt_u->ifStmt);
+        else if(stmt_utype == RET_STMT)
+            free(stmt->stmt_u->returnExp);
+        else if(stmt_utype == WHILE_STMT)
+            free(stmt->stmt_u->varDecl);
+        else if(stmt_utype == ASSGN_STMT)
+            free(stmt->stmt_u->assgn);
+
+        free(stmt->stmt_u);
+        free(stmt);
+    }
+}
+
+void destruct_classMembers(ClassMembers *cMems){
+    if(cMems != NULL){
+        destruct_classMember(cMems->member);
+        destruct_classMembers(cMems->next);
+        free(cMems);
+    }
+}
+
+void destruct_classMember(ClassMember *cMem){
+    if(cMem != NULL){
+        if(cMem->utype == FUN_DECL)
+            destruct_functionDecl(cMem->member->funDecl);
+        else if(cMem->utype == VAR_DECL)
+            destruct_varDecl(cMem->member->varDecls);
+        else if(cMem->utype == CONSTR_DECL)
+            destruct_constrDecl(cMem->member->constrDecl);
+        free(cMem->member);
+        free(cMem);
+    }
+}
+
+void destruct_varDecl(VarDecl *vars){
+    if(vars != NULL){
+        destruct_idList(vars->idList);
+        free(vars->type);
+        free(vars->id);
+        free(vars);
+    }
+}
+
+void destruct_functionDecl(FunctionDecl *funs){
+    if(funs != NULL){
+        free(funs->name);
+        free(funs->type);
+        destruct_formalArgs(funs->fargs);
+        destruct_stmtList(funs->stmts);
+        free(funs);
+    }
+}
+
+void destruct_constrDecl(ConstrDecl *constrs){
+    if(constrs != NULL){
+        free(constrs->name)
+        destruct_formalArgs(constrs->fargs);
+        destruct_stmtList(constrs->stmts);
+        free(constrs);
+    }
+}
+
+void destruct_idList(IdList *ids){
+    if(ids != NULL){
+        free(ids->id);
+        destruct_idList(ids->next);
+    }
+}
+
+void destruct_formalArgs(FormalArgs *fargs){
+    if(fargs != NULL){
+        free(fargs->type);
+        free(fargs->name);
+        destruct_formalArgs(fargs->next);
+    }
+}
+
+void destruct_ifStmt(IfStmt *ifStmt){
+    if(ifStmt != NULL){
+        destruct_exp(ifStmt->cond);
+        destruct_stmtList(ifStmt->then);
+        destruct_stmtList(ifStmt->els);
+        free(ifStmt);
+    }
+}
+
+void destruct_whileStmt(WhileStmt *whileStmt){
+    if(whileStmt != NULL){
+        destruct_exp(whileStmt->cond);
+        destruct_stmtList(whileStmt->loop);
+        free(whileStmt);
+    }
+}
+
+void destruct_exp(Exp *e){
+    if(e != NULL){
+        if(e->utype == VAR_EXP)
+            destruct_var(e->exp_u->var);
+        else if(e->utype == BINOP_EXP)
+            destruct_var(e->exp_u->binOp);
+        else if(e->utype == PAR_EXP)
+            destruct_var(e->exp_u->parenthesis);
+        else if(e->utype == PRIM_EXP)
+            destruct_var(e->exp_u->primary);
+        free(e->exp_u);
+    }
+}
+
 void destruct_varDecl(VarDecl *vDecl);
 void destruct_assignment(Assignment *assgn);
 void destruct_var(Var *v);

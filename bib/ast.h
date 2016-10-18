@@ -287,7 +287,7 @@ void destruct_stmtList(StmtList *sl);
 void destruct_stmt(Stmt *stmt);
 void destruct_classMembers(ClassMembers *cMems);
 void destruct_classMember(ClassMember *cMem);
-void destruct_VarDecl(VarDecl *vars);
+void destruct_varDecl(VarDecl *vars);
 void destruct_functionDecl(FunctionDecl *funs);
 void destruct_constrDecl(ConstrDecl *constrs);
 void destruct_idList(IdList *ids);

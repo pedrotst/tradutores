@@ -440,13 +440,15 @@ void destruct_stmtList(StmtList *sl){
 void destruct_stmt(Stmt *stmt){
     if(stmt != NULL){
         if(stmt->utype == IF_STMT)
-            free(stmt->stmt_u->ifStmt);
+            destruct_ifStmt(stmt->stmt_u->ifStmt);
         else if(stmt->utype == RET_STMT)
-            free(stmt->stmt_u->returnExp);
+            destruct_exp(stmt->stmt_u->returnExp);
+        else if(stmt->utype == VAR_DECL)
+            destruct_varDecl(stmt->stmt_u->varDecl);
         else if(stmt->utype == WHILE_STMT)
-            free(stmt->stmt_u->varDecl);
+            destruct_whileStmt(stmt->stmt_u->whileStmt);
         else if(stmt->utype == ASSGN_STMT)
-            free(stmt->stmt_u->assgn);
+            destruct_assignment(stmt->stmt_u->assgn);
 
         free(stmt->stmt_u);
         free(stmt);
@@ -497,6 +499,7 @@ void destruct_idList(IdList *ids){
     if(ids != NULL){
         free(ids->id);
         destruct_idList(ids->next);
+        free(ids);
     }
 }
 
@@ -505,6 +508,7 @@ void destruct_formalArgs(FormalArgs *fargs){
         free(fargs->type);
         free(fargs->name);
         destruct_formalArgs(fargs->next);
+        free(fargs);
     }
 }
 
@@ -536,6 +540,7 @@ void destruct_exp(Exp *e){
         else if(e->utype == PRIM_EXP)
             destruct_primary(e->exp_u->primary);
         free(e->exp_u);
+        free(e);
     }
 }
 
@@ -544,6 +549,7 @@ void destruct_varDecl(VarDecl *vDecl){
         free(vDecl->type);
         free(vDecl->id);
         destruct_idList(vDecl->idList);
+        free(vDecl);
     }
 }
 
@@ -557,10 +563,12 @@ void destruct_assignment(Assignment *assgn){
 
 void destruct_var(Var *v){
     if(v != NULL){
-        if(v->utype == ID_VAR)
+        if(v->utype == ID_VAR){
             free(v->var_u->id);
+        }
         else if(v->utype == OBJ_VAR)
             destruct_object(v->var_u->obj);
+        free(v->var_u);
         free(v);
     }
 }
@@ -573,6 +581,8 @@ void destruct_object(Object *obj){
             destruct_methodInvoc(obj->obj_u->meth);
         else if(obj->utype == NEW_OBJ)
             destruct_new(obj->obj_u->newObj);
+
+        free(obj->obj_u);
         free(obj);
     }
 }
@@ -606,6 +616,7 @@ void destruct_binOp(BinOp *op){
     if(op != NULL){
         destruct_exp(op->lhs);
         destruct_exp(op->rhs);
+        free(op);
     }
 }
 
@@ -618,7 +629,7 @@ void destruct_primary(Primary *prim){
 void destruct_argList(ArgList *args){
     if(args != NULL){
         destruct_exp(args->arg);
-        destruct_argList(args);
+        destruct_argList(args->next);
         free(args);
     }
 }

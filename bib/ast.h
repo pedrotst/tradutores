@@ -2,6 +2,7 @@
 #define __ast_h
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <err.h>
 /*tags serão utilizadas para tipagem das unions*/
 typedef enum type_enum{

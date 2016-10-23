@@ -37,6 +37,8 @@ ClassDecl* classDecl_node(char *selfName, char *superName,
     ct_node->line = line;
     ct_node->chbegin = chbegin;
     ct_node->next = NULL;
+    ct_node->variables = NULL;
+    ct_node->functions = NULL;
 
     if (*ctable==NULL)
         *ctable = ct_node;
@@ -423,6 +425,8 @@ void destruct_program(Program *p){
 
 void destruct_classDecl(ClassDecl *cDecl){
     if(cDecl != NULL){
+        free(cDecl->selfName);
+        free(cDecl->superName);
         destruct_classMembers(cDecl->cMembers);
         destruct_classDecl(cDecl->next);
         free(cDecl);

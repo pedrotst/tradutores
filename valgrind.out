@@ -1,0 +1,122 @@
+==10861== Memcheck, a memory error detector
+==10861== Copyright (C) 2002-2015, and GNU GPL'd, by Julian Seward et al.
+==10861== Using Valgrind-3.11.0 and LibVEX; rerun with -h for copyright info
+==10861== Command: ./fj
+==10861== Parent PID: 10860
+==10861== 
+--10861-- 
+--10861-- Valgrind options:
+--10861--    --leak-check=full
+--10861--    --show-leak-kinds=all
+--10861--    --log-file=valgrind.out
+--10861--    -v
+--10861-- Contents of /proc/version:
+--10861--   Linux version 4.4.0-21-generic (buildd@lgw01-21) (gcc version 5.3.1 20160413 (Ubuntu 5.3.1-14ubuntu2) ) #37-Ubuntu SMP Mon Apr 18 18:33:37 UTC 2016
+--10861-- 
+--10861-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-avx-avx2-bmi
+--10861-- Page sizes: currently 4096, max supported 4096
+--10861-- Valgrind library directory: /usr/lib/valgrind
+--10861-- Reading syms from /home/pedroabreu/gitstuff/tradutores/fj
+--10861-- Reading syms from /lib/x86_64-linux-gnu/ld-2.23.so
+--10861--   Considering /lib/x86_64-linux-gnu/ld-2.23.so ..
+--10861--   .. CRC mismatch (computed d3da0723 wanted a1c29704)
+--10861--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/ld-2.23.so ..
+--10861--   .. CRC is valid
+--10861-- Reading syms from /usr/lib/valgrind/memcheck-amd64-linux
+--10861--   Considering /usr/lib/valgrind/memcheck-amd64-linux ..
+--10861--   .. CRC mismatch (computed 5529a2c7 wanted 5bd23904)
+--10861--    object doesn't have a symbol table
+--10861--    object doesn't have a dynamic symbol table
+--10861-- Scheduler: using generic scheduler lock implementation.
+--10861-- Reading suppressions file: /usr/lib/valgrind/default.supp
+==10861== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-10861-by-pedroabreu-on-???
+==10861== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-10861-by-pedroabreu-on-???
+==10861== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-10861-by-pedroabreu-on-???
+==10861== 
+==10861== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==10861== don't want to do, unless you know exactly what you're doing,
+==10861== or are doing some strange experiment):
+==10861==   /usr/lib/valgrind/../../bin/vgdb --pid=10861 ...command...
+==10861== 
+==10861== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==10861==   /path/to/gdb ./fj
+==10861== and then give GDB the following command
+==10861==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=10861
+==10861== --pid is optional if only one valgrind process is running
+==10861== 
+--10861-- REDIR: 0x401cdc0 (ld-linux-x86-64.so.2:strlen) redirected to 0x3809e181 (???)
+--10861-- Reading syms from /usr/lib/valgrind/vgpreload_core-amd64-linux.so
+--10861--   Considering /usr/lib/valgrind/vgpreload_core-amd64-linux.so ..
+--10861--   .. CRC mismatch (computed a30c8eaa wanted 7ae2fed4)
+--10861--    object doesn't have a symbol table
+--10861-- Reading syms from /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so
+--10861--   Considering /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so ..
+--10861--   .. CRC mismatch (computed 402c2ab5 wanted 745f25ae)
+--10861--    object doesn't have a symbol table
+==10861== WARNING: new redirection conflicts with existing -- ignoring it
+--10861--     old: 0x0401cdc0 (strlen              ) R-> (0000.0) 0x3809e181 ???
+--10861--     new: 0x0401cdc0 (strlen              ) R-> (2007.0) 0x04c31020 strlen
+--10861-- REDIR: 0x401b710 (ld-linux-x86-64.so.2:index) redirected to 0x4c30bc0 (index)
+--10861-- REDIR: 0x401b930 (ld-linux-x86-64.so.2:strcmp) redirected to 0x4c320d0 (strcmp)
+--10861-- REDIR: 0x401db20 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x4c35270 (mempcpy)
+--10861-- Reading syms from /lib/x86_64-linux-gnu/libc-2.23.so
+--10861--   Considering /lib/x86_64-linux-gnu/libc-2.23.so ..
+--10861--   .. CRC mismatch (computed 2adb2e50 wanted 9b73f606)
+--10861--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/libc-2.23.so ..
+--10861--   .. CRC is valid
+--10861-- REDIR: 0x4ec8fd0 (libc.so.6:strcasecmp) redirected to 0x4a286f0 (_vgnU_ifunc_wrapper)
+--10861-- REDIR: 0x4ec4850 (libc.so.6:strcspn) redirected to 0x4a286f0 (_vgnU_ifunc_wrapper)
+--10861-- REDIR: 0x4ecb2c0 (libc.so.6:strncasecmp) redirected to 0x4a286f0 (_vgnU_ifunc_wrapper)
+--10861-- REDIR: 0x4ec6cc0 (libc.so.6:strpbrk) redirected to 0x4a286f0 (_vgnU_ifunc_wrapper)
+--10861-- REDIR: 0x4ec7050 (libc.so.6:strspn) redirected to 0x4a286f0 (_vgnU_ifunc_wrapper)
+--10861-- REDIR: 0x4ec871b (libc.so.6:memcpy@GLIBC_2.2.5) redirected to 0x4a286f0 (_vgnU_ifunc_wrapper)
+--10861-- REDIR: 0x4ec69d0 (libc.so.6:rindex) redirected to 0x4c308a0 (rindex)
+--10861-- REDIR: 0x4ebd550 (libc.so.6:malloc) redirected to 0x4c2db20 (malloc)
+--10861-- REDIR: 0x4ec8780 (libc.so.6:memset) redirected to 0x4a286f0 (_vgnU_ifunc_wrapper)
+--10861-- REDIR: 0x4fac1a0 (libc.so.6:__memset_avx2) redirected to 0x4c344c0 (memset)
+--10861-- REDIR: 0x4ec4cf0 (libc.so.6:strlen) redirected to 0x4c30f60 (strlen)
+--10861-- REDIR: 0x4ecda40 (libc.so.6:__GI_memcpy) redirected to 0x4c32b00 (__GI_memcpy)
+--10861-- REDIR: 0x4ecfd30 (libc.so.6:strchrnul) redirected to 0x4c34da0 (strchrnul)
+--10861-- REDIR: 0x4ec8980 (libc.so.6:__GI_mempcpy) redirected to 0x4c34fa0 (__GI_mempcpy)
+--10861-- REDIR: 0x4ebda70 (libc.so.6:free) redirected to 0x4c2ed80 (free)
+==10861== 
+==10861== HEAP SUMMARY:
+==10861==     in use at exit: 16,458 bytes in 3 blocks
+==10861==   total heap usage: 255 allocs, 252 frees, 24,875 bytes allocated
+==10861== 
+==10861== Searching for pointers to 3 not-freed blocks
+==10861== Checked 66,744 bytes
+==10861== 
+==10861== 8 bytes in 1 blocks are still reachable in loss record 1 of 3
+==10861==    at 0x4C2DB8F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==10861==    by 0x402D0B: yyalloc (lex.yy.c:1945)
+==10861==    by 0x402820: yyensure_buffer_stack (lex.yy.c:1643)
+==10861==    by 0x400CEC: yylex (lex.yy.c:750)
+==10861==    by 0x40351B: yyparse (y.tab.c:1344)
+==10861==    by 0x404840: main (fj.y:256)
+==10861== 
+==10861== 64 bytes in 1 blocks are still reachable in loss record 2 of 3
+==10861==    at 0x4C2DB8F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==10861==    by 0x402D0B: yyalloc (lex.yy.c:1945)
+==10861==    by 0x4023A7: yy_create_buffer (lex.yy.c:1483)
+==10861==    by 0x400D16: yylex (lex.yy.c:752)
+==10861==    by 0x40351B: yyparse (y.tab.c:1344)
+==10861==    by 0x404840: main (fj.y:256)
+==10861== 
+==10861== 16,386 bytes in 1 blocks are still reachable in loss record 3 of 3
+==10861==    at 0x4C2DB8F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==10861==    by 0x402D0B: yyalloc (lex.yy.c:1945)
+==10861==    by 0x4023DE: yy_create_buffer (lex.yy.c:1492)
+==10861==    by 0x400D16: yylex (lex.yy.c:752)
+==10861==    by 0x40351B: yyparse (y.tab.c:1344)
+==10861==    by 0x404840: main (fj.y:256)
+==10861== 
+==10861== LEAK SUMMARY:
+==10861==    definitely lost: 0 bytes in 0 blocks
+==10861==    indirectly lost: 0 bytes in 0 blocks
+==10861==      possibly lost: 0 bytes in 0 blocks
+==10861==    still reachable: 16,458 bytes in 3 blocks
+==10861==         suppressed: 0 bytes in 0 blocks
+==10861== 
+==10861== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==10861== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

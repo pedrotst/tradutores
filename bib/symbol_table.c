@@ -2,6 +2,20 @@
 #include "symbol_table.h"
 
 
+unsigned long hash_fun(unsigned char *str)
+{
+    unsigned long hash = 5381;
+    int c;
+
+    while (c = *str++)
+        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+
+    return hash;
+}
+
+/*
+    ---------------------- # Print Tables # -------------------------
+*/
 void print_varTable(VariableTable *varTable){
     printf("### --- Variable Table --- ###\n");
     printf("name\t\ttype\t\tline\t\tcollum\n");
@@ -33,4 +47,31 @@ void print_classTable(ClassTable *ctable){
         ctable = ctable->next;
     }
     printf("\n");
+}
+
+/*
+    ----------------------------- # Destruct Tables # ---------------------
+*/
+
+void destruct_varTable(VariableTable *vt){
+    if(vt != NULL){
+        destruct_varTable(vt->next);
+        free(vt);
+    }
+}
+
+void destruct_funTable(FunctionTable *ft){
+    if(ft != NULL){
+        destruct_funTable(ft->next);
+        free(ft);
+    }
+}
+
+void destruct_classTable(ClassTable *ct){
+    if(ct != NULL){
+        destruct_funTable(ct->functions);
+        destruct_varTable(ct->variables);
+        destruct_classTable(ct->next);
+        free(ct);
+    }
 }

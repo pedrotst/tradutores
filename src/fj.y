@@ -262,6 +262,9 @@ int main()
     }
 
     destruct_program(p);
+    destruct_classTable(classTable);
+    destruct_varTable(varTable);
+    destruct_funTable(funTable);
     return 0;
 }
 

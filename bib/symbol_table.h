@@ -6,44 +6,54 @@ typedef enum SymbolType_e{
     VAR, FUN
 }SymbolType;
 
-// a main sera armazenada numa classe chamada main
+// a main sera armazenada numa classe chamada Object
 typedef struct ClassTable_s ClassTable;
-typedef struct FunctionTable_s FunctionTable; 
-typedef struct VariableTable_s VariableTable;
+typedef struct Class_s Class;
+typedef struct Function_s Function; 
+typedef struct Variable_s Variable;
 #include "ast.h"
 
 
-struct VariableTable_s{
+struct Variable_s{
     char *name;
     char *type;
-    int line, chbegin;
-    struct VariableTable_s *next;
+    int line, ch_begin, ch_end;
 };
 
 struct FunctionTable_s{
     char *name;
     char *type;
     int line, chbegin;
-    FormalArgs *fargs;
-    struct FunctionTable_s *next;
+    int var_cur_size, var_el_num;
+    Variable **vars;
+    StmtList *stmts;
 };
 
+/* 
+ClassTable é uma hashtable de tamanho variável,
+ela possúi um tamanho atual para, caso ela lote faremos realoc de 2*cur_size, ela é indexada no nome da classe (i.e. *selfName)
+*/
 struct ClassTable_s{
+    int cur_size, el_num;
+    Class **classes;
+};
+
+struct Class_s{
     char *selfName;
     char *superName;
-    int line, chbegin;
-    FunctionTable *functions;
-    VariableTable *variables;
-    struct ClassTable_s *next;
+    int line, ch_begin, ch_end;
+    int fun_cur_size, fun_el_num;
+    Function **functions;
+    int fields_cur_size, fields_el_num;
+    Variable **fields;
 };
 
 // ClassTable* classTable_insert(char *className, char *superName, 
-void print_varTable(VariableTable *varTable);
-void print_funTable(FunctionTable *ftable);
-void print_classTable(ClassTable *ctable);
-
-void destruct_varTable(VariableTable *varTable);
-void destruct_funTable(FunctionTable *funTable);
-void destruct_classTable(ClassTable *classTable);
+/* Hash Functions */
+unsigned long hash_fun(unsigned char *str);
+int ct_insert_class(Class *cl, ClassTable *ct);
+int class_insert_fun(Function *fun, Class *cl); 
+int class_insert_var(Variable *var, Class *cl); 
+int function_insert_var(Variable *var, Function *fun); 
 
 #endif

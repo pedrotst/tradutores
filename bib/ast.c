@@ -18,7 +18,7 @@ Program* program_node(ClassDecl *classes, StmtList *stmts){
 }
 
 ClassDecl* classDecl_node(char *selfName, char *superName,
-        ClassMembers *cMembers, ClassDecl *head, ClassTable **ctable,
+        ClassMembers *cMembers, ClassDecl *head,
         int line, int chbegin){
 
     ClassDecl *c = (ClassDecl*) malloc(sizeof(ClassDecl));
@@ -30,24 +30,6 @@ ClassDecl* classDecl_node(char *selfName, char *superName,
     c->superName = superName;
     c->cMembers = cMembers;
     c->next= NULL;
-
-    ClassTable *ct_aux, *ct_node = (ClassTable*)malloc(sizeof(ClassTable));
-    ct_node->selfName = selfName;
-    ct_node->superName = superName;
-    ct_node->line = line;
-    ct_node->chbegin = chbegin;
-    ct_node->next = NULL;
-    ct_node->variables = NULL;
-    ct_node->functions = NULL;
-
-    if (*ctable==NULL)
-        *ctable = ct_node;
-    else{
-        ct_aux = *ctable;
-        while(ct_aux->next!=NULL)
-            ct_aux = ct_aux->next;
-        ct_aux->next = ct_node;
-    }
 
     if(head == NULL)
         return c;
@@ -113,8 +95,7 @@ ClassMember* classMember_node(tag utype, VarDecl *varDecls,
     return c;
 }
 
-VarDecl* varDecl_node(char *type, IdList *ids,
-        VariableTable **vtable, int line, int chbegin){
+VarDecl* varDecl_node(char *type, IdList *ids, int line, int chbegin){
     VarDecl* v = (VarDecl*)malloc(sizeof(VarDecl));
     v->type = type;
     v->idList = ids;
@@ -255,8 +236,7 @@ ConstrDecl* constrDecl_node(char *name,
 }
 
 FunctionDecl* functionDecl_node(char *type, char *name,
-    FormalArgs *fargs, StmtList *stmtList, FunctionTable **ftable,
-    int line, int chbegin){
+    FormalArgs *fargs, StmtList *stmtList, int line, int chbegin){
 
     FunctionDecl* f_decl = (FunctionDecl*)malloc(sizeof(FunctionDecl));
 
@@ -264,24 +244,6 @@ FunctionDecl* functionDecl_node(char *type, char *name,
     f_decl->type = type;
     f_decl->fargs = fargs;
     f_decl->stmts = stmtList;
-
-    FunctionTable *ft_aux, *ft_node = (FunctionTable*)malloc(sizeof(FunctionTable));
-    ft_node->type = type;
-    ft_node->name = name;
-    ft_node->fargs = fargs;
-    ft_node->line = line;
-    ft_node->chbegin = chbegin;
-    ft_node->next = NULL;
-    ft_aux = ft_node;
-
-    if (*ftable==NULL)
-        *ftable = ft_node;
-    else{
-        ft_aux = *ftable;
-        while(ft_aux->next!=NULL)
-            ft_aux = ft_aux->next;
-        ft_aux->next = ft_node;
-    }
 
     return f_decl;
 }

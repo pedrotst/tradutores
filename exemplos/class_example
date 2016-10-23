@@ -24,7 +24,7 @@ class bar extends Object {
     }
 }
 
-/*
+
 class a extends Object{}
 
 
@@ -47,4 +47,4 @@ a = new A(1, 2, c);
 x = a.foo(12);
 d = (c.u);
 
-*/
+

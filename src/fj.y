@@ -14,10 +14,6 @@ int yylex(void);
 
 // Global Vars
 Program *p; 
-ClassTable *classTable;
-VariableTable *varTable;
-FunctionTable *funTable;
-
 %}
 
 
@@ -102,10 +98,10 @@ program
 classDecl
 : %empty {$$ = NULL;}
 | classDecl CLASS ID EXTENDS ID '{' classMembers '}' {
-    $$ = classDecl_node($3, $5, $7, $1, &classTable, count_lines, ch_end);
+    $$ = classDecl_node($3, $5, $7, $1, count_lines, ch_end);
 }
 | classDecl CLASS ID EXTENDS ID '{' '}' {
-    $$ = classDecl_node($3, $5, NULL, $1, &classTable, count_lines, ch_end);
+    $$ = classDecl_node($3, $5, NULL, $1, count_lines, ch_end);
 }
 
 
@@ -123,7 +119,7 @@ constrDecl
 ;
 
 functionDecl
-: type ID '(' formalArgs ')' '{' stmtList '}' {$$ = functionDecl_node ($1, $2, $4, $7, &funTable, count_lines, ch_end);}
+: type ID '(' formalArgs ')' '{' stmtList '}' {$$ = functionDecl_node ($1, $2, $4, $7, count_lines, ch_end);}
 ;
 
 stmtList
@@ -146,7 +142,7 @@ formalArgs
 varDecl
 : type ID idList {
     IdList *ids = idList_node($2, ch_end, ch_begin, $3);
-    $$ = varDecl_node($1, ids, &varTable, count_lines, ch_end);
+    $$ = varDecl_node($1, ids, count_lines, ch_end);
 }
 ;
 
@@ -253,21 +249,12 @@ int yywrap() {return 1;};
 
 int main()
 {
-    classTable = NULL;
-    varTable = NULL;
-    funTable = NULL;
     yyparse();
     if(yynerrs == 0){ // So printa se o parse foi ok
         print_program(p);
-        print_varTable(varTable);
-        print_funTable(funTable);
-        print_classTable(classTable);
     }
 
     destruct_program(p);
-    destruct_classTable(classTable);
-    destruct_varTable(varTable);
-    destruct_funTable(funTable);
     return 0;
 }
 

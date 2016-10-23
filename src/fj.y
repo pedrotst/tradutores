@@ -6,7 +6,7 @@
 #include "bib/ast.h"
 #include "bib/symbol_table.h"
 
-int count_lines = 1, chars = 0;
+int count_lines = 1, ch_end= 0, ch_begin = 0;
 
 void yyerror(const char*);
 int yywrap();
@@ -102,10 +102,10 @@ program
 classDecl
 : %empty {$$ = NULL;}
 | classDecl CLASS ID EXTENDS ID '{' classMembers '}' {
-    $$ = classDecl_node($3, $5, $7, $1, &classTable, count_lines, chars);
+    $$ = classDecl_node($3, $5, $7, $1, &classTable, count_lines, ch_end);
 }
 | classDecl CLASS ID EXTENDS ID '{' '}' {
-    $$ = classDecl_node($3, $5, NULL, $1, &classTable, count_lines, chars);
+    $$ = classDecl_node($3, $5, NULL, $1, &classTable, count_lines, ch_end);
 }
 
 
@@ -123,7 +123,7 @@ constrDecl
 ;
 
 functionDecl
-: type ID '(' formalArgs ')' '{' stmtList '}' {$$ = functionDecl_node ($1, $2, $4, $7, &funTable, count_lines, chars);}
+: type ID '(' formalArgs ')' '{' stmtList '}' {$$ = functionDecl_node ($1, $2, $4, $7, &funTable, count_lines, ch_end);}
 ;
 
 stmtList
@@ -144,12 +144,15 @@ formalArgs
 ;
 
 varDecl
-: type ID idList {$$ = varDecl_node($1, $2, $3, &varTable, count_lines, chars);}
+: type ID idList {
+    IdList *ids = idList_node($2, ch_end, ch_begin, $3);
+    $$ = varDecl_node($1, ids, &varTable, count_lines, ch_end);
+}
 ;
 
 idList
 : %empty {$$= NULL;}
-| idList ',' ID {$$=idList_node($3, $1);}
+| idList ',' ID {$$=idList_node($3, ch_end, ch_begin, $1);}
 ;
 
 
@@ -242,7 +245,7 @@ suite
 
 void yyerror(const char *str)
 {
-    fprintf(stderr,"Error line %d:%d: %s\n",count_lines, chars, str);
+    fprintf(stderr,"Error line %d:%d: %s\n",count_lines, ch_end, str);
 }
 
 int yywrap() {return 1;};

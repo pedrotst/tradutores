@@ -153,12 +153,12 @@ struct StmtList_s{
 
 struct IdList_s{
     char *id;
+    int ch_begin, ch_end;
     IdList *next;
 };
 
 struct VarDecl_s{
     char *type;
-    char *id;
     IdList *idList;
 };
 
@@ -217,10 +217,10 @@ ClassMembers* classMembers_node(ClassMember *member,
 ClassMember* classMember_node(tag utype, VarDecl *varDecl,
     FunctionDecl *funDecl, ConstrDecl *constrDecl);
 
-VarDecl* varDecl_node(char *type, char *id, IdList *ids,
+VarDecl* varDecl_node(char *type, IdList *ids,
     VariableTable **vtable, int line, int chbegin);
 
-IdList* idList_node(char *id, IdList *head);
+IdList* idList_node(char *id, int ch_begin, int ch_end, IdList *head);
 
 ConstrDecl* constrDecl_node(char *name,
     FormalArgs *fargs, StmtList *stmtList);

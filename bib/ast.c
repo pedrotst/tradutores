@@ -113,45 +113,11 @@ ClassMember* classMember_node(tag utype, VarDecl *varDecls,
     return c;
 }
 
-VarDecl* varDecl_node(char *type, char *id, IdList *ids,
+VarDecl* varDecl_node(char *type, IdList *ids,
         VariableTable **vtable, int line, int chbegin){
     VarDecl* v = (VarDecl*)malloc(sizeof(VarDecl));
     v->type = type;
-    v->id = id;
     v->idList = ids;
-
-    VariableTable *vt_aux, *vt_next, *vt_node = (VariableTable*)malloc(sizeof(VariableTable));
-    vt_node->type = type;
-    vt_node->name = id;
-    vt_node->line = line;
-    vt_node->chbegin = chbegin;
-    vt_node->next = NULL;
-    vt_aux = vt_node;
-
-    IdList *vnames = v->idList;
-    while(vnames != NULL){
-        vt_next = (VariableTable*)malloc(sizeof(VariableTable));
-        vt_next->name = vnames->id;
-        vt_next->type = type;
-        vt_next->line = line;
-        vt_next->chbegin = chbegin;
-        vt_next->next = NULL;
-
-        vt_aux->next = vt_next;
-        vt_aux = vt_next;
-
-        vnames = vnames->next;
-    }
-
-    if (*vtable == NULL)
-        *vtable = vt_node;
-    else{
-        vt_aux = *vtable;
-        while(vt_aux->next != NULL){
-            vt_aux = vt_aux->next;
-        }
-        vt_aux->next = vt_node;
-    }
 
     return v;
 }
@@ -221,9 +187,11 @@ ArgList* argList_node(Exp *arg, ArgList *head){
     return head;
 }
 
-IdList* idList_node(char *id, IdList *head){
+IdList* idList_node(char *id, int ch_begin, int ch_end, IdList *head){
     IdList* id_list = (IdList*)malloc(sizeof(IdList));
     id_list->id = id;
+    id_list->ch_begin = ch_begin;
+    id_list->ch_end = ch_end;
     id_list->next= NULL;
 
     if(head == NULL)
@@ -551,7 +519,6 @@ void destruct_exp(Exp *e){
 void destruct_varDecl(VarDecl *vDecl){
     if(vDecl != NULL){
         free(vDecl->type);
-        free(vDecl->id);
         destruct_idList(vDecl->idList);
         free(vDecl);
     }
@@ -686,7 +653,7 @@ void print_classMembers(ClassMembers *cmembers){
 
 void print_varDecl(VarDecl *varDecls, int tabs){
     print_tabs(tabs);
-    printf("%s %s", varDecls->type, varDecls->id);
+    printf("%s ", varDecls->type);
     print_idList(varDecls->idList);
 }
 
@@ -726,6 +693,9 @@ void print_fargs(FormalArgs *fargs){
 }
 
 void print_idList(IdList *ids){
+    // Don't forget to check if idList was created with a first element
+    printf("%s", ids->id);
+    ids = ids->next;
     while(ids!=NULL){
         printf(", %s", ids->id);
         ids = ids->next;

@@ -3,7 +3,7 @@
 #include <string.h>
 #include "y.tab.h"
 
-extern int count_lines, chars;
+extern int count_lines, ch_end, ch_begin;
 void parse_comment(char* yytext);
 extern int yywrap(void);
 
@@ -24,38 +24,38 @@ SEP	\(|\)|;|,|=|\{|\}|\*|\/|\+|-
 %%
 
 \/\*([^*]|[\n]|[\r\n]|(\*+([^*/]|[\n][\r\n])))*\*+\/   {parse_comment(yytext);/*Comentario*/}
-"//".*\n    {count_lines++; chars=0;/* Comentario */}
+"//".*\n    {count_lines++; ch_end=0;/* Comentario */}
 
 
 
-"int"       {yylval.strs=strdup(yytext);chars+=strlen(yytext); return INT;}
-"bool"      {yylval.strs=strdup(yytext);chars+=strlen(yytext); return BOOL;}
-"new"       {chars+=strlen(yytext); return NEW;}
-"class"     {chars+=strlen(yytext); return CLASS;}
-"true"      {chars+=strlen(yytext); return TRUE;}
-"false"     {chars+=strlen(yytext); return FALSE;}
-"return"    {chars+=strlen(yytext); return RETURN;}
-"extends"   {chars+=strlen(yytext); return EXTENDS;}
-"if"        {chars+=strlen(yytext); return IF;}
-"else"      {chars+=strlen(yytext); return ELSE;}
-"while"     {chars+=strlen(yytext); return WHILE;}
+"int"       {yylval.strs=strdup(yytext);ch_end+=yyleng; return INT;}
+"bool"      {yylval.strs=strdup(yytext);ch_end+=yyleng; return BOOL;}
+"new"       {ch_end+=yyleng; return NEW;}
+"class"     {ch_end+=yyleng; return CLASS;}
+"true"      {ch_end+=yyleng; return TRUE;}
+"false"     {ch_end+=yyleng; return FALSE;}
+"return"    {ch_end+=yyleng; return RETURN;}
+"extends"   {ch_end+=yyleng; return EXTENDS;}
+"if"        {ch_end+=yyleng; return IF;}
+"else"      {ch_end+=yyleng; return ELSE;}
+"while"     {ch_end+=yyleng; return WHILE;}
 
-{ID}        {yylval.strs=strdup(yytext);chars+=strlen(yytext);return ID;}       
-{SEP}  {chars+=strlen(yytext); return yytext[0];}
-"."         {chars+=strlen(yytext); return DOT;}
-"~"         {chars+=strlen(yytext); return NOT;}
-"&&"        {chars+=strlen(yytext); return BAND;}
-"||"        {chars+=strlen(yytext); return BOR;}
-"=="        {chars+=strlen(yytext); return BEQ;}
-">="        {chars+=strlen(yytext); return BGE;}
-"<="        {chars+=strlen(yytext); return BLE;}
-">"         {chars+=strlen(yytext); return BGT;}
-"<"         {chars+=strlen(yytext); return BLT;}
+{ID}        {yylval.strs=strdup(yytext);ch_begin=ch_end;ch_end+=yyleng;return ID;}       
+{SEP}  {ch_end+=yyleng; return yytext[0];}
+"."         {ch_end+=yyleng; return DOT;}
+"~"         {ch_end+=yyleng; return NOT;}
+"&&"        {ch_end+=yyleng; return BAND;}
+"||"        {ch_end+=yyleng; return BOR;}
+"=="        {ch_end+=yyleng; return BEQ;}
+">="        {ch_end+=yyleng; return BGE;}
+"<="        {ch_end+=yyleng; return BLE;}
+">"         {ch_end+=yyleng; return BGT;}
+"<"         {ch_end+=yyleng; return BLT;}
 
-{DIGIT}*    {yylval.num = atoi(yytext); chars+=strlen(yytext); return NUM;}
-[ \t\r]+      {chars+=strlen(yytext);}
-[\n]		{count_lines++;chars=0;}
-.	        {printf("Line %d, %d: Character %s not recognized\n", count_lines, chars, yytext);chars+=strlen(yytext);}
+{DIGIT}*    {yylval.num = atoi(yytext); ch_end+=yyleng; return NUM;}
+[ \t\r]+      {ch_end+=yyleng;}
+[\n]		{count_lines++;ch_end=0;}
+.	        {printf("Line %d, %d: Character %s not recognized\n", count_lines, ch_end, yytext);ch_end+=yyleng;}
 
 %%
 

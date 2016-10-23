@@ -37,12 +37,6 @@ struct ClassTable_s{
     struct ClassTable_s *next;
 };
 
-typedef struct HashedClass_s{
-    uint32_t cur_size;
-    uint32_t cur_ele_num;
-    ClassTable **classes;
-}ClassTable;
-
 // ClassTable* classTable_insert(char *className, char *superName, 
 void print_varTable(VariableTable *varTable);
 void print_funTable(FunctionTable *ftable);
@@ -51,8 +45,5 @@ void print_classTable(ClassTable *ctable);
 void destruct_varTable(VariableTable *varTable);
 void destruct_funTable(FunctionTable *funTable);
 void destruct_classTable(ClassTable *classTable);
-
-unsigned long hash_fun(unsigned char *str);
-int hash_insert(
 
 #endif

@@ -1,18 +1,6 @@
 #include <stdio.h>
 #include "symbol_table.h"
 
-
-unsigned long hash_fun(unsigned char *str)
-{
-    unsigned long hash = 5381;
-    int c;
-
-    while (c = *str++)
-        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-
-    return hash;
-}
-
 /*
     ---------------------- # Print Tables # -------------------------
 */

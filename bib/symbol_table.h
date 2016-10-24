@@ -50,7 +50,8 @@ struct Class_s{
 
 // ClassTable* classTable_insert(char *className, char *superName, 
 /* Hash Functions */
-unsigned long hash_fun(unsigned char *str);
+unsigned long hash_fun(unsigned char *str, int modulo);
+int new_ct(ClassTable **ct);
 int ct_insert_class(Class *cl, ClassTable *ct);
 int class_insert_fun(Function *fun, Class *cl); 
 int class_insert_var(Variable *var, Class *cl); 

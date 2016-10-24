@@ -254,6 +254,15 @@ int main()
         print_program(p);
     }
 
+    printf("%lu\n", hash_fun("a", 1000) );
+    printf("%lu\n", hash_fun("b", 1000) );
+    printf("%lu\n", hash_fun("c", 1000) );
+    printf("%lu\n", hash_fun("pedro", 1000) );
+    printf("%lu\n", hash_fun("Pedro", 1000) );
+    printf("%lu\n", hash_fun("Marcos", 1000) );
+    printf("%lu\n", hash_fun("Object", 1000) );
+    printf("%lu\n", hash_fun("System", 1000) );
+
     destruct_program(p);
     return 0;
 }

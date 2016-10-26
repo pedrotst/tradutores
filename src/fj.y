@@ -246,23 +246,15 @@ void yyerror(const char *str)
 
 int yywrap() {return 1;};
 
-
 int main()
 {
+    Class *ct;
     yyparse();
     if(yynerrs == 0){ // So printa se o parse foi ok
         print_program(p);
+        ct = build_ct(p);
+        print_ct(ct);
     }
-
-    printf("%lu\n", hash_fun("a", 1000) );
-    printf("%lu\n", hash_fun("b", 1000) );
-    printf("%lu\n", hash_fun("c", 1000) );
-    printf("%lu\n", hash_fun("pedro", 1000) );
-    printf("%lu\n", hash_fun("Pedro", 1000) );
-    printf("%lu\n", hash_fun("Marcos", 1000) );
-    printf("%lu\n", hash_fun("Object", 1000) );
-    printf("%lu\n", hash_fun("System", 1000) );
-
     destruct_program(p);
     return 0;
 }

@@ -4,22 +4,28 @@
 
 Class* build_ct(Program *p){
     Class *ct = NULL;
-    Class *c;
+    Class *c, *tmp;
 
     if(p == NULL || c == NULL)
         return NULL;
 
     ClassDecl *cdecl = p->classes;
     while(cdecl != NULL){
-        c = (Class*) malloc(sizeof(Class));
-        c->selfName = cdecl->selfName;
-        c->superName = cdecl->superName;
-        c->line = cdecl->line;
-        c->functions = NULL;
-        c->fields = NULL;
-        printf("Coloca %s na ct\n", c->selfName);
+        HASH_FIND_STR(ct, cdecl->selfName, tmp); // esta classe ja foi declarada?
+        if(tmp == NULL){
+            c = (Class*) malloc(sizeof(Class));
+            c->selfName = strdup(cdecl->selfName);
+            c->superName = strdup(cdecl->superName);
+            c->line = cdecl->line;
+            c->functions = NULL;
+            c->fields = NULL;
+            printf("Coloca %s na ct\n", c->selfName);
 
-        HASH_ADD_KEYPTR(hh, ct, c->selfName, strlen(c->selfName), c);
+
+            HASH_ADD_KEYPTR(hh, ct, c->selfName, strlen(c->selfName), c);
+        }else{
+            printf("WARN %d: Class %s already declared at line %d, this declaration will be desconsidered\n", cdecl->line, tmp->selfName, tmp->line);
+        }
         cdecl = cdecl->next;
     }
 
@@ -37,7 +43,7 @@ void print_ct(Class *ct){
    printf("Achei %d:%s extd %s na ct\n", c->line, c->selfName, c->superName);
    */
    for(c=ct; c != NULL; c = (c->hh.next))
-       printf("Achei %d:%s extd %s na ct\n", c->line, c->selfName, c->superName);
+       printf("Achei %d: %s extd %s na ct\n", c->line, c->selfName, c->superName);
 }
 
 /*

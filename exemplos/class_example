@@ -27,6 +27,7 @@ class bar extends Object {
 
 class a extends Object{}
 
+class a extends Object{}
 
 int a,fjd,fodassse,d;
 Foo f;

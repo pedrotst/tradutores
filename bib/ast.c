@@ -19,7 +19,7 @@ Program* program_node(ClassDecl *classes, StmtList *stmts){
 
 ClassDecl* classDecl_node(char *selfName, char *superName,
         ClassMembers *cMembers, ClassDecl *head,
-        int line, int chbegin){
+        int line){
 
     ClassDecl *c = (ClassDecl*) malloc(sizeof(ClassDecl));
     if(c == NULL){
@@ -29,6 +29,7 @@ ClassDecl* classDecl_node(char *selfName, char *superName,
     c->selfName = selfName;
     c->superName = superName;
     c->cMembers = cMembers;
+    c->line = line;
     c->next= NULL;
 
     if(head == NULL)

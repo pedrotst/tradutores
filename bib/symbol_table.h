@@ -33,7 +33,7 @@ struct FunctionTable_s{
 struct Class_s{
     char *selfName;
     char *superName;
-    int line, ch_begin, ch_end;
+    int line;
     Function *functions;
     Variable *fields;
     UT_hash_handle hh;

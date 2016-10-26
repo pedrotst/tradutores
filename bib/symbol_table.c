@@ -4,28 +4,40 @@
 
 Class* build_ct(Program *p){
     Class *ct = NULL;
-    Class *c = (Class*) malloc(sizeof(Class));
+    Class *c;
 
     if(p == NULL || c == NULL)
         return NULL;
 
     ClassDecl *cdecl = p->classes;
-    c->selfName = cdecl->selfName;
-    c->superName = c->superName;
-    c->functions = NULL;
-    c->fields = NULL;
-    printf("Coloca %s na ct\n", c->selfName);
+    while(cdecl != NULL){
+        c = (Class*) malloc(sizeof(Class));
+        c->selfName = cdecl->selfName;
+        c->superName = cdecl->superName;
+        c->line = cdecl->line;
+        c->functions = NULL;
+        c->fields = NULL;
+        printf("Coloca %s na ct\n", c->selfName);
 
-    HASH_ADD_KEYPTR(hh, ct, c->selfName,strlen(c->selfName), c);
+        HASH_ADD_KEYPTR(hh, ct, c->selfName, strlen(c->selfName), c);
+        cdecl = cdecl->next;
+    }
 
     return ct;
 }
 
 void print_ct(Class *ct){
    Class *tmp, *c = NULL;
-   HASH_ITER(hh, ct, c, tmp){
-       printf("Achei %s na ct\n", c->selfName);
-   }
+   /*
+   HASH_FIND_STR(ct, "a", c);
+   printf("Achei %d:%s extd %s na ct\n", c->line, c->selfName, c->superName);
+   HASH_FIND_STR(ct, "foo", c);
+   printf("Achei %d:%s extd %s na ct\n", c->line, c->selfName, c->superName);
+   HASH_FIND_STR(ct, "bar", c);
+   printf("Achei %d:%s extd %s na ct\n", c->line, c->selfName, c->superName);
+   */
+   for(c=ct; c != NULL; c = (c->hh.next))
+       printf("Achei %d:%s extd %s na ct\n", c->line, c->selfName, c->superName);
 }
 
 /*

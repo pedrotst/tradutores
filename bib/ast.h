@@ -49,6 +49,7 @@ typedef struct Primary_s         Primary;
 struct ClassDecl_s{
     char *selfName;
     char *superName;
+    int line;
     ClassMembers *cMembers;
     struct ClassDecl_s *next;
 };
@@ -209,7 +210,7 @@ Program* program_node(ClassDecl *classes, StmtList *stmts);
 
 ClassDecl* classDecl_node(char *Selfname, char *superName,
     ClassMembers *cMembers, ClassDecl *next,
-    int line, int chbegin);
+    int line);
 
 ClassMembers* classMembers_node(ClassMember *member,
     ClassMembers *head);

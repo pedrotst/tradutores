@@ -253,7 +253,7 @@ int main()
     if(yynerrs == 0){ // So printa se o parse foi ok
         print_program(p);
         ct = build_ct(p);
-        print_ct(ct);
+        print_ct(&ct);
     }
     destruct_program(p);
     return 0;

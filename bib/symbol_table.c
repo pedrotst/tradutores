@@ -32,7 +32,7 @@ Class* build_ct(Program *p){
     return ct;
 }
 
-void print_ct(Class *ct){
+void print_ct(Class **ct){
    Class *tmp, *c = NULL;
    /*
    HASH_FIND_STR(ct, "a", c);
@@ -42,7 +42,7 @@ void print_ct(Class *ct){
    HASH_FIND_STR(ct, "bar", c);
    printf("Achei %d:%s extd %s na ct\n", c->line, c->selfName, c->superName);
    */
-   for(c=ct; c != NULL; c = (c->hh.next))
+   for(c=*ct; c != NULL; c = (c->hh.next))
        printf("Achei %d: %s extd %s na ct\n", c->line, c->selfName, c->superName);
 }
 

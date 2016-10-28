@@ -151,7 +151,7 @@ varDecl
 
 idList
 : %empty {$$= NULL;}
-| idList ',' ID {$$=idList_node($3, @2.first_column, @2.last_column, $1);}
+| idList ',' ID {$$=idList_node($3, @3.first_column, @3.last_column, $1);}
 ;
 
 

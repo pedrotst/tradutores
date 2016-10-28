@@ -23,6 +23,7 @@ Class* build_ct(Program *p){
             c->line = cdecl->line;
             c->functions = NULL;
             c->fields = NULL;
+            c->fields = NULL;
             build_class_body(c, cdecl->cMembers);
             printf("Coloca %s na ct\n", c->selfName);
 
@@ -38,21 +39,20 @@ Class* build_ct(Program *p){
 }
 
 void build_class_body(Class *c, ClassMember *cmem){
-    Variable *v_table = NULL;
-    Function *f_table = NULL;
     while(cmem != NULL){
         if(cmem->utype == VAR_DECL)
-            hash_insert_variable(cmem->member->varDecls, &v_table);
+            hash_insert_variable(cmem->member->varDecls, &(c->fields));
         else if(cmem->utype == FUN_DECL)
-            hash_insert_function(cmem->member->funDecl, &f_table);
+            hash_insert_function(cmem->member->funDecl, &(c->functions));
 
         cmem = cmem->next;
     }
-    c->fields = v_table;
-    c->functions = f_table;
 
 }
 
+/**
+    Preciso passar Variable **v_table pois HASH_ADD pode modificar o valor de *v_table
+*/
 void hash_insert_variable(VarDecl *vars, Variable **v_table){
     Variable *v, *tmp;
     IdList *ids = vars->idList;
@@ -85,6 +85,7 @@ void hash_insert_function(FunctionDecl *funs, Function **f_table){
         f->line = funs->line;
         f->vars = NULL;
         f->stmts = funs->stmts;
+        f->fargs = funs->fargs;
         HASH_ADD_KEYPTR(hh, *f_table, f->name, strlen(f->name), f);
     }
     else{

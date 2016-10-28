@@ -27,6 +27,7 @@ struct Function_s{
     int line, chbegin;
     Variable *vars;
     StmtList *stmts;
+    FormalArgs *fargs;
     UT_hash_handle hh;
 };
 

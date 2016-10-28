@@ -49,7 +49,7 @@ Variable* build_class_fields(VarDecl *vars){
         v = (Variable*)malloc(sizeof(Variable));
         v->name = ids->id;
         v->type = vars->type;
-        v->line = 0;
+        v->line = vars->line;
         v->ch_begin = ids->ch_begin;
         v->ch_end = ids->ch_end;
         HASH_ADD_KEYPTR(hh, v_table, v->name, strlen(v->name), v);

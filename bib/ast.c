@@ -242,12 +242,13 @@ ConstrDecl* constrDecl_node(char *name,
 }
 
 FunctionDecl* functionDecl_node(char *type, char *name,
-    FormalArgs *fargs, StmtList *stmtList, int line, int chbegin){
+    FormalArgs *fargs, StmtList *stmtList, int line){
 
     FunctionDecl* f_decl = (FunctionDecl*)malloc(sizeof(FunctionDecl));
 
     f_decl->name = name;
     f_decl->type = type;
+    f_decl->line = line;
     f_decl->fargs = fargs;
     f_decl->stmts = stmtList;
 

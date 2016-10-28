@@ -179,6 +179,7 @@ struct ConstrDecl_s{
 struct FunctionDecl_s{
     char *name;
     char *type;
+    int line;
     FormalArgs *fargs;
     StmtList *stmts;
 };
@@ -228,7 +229,7 @@ ConstrDecl* constrDecl_node(char *name,
     FormalArgs *fargs, StmtList *stmtList);
 
 FunctionDecl* functionDecl_node(char *type, char *name,
-    FormalArgs *fargs, StmtList *stmtList, int line, int chbegin);
+    FormalArgs *fargs, StmtList *stmtList, int line);
 
 FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head);
 

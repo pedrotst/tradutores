@@ -25,7 +25,9 @@ class bar extends Object {
 }
 
 
-class a extends Object{}
+class a extends Object{
+    bar eu, sou, muito, louco;
+}
 
 class a extends Object{}
 

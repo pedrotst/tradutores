@@ -6,18 +6,18 @@
 #include "bib/ast.h"
 #include "bib/symbol_table.h"
 
-int count_lines = 1, ch_end= 0, ch_begin = 0;
+int count_lines = 1;
 
 void yyerror(const char*);
 int yywrap();
 int yylex(void);
+
 
 // Global Vars
 Program *p; 
 %}
 
 
-%start program
 %union {
     char c; 
     char *strs;
@@ -48,7 +48,9 @@ Program *p;
 
 }
 %define parse.error verbose
+%locations
 
+%start program
 %token ID NUM COMMA DOT 
 %token NOT BAND BOR BEQ BGE BLE BGT BLT PRINT
 %token INT BOOL THIS NEW CLASS OBJECT TRUE FALSE RETURN SUPER EXTENDS IF ELSE WHILE
@@ -119,7 +121,7 @@ constrDecl
 ;
 
 functionDecl
-: type ID '(' formalArgs ')' '{' stmtList '}' {$$ = functionDecl_node ($1, $2, $4, $7, count_lines, ch_end);}
+: type ID '(' formalArgs ')' '{' stmtList '}' {$$ = functionDecl_node ($1, $2, $4, $7, count_lines);}
 ;
 
 stmtList
@@ -141,15 +143,15 @@ formalArgs
 
 varDecl
 : type ID idList {
-    IdList *ids = idList_node($2, ch_end, ch_begin, NULL);
+    IdList *ids = idList_node($2, @2.first_column, @2.last_column, NULL);
     ids->next = $3;
-    $$ = varDecl_node($1, ids, count_lines, ch_begin);
+    $$ = varDecl_node($1, ids, count_lines, @$.first_column);
 }
 ;
 
 idList
 : %empty {$$= NULL;}
-| idList ',' ID {$$=idList_node($3, ch_begin, ch_end, $1);}
+| idList ',' ID {$$=idList_node($3, @2.first_column, @2.last_column, $1);}
 ;
 
 
@@ -242,7 +244,7 @@ suite
 
 void yyerror(const char *str)
 {
-    fprintf(stderr,"Error line %d:%d: %s\n",count_lines, ch_end, str);
+    fprintf(stderr,"Error line %d: %s\n",count_lines, str);
 }
 
 int yywrap() {return 1;};

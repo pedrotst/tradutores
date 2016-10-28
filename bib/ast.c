@@ -18,7 +18,7 @@ Program* program_node(ClassDecl *classes, StmtList *stmts){
 }
 
 ClassDecl* classDecl_node(char *selfName, char *superName,
-        ClassMembers *cMembers, ClassDecl *head,
+        ClassMember *cMembers, ClassDecl *head,
         int line){
 
     ClassDecl *c = (ClassDecl*) malloc(sizeof(ClassDecl));
@@ -47,21 +47,16 @@ ClassDecl* classDecl_node(char *selfName, char *superName,
     return head;
 }
 
-ClassMembers* classMembers_node(ClassMember *member, ClassMembers *head){
-
-    ClassMembers *c = (ClassMembers*) malloc(sizeof(ClassMembers));
-    c->member = member;
-    c->next = NULL;
-
+ClassMember* classMembers_node(ClassMember *member, ClassMember *head){
     if(head == NULL)
-        return c;
+        return member;
 
-    ClassMembers *current = head;
+    ClassMember *current = head;
     while(current->next != NULL){
         current = current->next;
     }
 
-    current->next = c;
+    current->next = member;
 
     return head;
 }
@@ -396,15 +391,7 @@ void destruct_stmt(Stmt *stmt){
     }
 }
 
-void destruct_classMembers(ClassMembers *cMems){
-    if(cMems != NULL){
-        destruct_classMember(cMems->member);
-        destruct_classMembers(cMems->next);
-        free(cMems);
-    }
-}
-
-void destruct_classMember(ClassMember *cMem){
+void destruct_classMembers(ClassMember *cMem){
     if(cMem != NULL){
         if(cMem->utype == FUN_DECL)
             destruct_functionDecl(cMem->member->funDecl);
@@ -413,6 +400,7 @@ void destruct_classMember(ClassMember *cMem){
         else if(cMem->utype == CONSTR_DECL)
             destruct_constrDecl(cMem->member->constrDecl);
         free(cMem->member);
+        destruct_classMembers(cMem->next);
         free(cMem);
     }
 }
@@ -596,27 +584,23 @@ void print_class(ClassDecl *c){
 
 }
 
-void print_classMembers(ClassMembers *cmembers){
-    ClassMember *cmember;
-    while(cmembers != NULL){
-        cmember = cmembers->member;
-        if(cmember != NULL){
-            switch(cmember->utype){
-                case VAR_DECL:
-                    print_varDecl(cmember->member->varDecls, 1);
-                    printf(";\n");
-                    break;
-                case FUN_DECL:
-                    print_funDecl(cmember->member->funDecl);
-                    break;
-                case CONSTR_DECL:
-                    print_constrDecl(cmember->member->constrDecl);
-                    break;
-                default:
-                    break;
-            }
+void print_classMembers(ClassMember *cmember){
+    while(cmember != NULL){
+        switch(cmember->utype){
+            case VAR_DECL:
+                print_varDecl(cmember->member->varDecls, 1);
+                printf(";\n");
+                break;
+            case FUN_DECL:
+                print_funDecl(cmember->member->funDecl);
+                break;
+            case CONSTR_DECL:
+                print_constrDecl(cmember->member->constrDecl);
+                break;
+            default:
+                break;
         }
-        cmembers = cmembers->next;
+        cmember = cmember->next;
     }
 }
 

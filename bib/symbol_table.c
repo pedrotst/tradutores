@@ -33,11 +33,11 @@ Class* build_ct(Program *p){
     return ct;
 }
 
-void build_class_body(Class *c, ClassMembers *cmem){
+void build_class_body(Class *c, ClassMember *cmem){
     Variable *v_table = NULL;
     while(cmem != NULL){
-        if(cmem->member->utype == VAR_DECL)
-            build_class_fields(cmem->member->member->varDecls, &v_table);
+        if(cmem->utype == VAR_DECL)
+            build_class_fields(cmem->member->varDecls, &v_table);
         cmem = cmem->next;
     }
     c->fields = v_table;
@@ -64,6 +64,7 @@ void build_class_fields(VarDecl *vars, Variable **v_table){
     }
     
 }
+
 
 void print_ct(Class **ct){
    Class *c = NULL;

@@ -24,7 +24,6 @@ Program *p;
     int num; 
     struct Program_s*       program_v;
     struct ClassDecl_s*     class_v;
-    struct ClassMembers_s*  classMembers_v;
     struct ClassMember_s*        classMember_v;
     struct ConstrDecl_s*        constrDecl_v;
     struct FunctionDecl_s*       functionDecl_v;
@@ -68,7 +67,7 @@ Program *p;
 %type <strs> ID INT BOOL type
 %type <program_v> program 
 %type <class_v> classDecl
-%type <classMembers_v> classMembers
+%type <classMember_v> classMembers
 %type <classMember_v> classMember
 %type <constrDecl_v> constrDecl
 %type <functionDecl_v> functionDecl

@@ -18,7 +18,6 @@ typedef enum type_enum{
 typedef struct Program_s            Program;
 typedef struct ClassDecl_s          ClassDecl;
 typedef struct FunctionDecl_s       FunctionDecl;
-typedef struct ClassMembers_s       ClassMembers;
 typedef struct ClassMember_s        ClassMember;
 typedef struct ConstrDecl_s         ConstrDecl;
 typedef struct Assignment_s         Assignment;
@@ -50,7 +49,7 @@ struct ClassDecl_s{
     char *selfName;
     char *superName;
     int line;
-    ClassMembers *cMembers;
+    ClassMember *cMembers;
     struct ClassDecl_s *next;
 };
 
@@ -190,14 +189,10 @@ typedef union ClassMember__u{
     ConstrDecl *constrDecl;
 }ClassMember_u;
 
-struct ClassMembers_s{
-    ClassMember *member;
-    ClassMembers *next;
-};
-
 struct ClassMember_s{
     tag utype;
     ClassMember_u *member;
+    ClassMember *next;
 };
 
 struct Program_s{
@@ -211,11 +206,11 @@ struct Program_s{
 Program* program_node(ClassDecl *classes, StmtList *stmts);
 
 ClassDecl* classDecl_node(char *Selfname, char *superName,
-    ClassMembers *cMembers, ClassDecl *next,
+    ClassMember *cMembers, ClassDecl *next,
     int line);
 
-ClassMembers* classMembers_node(ClassMember *member,
-    ClassMembers *head);
+ClassMember* classMembers_node(ClassMember *member,
+    ClassMember *head);
 
 ClassMember* classMember_node(tag utype, VarDecl *varDecl,
     FunctionDecl *funDecl, ConstrDecl *constrDecl);
@@ -262,7 +257,7 @@ Primary* primary_node(tag type, int val);
 void print_program(Program* p);
 void print_class(ClassDecl *c);
 void print_stmt(StmtList *stmt, int tabs);
-void print_classMembers(ClassMembers *cmember);
+void print_classMembers(ClassMember *cmember);
 void print_idList(IdList *ids);
 void print_fargs(FormalArgs *fargs);
 void print_varDecl(VarDecl *varDecls, int tabs);
@@ -289,7 +284,7 @@ void destruct_program(Program *p);
 void destruct_classDecl(ClassDecl *cDecl);
 void destruct_stmtList(StmtList *sl);
 void destruct_stmt(Stmt *stmt);
-void destruct_classMembers(ClassMembers *cMems);
+void destruct_classMembers(ClassMember *cMems);
 void destruct_classMember(ClassMember *cMem);
 void destruct_varDecl(VarDecl *vars);
 void destruct_functionDecl(FunctionDecl *funs);

@@ -98,10 +98,14 @@ ClassMember* classMember_node(tag utype, VarDecl *varDecls,
 
 VarDecl* varDecl_node(char *type, IdList *ids, int line, int chbegin){
     VarDecl* v = (VarDecl*)malloc(sizeof(VarDecl));
+    v->line = line;
     v->type = type;
     v->idList = ids;
 
     return v;
+
+
+
 }
 
 StmtList* stmtList_node(Stmt *stmt, StmtList *head){
@@ -187,6 +191,9 @@ IdList* idList_node(char *id, int ch_begin, int ch_end, IdList *head){
     current->next = id_list;
 
     return head;
+
+
+
 
 }
 

@@ -47,6 +47,11 @@ int class_insert_var(Variable *var, Class *cl);
 int function_insert_var(Variable *var, Function *fun); 
 
 Class* build_ct(Program *p);
+Variable* build_class_fields(VarDecl *vars);
+void build_class_body(Class *c, ClassMembers *cmem);
+
+
 void print_ct(Class **ctable);
+void print_vars(Variable *v);
 
 #endif

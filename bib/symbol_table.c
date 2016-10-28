@@ -14,17 +14,18 @@ Class* build_ct(Program *p){
         HASH_FIND_STR(ct, cdecl->selfName, tmp); // esta classe ja foi declarada?
         if(tmp == NULL){
             c = (Class*) malloc(sizeof(Class));
-            c->selfName = strdup(cdecl->selfName);
-            c->superName = strdup(cdecl->superName);
+            c->selfName = cdecl->selfName;
+            c->superName = cdecl->superName;
             c->line = cdecl->line;
             c->functions = NULL;
             c->fields = NULL;
+            build_class_body(c, cdecl->cMembers);
             printf("Coloca %s na ct\n", c->selfName);
 
 
             HASH_ADD_KEYPTR(hh, ct, c->selfName, strlen(c->selfName), c);
         }else{
-            printf("WARN %d: Class %s already declared at line %d, this declaration will be desconsidered\n", cdecl->line, tmp->selfName, tmp->line);
+            printf("WARN %d: Class %s already declared at line %d, this declaration will be disconsidered\n", cdecl->line, tmp->selfName, tmp->line);
         }
         cdecl = cdecl->next;
     }
@@ -32,18 +33,51 @@ Class* build_ct(Program *p){
     return ct;
 }
 
+void build_class_body(Class *c, ClassMembers *cmem){
+    while(cmem != NULL){
+        if(cmem->member->utype == VAR_DECL)
+            c->fields = build_class_fields(cmem->member->member->varDecls);
+        cmem = cmem->next;
+    }
+
+}
+
+Variable* build_class_fields(VarDecl *vars){
+    Variable *v, *v_table = NULL;
+    IdList *ids = vars->idList;
+    while(ids != NULL){
+        v = (Variable*)malloc(sizeof(Variable));
+        v->name = ids->id;
+        v->type = vars->type;
+        v->line = 0;
+        v->ch_begin = ids->ch_begin;
+        v->ch_end = ids->ch_end;
+        HASH_ADD_KEYPTR(hh, v_table, v->name, strlen(v->name), v);
+        ids = ids->next;
+    }
+    return v_table;
+    
+}
+
 void print_ct(Class **ct){
-   Class *tmp, *c = NULL;
+   Class *c = NULL;
    /*
    HASH_FIND_STR(ct, "a", c);
    printf("Achei %d:%s extd %s na ct\n", c->line, c->selfName, c->superName);
-   HASH_FIND_STR(ct, "foo", c);
-   printf("Achei %d:%s extd %s na ct\n", c->line, c->selfName, c->superName);
-   HASH_FIND_STR(ct, "bar", c);
-   printf("Achei %d:%s extd %s na ct\n", c->line, c->selfName, c->superName);
    */
-   for(c=*ct; c != NULL; c = (c->hh.next))
-       printf("Achei %d: %s extd %s na ct\n", c->line, c->selfName, c->superName);
+   printf("------------------ # Class Table # ------------------\n");
+   for(c=*ct; c != NULL; c = (c->hh.next)){
+       printf("%d: %s extd %s{\n", c->line, c->selfName, c->superName);
+       print_vars(c->fields);
+       printf("}\n");
+   }
+}
+
+void print_vars(Variable *vt){
+    Variable *v;
+    for(v=vt; v != NULL; v = (v->hh.next)){
+        printf("\t%d: %s %s[%d-%d];\n", v->line, v->type, v->name, v->ch_begin, v->ch_end);
+    }
 }
 
 /*
@@ -66,9 +100,6 @@ int ct_insert_class(Class **ct, Class *c){
     return 0;
 }
 
-int class_insert_fun(Function *fun, Class *cl); 
-int class_insert_var(Variable *var, Class *cl); 
-int function_insert_var(Variable *var, Function *fun); 
 
 
 

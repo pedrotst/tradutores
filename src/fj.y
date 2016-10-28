@@ -141,7 +141,8 @@ formalArgs
 
 varDecl
 : type ID idList {
-    IdList *ids = idList_node($2, ch_end, ch_begin, $3);
+    IdList *ids = idList_node($2, ch_end, ch_begin, NULL);
+    ids->next = $3;
     $$ = varDecl_node($1, ids, count_lines, ch_end);
 }
 ;

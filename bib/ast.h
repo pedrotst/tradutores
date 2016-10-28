@@ -160,6 +160,7 @@ struct IdList_s{
 
 struct VarDecl_s{
     char *type;
+    int line;
     IdList *idList;
 };
 

@@ -104,8 +104,6 @@ VarDecl* varDecl_node(char *type, IdList *ids, int line, int chbegin){
 
     return v;
 
-
-
 }
 
 StmtList* stmtList_node(Stmt *stmt, StmtList *head){

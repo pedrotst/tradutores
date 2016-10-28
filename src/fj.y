@@ -143,13 +143,13 @@ varDecl
 : type ID idList {
     IdList *ids = idList_node($2, ch_end, ch_begin, NULL);
     ids->next = $3;
-    $$ = varDecl_node($1, ids, count_lines, ch_end);
+    $$ = varDecl_node($1, ids, count_lines, ch_begin);
 }
 ;
 
 idList
 : %empty {$$= NULL;}
-| idList ',' ID {$$=idList_node($3, ch_end, ch_begin, $1);}
+| idList ',' ID {$$=idList_node($3, ch_begin, ch_end, $1);}
 ;
 
 

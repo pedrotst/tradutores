@@ -2,6 +2,10 @@
 #include "symbol_table.h"
 
 
+/*
+    ---------------------- # CT Building Functions # -------------------------
+*/
+
 Class* build_ct(Program *p){
     Class *ct = NULL;
     Class *c, *tmp;
@@ -35,16 +39,21 @@ Class* build_ct(Program *p){
 
 void build_class_body(Class *c, ClassMember *cmem){
     Variable *v_table = NULL;
+    Function *f_table = NULL;
     while(cmem != NULL){
         if(cmem->utype == VAR_DECL)
-            build_class_fields(cmem->member->varDecls, &v_table);
+            hash_insert_variable(cmem->member->varDecls, &v_table);
+        else if(cmem->utype == FUN_DECL)
+            hash_insert_function(cmem->member->funDecl, &f_table);
+
         cmem = cmem->next;
     }
     c->fields = v_table;
+    c->functions = f_table;
 
 }
 
-void build_class_fields(VarDecl *vars, Variable **v_table){
+void hash_insert_variable(VarDecl *vars, Variable **v_table){
     Variable *v, *tmp;
     IdList *ids = vars->idList;
     while(ids != NULL){
@@ -66,6 +75,28 @@ void build_class_fields(VarDecl *vars, Variable **v_table){
 }
 
 
+void hash_insert_function(FunctionDecl *funs, Function **f_table){
+    Function *f;
+    HASH_FIND_STR(*f_table, funs->name, f);
+    if(f == NULL){
+        f = (Function*)malloc(sizeof(Function));
+        f->name = funs->name;
+        f->type = funs->type;
+        f->line = funs->line;
+        f->vars = NULL;
+        f->stmts = funs->stmts;
+        HASH_ADD_KEYPTR(hh, *f_table, f->name, strlen(f->name), f);
+    }
+    else{
+            printf("WARN %d: Function %s already declared at line %d, this declaration will be disconsidered\n", funs->line, funs->name, f->line);
+    }
+}
+
+
+/*
+    ---------------------- # Print Functions # -------------------------
+*/
+
 void print_ct(Class **ct){
    Class *c = NULL;
    /*
@@ -76,6 +107,7 @@ void print_ct(Class **ct){
    for(c=*ct; c != NULL; c = (c->hh.next)){
        printf("%d: %s extd %s{\n", c->line, c->selfName, c->superName);
        print_vars(c->fields);
+       print_functions(c->functions);
        printf("}\n");
    }
 }
@@ -87,27 +119,10 @@ void print_vars(Variable *vt){
     }
 }
 
-/*
-    ---------------------- # Hash Functions # -------------------------
-*/
-unsigned long hash_fun(unsigned char *str, int modulo){
-    unsigned long hash = 5381;
-    int c;
 
-    while (c = *str++)
-        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-
-    return hash % modulo;
+void print_functions(Function *ft){
+    Function *f;
+    for(f=ft; f != NULL; f = (f->hh.next)){
+        printf("\t%d: %s %s(){}\n", f->line, f->type, f->name);
+    }
 }
-
-
-int ct_insert_class(Class **ct, Class *c){
-    int try, hash;
-
-    return 0;
-}
-
-
-
-
-

@@ -21,7 +21,7 @@ struct Variable_s{
     UT_hash_handle hh;
 };
 
-struct FunctionTable_s{
+struct Function_s{
     char *name;
     char *type;
     int line, chbegin;
@@ -41,15 +41,19 @@ struct Class_s{
 
 // ClassTable* classTable_insert(char *className, char *superName, 
 /* Hash Functions */
-int ct_insert_class(Class **ctable, Class *ct);
-int class_insert_fun(Function *fun, Class *cl); 
-int class_insert_var(Variable *var, Class *cl); 
+// int ct_insert_class(Class **ctable, Class *ct);
+
+void class_insert_function(Function *fun, Class *cl); 
+void class_insert_var(Variable *var, Class *cl); 
 int function_insert_var(Variable *var, Function *fun); 
 
 Class* build_ct(Program *p);
-void build_class_fields(VarDecl *vars, Variable **v_table);
+void hash_insert_variable(VarDecl *vars, Variable **v_table);
+void hash_insert_function(FunctionDecl *funs, Function **f_table);
+void insert_class_functions(ConstrDecl *constrs, Function **f_table);
 void build_class_body(Class *c, ClassMember *cmem);
 void print_ct(Class **ctable);
 void print_vars(Variable *vt);
+void print_functions(Function *ft);
 
 #endif

@@ -1,8 +1,9 @@
 class foo extends bar {
-    int x,k,c,d;
+    int x,k,c, x, d;
     foo(int a, boolean c, xit b){
         a = b;
     }
+    int x, a, b, asdf, kct;
     int fx () {}
 }
 
@@ -27,6 +28,7 @@ class bar extends Object {
 
 class a extends Object{
     bar eu, sou, muito, louco;
+    foo eu, ainda, sou, extra, q;
 }
 
 class a extends Object{}

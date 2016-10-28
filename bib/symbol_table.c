@@ -34,28 +34,34 @@ Class* build_ct(Program *p){
 }
 
 void build_class_body(Class *c, ClassMembers *cmem){
+    Variable *v_table = NULL;
     while(cmem != NULL){
         if(cmem->member->utype == VAR_DECL)
-            c->fields = build_class_fields(cmem->member->member->varDecls);
+            build_class_fields(cmem->member->member->varDecls, &v_table);
         cmem = cmem->next;
     }
+    c->fields = v_table;
 
 }
 
-Variable* build_class_fields(VarDecl *vars){
-    Variable *v, *v_table = NULL;
+void build_class_fields(VarDecl *vars, Variable **v_table){
+    Variable *v, *tmp;
     IdList *ids = vars->idList;
     while(ids != NULL){
-        v = (Variable*)malloc(sizeof(Variable));
-        v->name = ids->id;
-        v->type = vars->type;
-        v->line = vars->line;
-        v->ch_begin = ids->ch_begin;
-        v->ch_end = ids->ch_end;
-        HASH_ADD_KEYPTR(hh, v_table, v->name, strlen(v->name), v);
+        HASH_FIND_STR(*v_table, ids->id, tmp); // esta variavel ja foi declarada?
+        if(tmp == NULL){
+            v = (Variable*)malloc(sizeof(Variable));
+            v->name = ids->id;
+            v->type = vars->type;
+            v->line = vars->line;
+            v->ch_begin = ids->ch_begin;
+            v->ch_end = ids->ch_end;
+            HASH_ADD_KEYPTR(hh, *v_table, v->name, strlen(v->name), v);
+        }else{
+            printf("WARN %d-[%d-%d]: Variable %s already declared at line %d, this declaration will be disconsidered\n", vars->line, ids->ch_begin, ids->ch_end, ids->id, tmp->line);
+        }
         ids = ids->next;
     }
-    return v_table;
     
 }
 

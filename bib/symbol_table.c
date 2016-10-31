@@ -16,12 +16,12 @@ Class* build_ct(Program *p){
 
     // Primeiro adicione Object na ct
     c = (Class*) malloc(sizeof(Class));
-    strcpy(c->selfName, "Object");
-    c->super= NULL;
+    c->selfName = strdup("Object");
     c->line = 0;
     c->functions = NULL;
     c->fields = NULL;
-    printf("Coloca %s na ct\n", c->selfName);
+    c->super= NULL;
+    DEBUG_PRINT("Coloca %s na ct\n", c->selfName);
     HASH_ADD_KEYPTR(hh, ct, c->selfName, strlen(c->selfName), c);
 
     // Adicione cada classe na CT
@@ -30,10 +30,10 @@ Class* build_ct(Program *p){
         HASH_FIND_STR(ct, cdecl->selfName, tmp); // esta classe ja foi declarada?
         HASH_FIND_STR(ct, cdecl->superName, super);
         if(tmp != NULL){
-            printf("WARN %d: Class %s already declared at line %d, this declaration will be disconsidered\n", cdecl->line, tmp->selfName, tmp->line);
+            printf("Line %d: WARN Class %s already declared at line %d, this declaration will be disconsidered\n", cdecl->line, tmp->selfName, tmp->line);
         }
         else if(super == NULL){
-            printf("ERROR %d: Class %s is not a defined class\n", cdecl->line, cdecl->superName);
+            printf("Line %d: ERROR Class %s is not a defined class\n", cdecl->line, cdecl->superName);
         }
         else{
             c = (Class*) malloc(sizeof(Class));
@@ -43,7 +43,7 @@ Class* build_ct(Program *p){
             c->functions = NULL;
             c->fields = NULL;
             build_class_body(c, cdecl->cMembers);
-            printf("Coloca %s na ct\n", c->selfName);
+            DEBUG_PRINT("Coloca %s na ct\n", c->selfName);
             HASH_ADD_KEYPTR(hh, ct, c->selfName, strlen(c->selfName), c);
         }
         cdecl = cdecl->next;
@@ -120,10 +120,13 @@ void print_ct(Class **ct){
    */
    printf("------------------ # Class Table # ------------------\n");
    for(c=*ct; c != NULL; c = (c->hh.next)){
-       printf("%d: %s extd %s{\n", c->line, c->selfName, c->super->selfName);
-       print_vars(c->fields);
-       print_functions(c->functions);
-       printf("}\n");
+       // Don't print if its object
+       if(strcmp(c->selfName, "Object")) {
+           printf("%d: %s extd %s{\n", c->line, c->selfName, c->super->selfName);
+           print_vars(c->fields);
+           print_functions(c->functions);
+           printf("}\n");
+       }
    }
 }
 

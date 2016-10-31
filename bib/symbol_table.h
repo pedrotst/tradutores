@@ -1,6 +1,7 @@
 #ifndef __sTable_h
 #define __sTable_h
 #include "uthash.h"
+#include "debug.h"
 
 typedef enum SymbolType_e{
     VAR, FUN

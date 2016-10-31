@@ -18,6 +18,22 @@ void add_Object_ct(){
     HASH_ADD_KEYPTR(hh, ct, c->selfName, strlen(c->selfName), c);
 }
 
+Type* resolve_type(char *type){
+    Type *t;
+    t = (Type*)malloc(sizeof(Type));
+    if(!strcmp(type, "int") || !strcmp(type, "bool")){
+        t->utype = BASE_TYPE;
+        t->u.base = type;
+    }
+    else{
+        Class *ref;
+        HASH_FIND_STR(ct, type, ref);         
+        t->utype = CLASS_TYPE;
+        t->u.class = ref;
+    }
+    return t;
+}
+
 void build_ct(Program *p){
     Class *c, *tmp, *super;
 
@@ -78,7 +94,7 @@ void hash_insert_varDecl(VarDecl *vars, Variable **v_table){
         if(tmp == NULL){
             v = (Variable*)malloc(sizeof(Variable));
             v->name = ids->id;
-            v->type = vars->type;
+            v->type = resolve_type(vars->type);
             v->line = vars->line;
             v->ch_begin = ids->ch_begin;
             v->ch_end = ids->ch_end;
@@ -98,7 +114,7 @@ void hash_insert_fargs(FormalArgs *fargs, Variable **v_table){
         if(tmp == NULL){
             v = (Variable*)malloc(sizeof(Variable));
             v->name = fargs->name;
-            v->type = fargs->type;
+            v->type = resolve_type(fargs->type);
             v->line = fargs->line;
             v->ch_begin = fargs->ch_begin;
             v->ch_end = fargs->ch_end;
@@ -116,7 +132,7 @@ void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
     if(f == NULL){
         f = (Function*)malloc(sizeof(Function));
         f->name = funs->name;
-        f->type = funs->type;
+        f->type = resolve_type(funs->type);
         f->line = funs->line;
         f->this = c;
         f->stmts = funs->stmts;
@@ -156,7 +172,10 @@ void print_ct(){
 void print_vars(Variable *vt){
     Variable *v;
     for(v=vt; v != NULL; v = (v->hh.next)){
-        printf("\t%d: %s %s[%d-%d];\n", v->line, v->type, v->name, v->ch_begin, v->ch_end);
+        if(v->type->utype == BASE_TYPE)
+            printf("\t%d: %s %s[%d-%d];\n", v->line, v->type->u.base, v->name, v->ch_begin, v->ch_end);
+        else
+            printf("\t%d: %s %s[%d-%d];\n", v->line, v->type->u.class->selfName, v->name, v->ch_begin, v->ch_end);
     }
 }
 
@@ -164,7 +183,10 @@ void print_vars(Variable *vt){
 void print_functions(Function *ft){
     Function *f;
     for(f=ft; f != NULL; f = (f->hh.next)){
-        printf("\t%d: %s %s(", f->line, f->type, f->name);
+        if(f->type->utype == BASE_TYPE)
+            printf("\t%d: %s %s(", f->line, f->type->u.base, f->name);
+        else
+            printf("\t%d: %s %s(", f->line, f->type->u.class->selfName, f->name);
         print_fargs(f->fargs);
         printf("){ ... }\n");
     }

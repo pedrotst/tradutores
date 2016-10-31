@@ -11,7 +11,8 @@ typedef enum type_enum{
     ID_VAR, OBJ_VAR,
     FIELD_OBJ, METH_OBJ, NEW_OBJ,
     VAR_EXP, BINOP_EXP, PAR_EXP, PRIM_EXP,
-    BOOL_PRIM, INT_PRIM
+    BOOL_PRIM, INT_PRIM,
+    BASE_TYPE, CLASS_TYPE
 }tag;
 
 

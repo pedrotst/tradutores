@@ -12,20 +12,31 @@ typedef struct ClassTable_s ClassTable;
 typedef struct Class_s Class;
 typedef struct Function_s Function; 
 typedef struct Variable_s Variable;
+typedef struct Type_s Type;
 #include "ast.h"
 
 extern Class *ct;
 
+typedef union Type__u{
+    char *base;
+    Class *class;
+}Type_u;
+
+struct Type_s{
+    tag utype;
+    Type_u u;
+};
+
 struct Variable_s{
     char *name;
-    char *type;
+    Type *type;
     int line, ch_begin, ch_end;
     UT_hash_handle hh;
 };
 
 struct Function_s{
     char *name;
-    char *type;
+    Type *type;
     int line, chbegin;
     Variable *vars;
     StmtList *stmts;

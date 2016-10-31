@@ -51,8 +51,10 @@ void class_insert_function(Function *fun, Class *cl);
 void class_insert_var(Variable *var, Class *cl); 
 int function_insert_var(Variable *var, Function *fun); 
 
+void add_Object_ct();
 void build_ct(Program *p);
-void hash_insert_variable(VarDecl *vars, Variable **v_table);
+void hash_insert_fargs(FormalArgs *fargs, Variable **v_table);
+void hash_insert_varDecl(VarDecl *vars, Variable **v_table);
 void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c);
 void insert_class_functions(ConstrDecl *constrs, Function **f_table);
 void build_class_body(Class *c, ClassMember *cmem);

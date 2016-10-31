@@ -164,8 +164,8 @@ struct VarDecl_s{
 };
 
 struct FormalArgs_s{
-    char *type;
-    char *name;
+    char *type, *name;
+    int line, ch_end, ch_begin;
     struct FormalArgs_s *next;
 };
 

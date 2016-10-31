@@ -1,12 +1,3 @@
-class foo extends bar {
-    int x,k,c, x, d;
-    foo(int a, boolean c, xit b){
-        a = b;
-    }
-    int x, a, b, asdf, kct;
-    int fx () {}
-}
-
 class bar extends Object {
     int u,b,c,d,e;
 
@@ -15,7 +6,6 @@ class bar extends Object {
     int f(int a){
         return a;
     }
-    int f () {}
 
     bar(Bool a){
         return a + d;
@@ -26,13 +16,18 @@ class bar extends Object {
     }
 }
 
+class foo extends bar {
+    int x,k,c,d;
+    foo(int a, boolean c, xit b){
+        a = b;
+    }
+    int a, b, asdf, kct;
+    int fx () {}
+}
 
 class a extends Object{
     bar eu, sou, muito, louco;
-    foo eu, ainda, sou, extra, q;
 }
-
-class a extends Object{}
 
 int a,fjd,fodassse,d;
 Foo f;

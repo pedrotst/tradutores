@@ -212,6 +212,9 @@ FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head){
     fargs->type = type;
     fargs->name = name;
     fargs->next = NULL;
+    fargs->line = 0;
+    fargs->ch_begin = 0;
+    fargs->ch_end = 0;
 
     if(head == NULL)
         return fargs;

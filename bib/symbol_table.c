@@ -6,14 +6,8 @@
     ---------------------- # CT Building Functions # -------------------------
 */
 
-void build_ct(Program *p){
-    Class *c, *tmp, *super;
-
-    // Construa a CT somente para programas validos
-    if(p == NULL)
-        return;
-
-    // Primeiro adicione Object na ct
+void add_Object_ct(){
+    Class *c;
     c = (Class*) malloc(sizeof(Class));
     c->selfName = strdup("Object");
     c->line = 0;
@@ -22,11 +16,21 @@ void build_ct(Program *p){
     c->super= NULL;
     DEBUG_PRINT("Coloca %s na ct\n", c->selfName);
     HASH_ADD_KEYPTR(hh, ct, c->selfName, strlen(c->selfName), c);
+}
 
-    // Adicione cada classe na CT
+void build_ct(Program *p){
+    Class *c, *tmp, *super;
+
+    // Construa a CT somente para programas validos
+    if(p == NULL)
+        return;
+
+    add_Object_ct();
+
     ClassDecl *cdecl = p->classes;
     while(cdecl != NULL){
-        HASH_FIND_STR(ct, cdecl->selfName, tmp); // esta classe ja foi declarada?
+        // esta classe ja foi declarada?
+        HASH_FIND_STR(ct, cdecl->selfName, tmp);         
         HASH_FIND_STR(ct, cdecl->superName, super);
         if(tmp != NULL){
             printf("Line %d: WARN Class %s already declared at line %d, this declaration will be disconsidered\n", cdecl->line, tmp->selfName, tmp->line);
@@ -54,7 +58,7 @@ void build_ct(Program *p){
 void build_class_body(Class *c, ClassMember *cmem){
     while(cmem != NULL){
         if(cmem->utype == VAR_DECL)
-            hash_insert_variable(cmem->member->varDecls, &(c->fields));
+            hash_insert_varDecl(cmem->member->varDecls, &(c->fields));
         else if(cmem->utype == FUN_DECL)
             hash_insert_function(cmem->member->funDecl, &(c->functions), c);
 
@@ -66,7 +70,7 @@ void build_class_body(Class *c, ClassMember *cmem){
 /**
     Preciso passar Variable **v_table pois HASH_ADD pode modificar o valor de *v_table
 */
-void hash_insert_variable(VarDecl *vars, Variable **v_table){
+void hash_insert_varDecl(VarDecl *vars, Variable **v_table){
     Variable *v, *tmp;
     IdList *ids = vars->idList;
     while(ids != NULL){
@@ -80,13 +84,31 @@ void hash_insert_variable(VarDecl *vars, Variable **v_table){
             v->ch_end = ids->ch_end;
             HASH_ADD_KEYPTR(hh, *v_table, v->name, strlen(v->name), v);
         }else{
-            printf("WARN %d-[%d-%d]: Variable %s already declared at line %d, this declaration will be disconsidered\n", vars->line, ids->ch_begin, ids->ch_end, ids->id, tmp->line);
+            printf("WARN %d-[%d-%d]: Variable %s already declared at line %d, this declaration will be disconsidered\n", tmp->line, tmp->ch_begin, tmp->ch_end, tmp->name, vars->line);
         }
         ids = ids->next;
     }
     
 }
 
+void hash_insert_fargs(FormalArgs *fargs, Variable **v_table){
+    Variable *v, *tmp;
+    while(fargs != NULL){
+        HASH_FIND_STR(*v_table, fargs->name, tmp); // esta variavel ja foi declarada?
+        if(tmp == NULL){
+            v = (Variable*)malloc(sizeof(Variable));
+            v->name = fargs->name;
+            v->type = fargs->type;
+            v->line = fargs->line;
+            v->ch_begin = fargs->ch_begin;
+            v->ch_end = fargs->ch_end;
+            HASH_ADD_KEYPTR(hh, *v_table, v->name, strlen(v->name), v);
+        }else{
+            printf("WARN %d-[%d-%d]: Variable %s already declared at line %d, this declaration will be disconsidered\n", fargs->line, fargs->ch_begin, fargs->ch_end, fargs->name, tmp->line);
+        }
+        fargs = fargs->next;
+    }
+ }
 
 void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
     Function *f;
@@ -96,10 +118,11 @@ void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
         f->name = funs->name;
         f->type = funs->type;
         f->line = funs->line;
-        f->vars = NULL;
         f->this = c;
         f->stmts = funs->stmts;
         f->fargs = funs->fargs;
+        // insert the arguments to the function var table
+        hash_insert_fargs(funs->fargs, &(f->vars));
         HASH_ADD_KEYPTR(hh, *f_table, f->name, strlen(f->name), f);
     }
     else{
@@ -141,6 +164,8 @@ void print_vars(Variable *vt){
 void print_functions(Function *ft){
     Function *f;
     for(f=ft; f != NULL; f = (f->hh.next)){
-        printf("\t%d: %s %s(){}\n", f->line, f->type, f->name);
+        printf("\t%d: %s %s(", f->line, f->type, f->name);
+        print_fargs(f->fargs);
+        printf("){ ... }\n");
     }
 }

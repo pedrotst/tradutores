@@ -56,7 +56,7 @@ void build_class_body(Class *c, ClassMember *cmem){
         if(cmem->utype == VAR_DECL)
             hash_insert_variable(cmem->member->varDecls, &(c->fields));
         else if(cmem->utype == FUN_DECL)
-            hash_insert_function(cmem->member->funDecl, &(c->functions));
+            hash_insert_function(cmem->member->funDecl, &(c->functions), c);
 
         cmem = cmem->next;
     }
@@ -88,7 +88,7 @@ void hash_insert_variable(VarDecl *vars, Variable **v_table){
 }
 
 
-void hash_insert_function(FunctionDecl *funs, Function **f_table){
+void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
     Function *f;
     HASH_FIND_STR(*f_table, funs->name, f);
     if(f == NULL){
@@ -97,12 +97,13 @@ void hash_insert_function(FunctionDecl *funs, Function **f_table){
         f->type = funs->type;
         f->line = funs->line;
         f->vars = NULL;
+        f->this = c;
         f->stmts = funs->stmts;
         f->fargs = funs->fargs;
         HASH_ADD_KEYPTR(hh, *f_table, f->name, strlen(f->name), f);
     }
     else{
-            printf("WARN %d: Function %s already declared at line %d, this declaration will be disconsidered\n", funs->line, funs->name, f->line);
+            printf("WARN %d: Function %s already declared at line %d at class %s, this declaration will be disconsidered\n", funs->line, funs->name, f->line, f->this->selfName);
     }
 }
 

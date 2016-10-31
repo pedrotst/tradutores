@@ -28,12 +28,13 @@ struct Function_s{
     Variable *vars;
     StmtList *stmts;
     FormalArgs *fargs;
+    Class *this;
     UT_hash_handle hh;
 };
 
 struct Class_s{
     char *selfName;
-    char *superName;
+    struct Class_s *super;
     int line;
     Function *functions;
     Variable *fields;

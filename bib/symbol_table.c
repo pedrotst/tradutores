@@ -8,29 +8,43 @@
 
 Class* build_ct(Program *p){
     Class *ct = NULL;
-    Class *c, *tmp;
+    Class *c, *tmp, *super;
 
-    if(p == NULL || c == NULL)
+    // Construa a CT somente para programas validos
+    if(p == NULL)
         return NULL;
 
+    // Primeiro adicione Object na ct
+    c = (Class*) malloc(sizeof(Class));
+    strcpy(c->selfName, "Object");
+    c->super= NULL;
+    c->line = 0;
+    c->functions = NULL;
+    c->fields = NULL;
+    printf("Coloca %s na ct\n", c->selfName);
+    HASH_ADD_KEYPTR(hh, ct, c->selfName, strlen(c->selfName), c);
+
+    // Adicione cada classe na CT
     ClassDecl *cdecl = p->classes;
     while(cdecl != NULL){
         HASH_FIND_STR(ct, cdecl->selfName, tmp); // esta classe ja foi declarada?
-        if(tmp == NULL){
+        HASH_FIND_STR(ct, cdecl->superName, super);
+        if(tmp != NULL){
+            printf("WARN %d: Class %s already declared at line %d, this declaration will be disconsidered\n", cdecl->line, tmp->selfName, tmp->line);
+        }
+        else if(super == NULL){
+            printf("ERROR %d: Class %s is not a defined class\n", cdecl->line, cdecl->superName);
+        }
+        else{
             c = (Class*) malloc(sizeof(Class));
             c->selfName = cdecl->selfName;
-            c->superName = cdecl->superName;
+            c->super= super;
             c->line = cdecl->line;
             c->functions = NULL;
             c->fields = NULL;
-            c->fields = NULL;
             build_class_body(c, cdecl->cMembers);
             printf("Coloca %s na ct\n", c->selfName);
-
-
             HASH_ADD_KEYPTR(hh, ct, c->selfName, strlen(c->selfName), c);
-        }else{
-            printf("WARN %d: Class %s already declared at line %d, this declaration will be disconsidered\n", cdecl->line, tmp->selfName, tmp->line);
         }
         cdecl = cdecl->next;
     }
@@ -106,7 +120,7 @@ void print_ct(Class **ct){
    */
    printf("------------------ # Class Table # ------------------\n");
    for(c=*ct; c != NULL; c = (c->hh.next)){
-       printf("%d: %s extd %s{\n", c->line, c->selfName, c->superName);
+       printf("%d: %s extd %s{\n", c->line, c->selfName, c->super->selfName);
        print_vars(c->fields);
        print_functions(c->functions);
        printf("}\n");

@@ -3,8 +3,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <err.h>
+#include "bib/debug.h"
 #include "bib/ast.h"
 #include "bib/symbol_table.h"
+
+// define diretiva de debug print
 
 int count_lines = 1;
 
@@ -15,6 +18,7 @@ int yylex(void);
 
 // Global Vars
 Program *p; 
+Class *ct;
 %}
 
 
@@ -250,12 +254,12 @@ int yywrap() {return 1;};
 
 int main()
 {
-    Class *ct;
+    ct = NULL;
     yyparse();
     if(yynerrs == 0){ // So printa se o parse foi ok
         print_program(p);
-        ct = build_ct(p);
-        print_ct(&ct);
+        build_ct(p);
+        print_ct();
     }
     destruct_program(p);
     return 0;

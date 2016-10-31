@@ -14,11 +14,13 @@ typedef struct Function_s Function;
 typedef struct Variable_s Variable;
 #include "ast.h"
 
+extern Class *ct;
 
 struct Variable_s{
     char *name;
     char *type;
     int line, ch_begin, ch_end;
+    Class *this;
     UT_hash_handle hh;
 };
 
@@ -50,12 +52,12 @@ void class_insert_function(Function *fun, Class *cl);
 void class_insert_var(Variable *var, Class *cl); 
 int function_insert_var(Variable *var, Function *fun); 
 
-Class* build_ct(Program *p);
+void build_ct(Program *p);
 void hash_insert_variable(VarDecl *vars, Variable **v_table);
 void hash_insert_function(FunctionDecl *funs, Function **f_table);
 void insert_class_functions(ConstrDecl *constrs, Function **f_table);
 void build_class_body(Class *c, ClassMember *cmem);
-void print_ct(Class **ctable);
+void print_ct();
 void print_vars(Variable *vt);
 void print_functions(Function *ft);
 

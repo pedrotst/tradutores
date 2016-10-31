@@ -6,13 +6,12 @@
     ---------------------- # CT Building Functions # -------------------------
 */
 
-Class* build_ct(Program *p){
-    Class *ct = NULL;
+void build_ct(Program *p){
     Class *c, *tmp, *super;
 
     // Construa a CT somente para programas validos
     if(p == NULL)
-        return NULL;
+        return;
 
     // Primeiro adicione Object na ct
     c = (Class*) malloc(sizeof(Class));
@@ -48,8 +47,8 @@ Class* build_ct(Program *p){
         }
         cdecl = cdecl->next;
     }
+    return;
 
-    return ct;
 }
 
 void build_class_body(Class *c, ClassMember *cmem){
@@ -112,14 +111,14 @@ void hash_insert_function(FunctionDecl *funs, Function **f_table){
     ---------------------- # Print Functions # -------------------------
 */
 
-void print_ct(Class **ct){
+void print_ct(){
    Class *c = NULL;
    /*
    HASH_FIND_STR(ct, "a", c);
    printf("Achei %d:%s extd %s na ct\n", c->line, c->selfName, c->superName);
    */
    printf("------------------ # Class Table # ------------------\n");
-   for(c=*ct; c != NULL; c = (c->hh.next)){
+   for(c=ct; c != NULL; c = (c->hh.next)){
        // Don't print if its object
        if(strcmp(c->selfName, "Object")) {
            printf("%d: %s extd %s{\n", c->line, c->selfName, c->super->selfName);

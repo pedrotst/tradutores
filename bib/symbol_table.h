@@ -53,8 +53,8 @@ void class_insert_function(Function *fun, Class *cl);
 void class_insert_var(Variable *var, Class *cl); 
 int function_insert_var(Variable *var, Function *fun); 
 Class* resolve_type(char *type);
-void check_stmts(StmtList *stmts, Variable **v_table);
-void check_bool(Exp *e, Variable *v_table);
+void check_stmts(StmtList *stmts, Function *f);
+void check_bool(Exp *e, Function *f);
 
 void add_Object_ct();
 void build_ct(Program *p);

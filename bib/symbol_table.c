@@ -135,7 +135,7 @@ void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
         f->fargs = funs->fargs;
         // insert the arguments to the function var table
         hash_insert_fargs(funs->fargs, &(f->vars));
-        check_stmts(funs->stmts, &(f->vars));
+        check_stmts(funs->stmts, f);
 
         HASH_ADD_KEYPTR(hh, *f_table, f->name, strlen(f->name), f);
     }
@@ -144,29 +144,33 @@ void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
     }
 }
 
-void check_stmts(StmtList *stmts, Variable **v_table){
+void check_stmts(StmtList *stmts, Function *f){
     while(stmts != NULL){
         if(stmts->stmt->utype == VAR_DECL)
-            hash_insert_varDecl(stmts->stmt->stmt_u->varDecl, v_table);
+            hash_insert_varDecl(stmts->stmt->stmt_u->varDecl, &(f->vars));
         else if(stmts->stmt->utype == IF_STMT){
-            check_bool(stmts->stmt->stmt_u->ifStmt->cond, *v_table);
+            check_bool(stmts->stmt->stmt_u->ifStmt->cond, f);
         }
         stmts = stmts->next;
     }
 }
 
-void check_bool(Exp *e, Variable *v_table){
+void check_bool(Exp *e, Function *f){
     if(e->utype == VAR_EXP){
-        Variable *decl_v;
+        Variable *decl_v = NULL;
         Var *v = e->exp_u->var;
         if(v->utype == ID_VAR){
-            HASH_FIND_STR(v_table, v->var_u->id, decl_v);
-            if(decl_v != NULL){
-                if(strcmp(decl_v->type, "bool"))
-                    printf("ERROR %d[%d-%d]: if condition must be boolean\n", 0,0,0);
+            HASH_FIND_STR(f->vars, v->var_u->id, decl_v);
+            // if variable is not within function scope look at class scope
+            if(decl_v == NULL){
+                HASH_FIND_STR(f->this->fields, v->var_u->id, decl_v);
             }
-            else
+            // if variable isn't within class scope also then error
+            if(decl_v == NULL){
                 printf("ERROR %d[%d-%d]: used variable %s not declared\n", 0, 0, 0, v->var_u->id);
+            } // is it declared as bool?
+            else if(strcmp(decl_v->type, "bool"))
+                printf("ERROR %d[%d-%d]: if condition must be boolean\n", 0,0,0);
         }
     }
 }

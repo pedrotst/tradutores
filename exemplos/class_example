@@ -1,11 +1,11 @@
 class bar extends Object {
     int u,b,c,d,e;
+    bool x;
 
     bool qk(At x){}
 
     int f(int a){
         int a, a;
-        int x;
         if x { a=b; }
         return a;
     }

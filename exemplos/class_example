@@ -5,6 +5,8 @@ class bar extends Object {
 
     int f(int a){
         int a, a;
+        int x;
+        if x { a=b; }
         return a;
     }
 

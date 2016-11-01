@@ -140,16 +140,34 @@ void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
         HASH_ADD_KEYPTR(hh, *f_table, f->name, strlen(f->name), f);
     }
     else{
-            printf("WARN %d: Function %s already declared at line %d at class %s, this declaration will be disconsidered\n", funs->line, funs->name, f->line, f->this->selfName);
+        printf("WARN %d: Function %s already declared at line %d at class %s, this declaration will be disconsidered\n", funs->line, funs->name, f->line, f->this->selfName);
     }
 }
 
 void check_stmts(StmtList *stmts, Variable **v_table){
     while(stmts != NULL){
-        if(stmts->stmt->utype == VAR_DECL){
+        if(stmts->stmt->utype == VAR_DECL)
             hash_insert_varDecl(stmts->stmt->stmt_u->varDecl, v_table);
+        else if(stmts->stmt->utype == IF_STMT){
+            check_bool(stmts->stmt->stmt_u->ifStmt->cond, *v_table);
         }
         stmts = stmts->next;
+    }
+}
+
+void check_bool(Exp *e, Variable *v_table){
+    if(e->utype == VAR_EXP){
+        Variable *decl_v;
+        Var *v = e->exp_u->var;
+        if(v->utype == ID_VAR){
+            HASH_FIND_STR(v_table, v->var_u->id, decl_v);
+            if(decl_v != NULL){
+                if(strcmp(decl_v->type, "bool"))
+                    printf("ERROR %d[%d-%d]: if condition must be boolean\n", 0,0,0);
+            }
+            else
+                printf("ERROR %d[%d-%d]: used variable %s not declared\n", 0, 0, 0, v->var_u->id);
+        }
     }
 }
 

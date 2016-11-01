@@ -54,6 +54,7 @@ void class_insert_var(Variable *var, Class *cl);
 int function_insert_var(Variable *var, Function *fun); 
 Class* resolve_type(char *type);
 void check_stmts(StmtList *stmts, Variable **v_table);
+void check_bool(Exp *e, Variable *v_table);
 
 void add_Object_ct();
 void build_ct(Program *p);
@@ -62,6 +63,8 @@ void hash_insert_varDecl(VarDecl *vars, Variable **v_table);
 void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c);
 void insert_class_functions(ConstrDecl *constrs, Function **f_table);
 void build_class_body(Class *c, ClassMember *cmem);
+
+
 void print_ct();
 void print_vars(Variable *vt, int tabs);
 void print_functions(Function *ft);

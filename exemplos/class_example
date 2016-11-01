@@ -4,6 +4,7 @@ class bar extends Object {
     bool qk(At x){}
 
     int f(int a){
+        int a, a;
         return a;
     }
 

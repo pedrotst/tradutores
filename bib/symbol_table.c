@@ -119,7 +119,7 @@ void hash_insert_fargs(FormalArgs *fargs, Variable **v_table){
         }
         fargs = fargs->next;
     }
- }
+}
 
 void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
     Function *f;
@@ -135,10 +135,21 @@ void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
         f->fargs = funs->fargs;
         // insert the arguments to the function var table
         hash_insert_fargs(funs->fargs, &(f->vars));
+        check_stmts(funs->stmts, &(f->vars));
+
         HASH_ADD_KEYPTR(hh, *f_table, f->name, strlen(f->name), f);
     }
     else{
             printf("WARN %d: Function %s already declared at line %d at class %s, this declaration will be disconsidered\n", funs->line, funs->name, f->line, f->this->selfName);
+    }
+}
+
+void check_stmts(StmtList *stmts, Variable **v_table){
+    while(stmts != NULL){
+        if(stmts->stmt->utype == VAR_DECL){
+            hash_insert_varDecl(stmts->stmt->stmt_u->varDecl, v_table);
+        }
+        stmts = stmts->next;
     }
 }
 

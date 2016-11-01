@@ -169,19 +169,25 @@ void print_ct(){
        // Don't print if its object
        if(strcmp(c->selfName, "Object")) {
            printf("%d: %s extd %s{\n", c->line, c->selfName, c->superName);
-           print_vars(c->fields);
+           print_vars(c->fields, 1);
            print_functions(c->functions);
            printf("}\n");
        }
    }
 }
 
-void print_vars(Variable *vt){
+void print_vars(Variable *vt, int tabs){
     Variable *v;
     for(v=vt; v != NULL; v = (v->hh.next)){
-        printf("\t%d: %s %s[%d-%d];\n", v->line, v->type, v->name, v->ch_begin, v->ch_end);
+        print_tabs(tabs);
+        printf("%d: %s %s[%d-%d];\n", v->line, v->type, v->name, v->ch_begin, v->ch_end);
     }
 }
+
+/*
+void print_tabs(int tabs){
+    for(int i; i < tabs; i++) printf("\t");
+}*/
 
 
 void print_functions(Function *ft){
@@ -189,6 +195,8 @@ void print_functions(Function *ft){
     for(f=ft; f != NULL; f = (f->hh.next)){
         printf("\t%d: %s %s(", f->line, f->type, f->name);
         print_fargs(f->fargs);
-        printf("){ ... }\n");
+        printf("){\n");
+        print_vars(f->vars, 2);
+        printf("\t}\n");
     }
 }

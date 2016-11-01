@@ -13,9 +13,19 @@ void add_Object_ct(){
     c->line = 0;
     c->functions = NULL;
     c->fields = NULL;
+    c->superName = NULL;
     c->super= NULL;
     DEBUG_PRINT("Coloca %s na ct\n", c->selfName);
     HASH_ADD_KEYPTR(hh, ct, c->selfName, strlen(c->selfName), c);
+}
+
+Class* resolve_type(char *type){
+    Class *t;
+    t = NULL;
+    if(strcmp(type, "int") || strcmp(type, "bool")){
+        HASH_FIND_STR(ct, type, t);
+    }
+    return t;
 }
 
 void build_ct(Program *p){
@@ -34,21 +44,20 @@ void build_ct(Program *p){
         HASH_FIND_STR(ct, cdecl->superName, super);
         if(tmp != NULL){
             printf("Line %d: WARN Class %s already declared at line %d, this declaration will be disconsidered\n", cdecl->line, tmp->selfName, tmp->line);
-        }
-        else if(super == NULL){
-            printf("Line %d: ERROR Class %s is not a defined class\n", cdecl->line, cdecl->superName);
-        }
-        else{
+        } else{
             c = (Class*) malloc(sizeof(Class));
             c->selfName = cdecl->selfName;
-            c->super= super;
+            c->super = super;
+            c->superName = cdecl->superName;
             c->line = cdecl->line;
             c->functions = NULL;
             c->fields = NULL;
             build_class_body(c, cdecl->cMembers);
             DEBUG_PRINT("Coloca %s na ct\n", c->selfName);
             HASH_ADD_KEYPTR(hh, ct, c->selfName, strlen(c->selfName), c);
-        }
+        } 
+        if(super == NULL)
+            printf("Line %d: ERROR Class %s is not a defined class\n", cdecl->line, cdecl->superName);
         cdecl = cdecl->next;
     }
     return;
@@ -79,6 +88,7 @@ void hash_insert_varDecl(VarDecl *vars, Variable **v_table){
             v = (Variable*)malloc(sizeof(Variable));
             v->name = ids->id;
             v->type = vars->type;
+            v->tref = resolve_type(vars->type);
             v->line = vars->line;
             v->ch_begin = ids->ch_begin;
             v->ch_end = ids->ch_end;
@@ -99,6 +109,7 @@ void hash_insert_fargs(FormalArgs *fargs, Variable **v_table){
             v = (Variable*)malloc(sizeof(Variable));
             v->name = fargs->name;
             v->type = fargs->type;
+            v->tref = resolve_type(fargs->type);
             v->line = fargs->line;
             v->ch_begin = fargs->ch_begin;
             v->ch_end = fargs->ch_end;
@@ -117,6 +128,7 @@ void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
         f = (Function*)malloc(sizeof(Function));
         f->name = funs->name;
         f->type = funs->type;
+        f->tref = resolve_type(funs->type);
         f->line = funs->line;
         f->this = c;
         f->stmts = funs->stmts;
@@ -145,7 +157,7 @@ void print_ct(){
    for(c=ct; c != NULL; c = (c->hh.next)){
        // Don't print if its object
        if(strcmp(c->selfName, "Object")) {
-           printf("%d: %s extd %s{\n", c->line, c->selfName, c->super->selfName);
+           printf("%d: %s extd %s{\n", c->line, c->selfName, c->superName);
            print_vars(c->fields);
            print_functions(c->functions);
            printf("}\n");

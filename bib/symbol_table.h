@@ -12,20 +12,21 @@ typedef struct ClassTable_s ClassTable;
 typedef struct Class_s Class;
 typedef struct Function_s Function; 
 typedef struct Variable_s Variable;
+typedef struct Type_s Type;
 #include "ast.h"
 
 extern Class *ct;
 
 struct Variable_s{
-    char *name;
-    char *type;
+    char *name, *type;
+    Class *tref;
     int line, ch_begin, ch_end;
     UT_hash_handle hh;
 };
 
 struct Function_s{
-    char *name;
-    char *type;
+    char *name, *type;
+    Class *tref;
     int line, chbegin;
     Variable *vars;
     StmtList *stmts;
@@ -36,6 +37,7 @@ struct Function_s{
 
 struct Class_s{
     char *selfName;
+    char *superName;
     struct Class_s *super;
     int line;
     Function *functions;
@@ -50,6 +52,7 @@ struct Class_s{
 void class_insert_function(Function *fun, Class *cl); 
 void class_insert_var(Variable *var, Class *cl); 
 int function_insert_var(Variable *var, Function *fun); 
+Class* resolve_type(char *type);
 
 void add_Object_ct();
 void build_ct(Program *p);

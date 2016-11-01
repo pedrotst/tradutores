@@ -25,7 +25,7 @@ class foo extends bar {
     int fx () {}
 }
 
-class a extends Object{
+class a extends abs{
     bar eu, sou, muito, louco;
 }
 

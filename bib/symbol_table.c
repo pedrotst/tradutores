@@ -20,8 +20,7 @@ void add_Object_ct(){
 }
 
 Class* resolve_type(char *type){
-    Class *t;
-    t = NULL;
+    Class *t = NULL;
     if(strcmp(type, "int") || strcmp(type, "bool")){
         HASH_FIND_STR(ct, type, t);
     }

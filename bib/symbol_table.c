@@ -94,11 +94,36 @@ void hash_insert_varDecl(VarDecl *vars, Variable **v_table){
             v->ch_end = ids->ch_end;
             HASH_ADD_KEYPTR(hh, *v_table, v->name, strlen(v->name), v);
         }else{
-            printf("WARN %d-[%d-%d]: Variable %s already declared at line %d, this declaration will be disconsidered\n", tmp->line, tmp->ch_begin, tmp->ch_end, tmp->name, vars->line);
+            printf("WARN %d:%d: Redeclaration of %s \n", vars->line, ids->ch_begin, tmp->name);
+            print_arq_line(vars->line, ids->ch_begin, ids->ch_end);
+            printf("Note %d:%d: Last declaration of %s was here\n", tmp->line, tmp->ch_begin, tmp->name);
+            print_arq_line(tmp->line, tmp->ch_begin, tmp->ch_end);
+
         }
         ids = ids->next;
     }
     
+}
+
+void print_arq_line(int line, int ch_begin, int ch_end){
+    int i;
+    char s[500];
+    FILE *f;
+    f = fopen(file_name, "r");
+    for(i=0; i < line; i++)
+        fgets(s, 500, f);
+
+    printf("%s", s);
+
+    for(i=0; i < ch_begin - 1; i++)
+        printf(" ");
+    for(; i < ch_end; i++)
+        printf("^");
+
+    printf("\n");
+
+    fclose(f);
+
 }
 
 void hash_insert_fargs(FormalArgs *fargs, Variable **v_table){

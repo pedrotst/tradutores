@@ -16,6 +16,7 @@ typedef struct Type_s Type;
 #include "ast.h"
 
 extern Class *ct;
+extern char *file_name;
 
 struct Variable_s{
     char *name, *type;
@@ -69,4 +70,5 @@ void print_ct();
 void print_vars(Variable *vt, int tabs);
 void print_functions(Function *ft);
 
+void print_arq_line(int line, int ch_begin, int ch_end);
 #endif

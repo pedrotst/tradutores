@@ -7,13 +7,15 @@
 #include "bib/ast.h"
 #include "bib/symbol_table.h"
 
-// define diretiva de debug print
 
 int count_lines = 1;
 
 void yyerror(const char*);
 int yywrap();
 int yylex(void);
+
+extern FILE *yyin;
+char *file_name;
 
 
 // Global Vars
@@ -252,9 +254,12 @@ void yyerror(const char *str)
 
 int yywrap() {return 1;};
 
-int main()
+
+int main(int argc, char **argv)
 {
     ct = NULL;
+    file_name = argv[1];
+    yyin = fopen(file_name, "r");
     yyparse();
     if(yynerrs == 0){ // So printa se o parse foi ok
         print_program(p);

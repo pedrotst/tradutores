@@ -4,8 +4,8 @@ class bar extends Object {
 
     bool qk(At x){}
 
-    int f(int a){
-        int a, a;
+    int f(int aasdf){
+        int aasdf, a;
         if x { a=b; }
         return a;
     }

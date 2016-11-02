@@ -140,8 +140,8 @@ argList
 
 formalArgs
 : %empty {$$=NULL;}
-| type ID {$$=formalArgs_node($1, $2, NULL);}
-| formalArgs ',' type ID {$$=formalArgs_node($3, $4, $1);}
+| type ID {$$=formalArgs_node($1, $2, NULL, count_lines, @2.first_column, @2.last_column);}
+| formalArgs ',' type ID {$$=formalArgs_node($3, $4, $1, count_lines, @2.first_column, @2.last_column);}
 ;
 
 varDecl

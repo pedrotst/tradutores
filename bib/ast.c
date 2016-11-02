@@ -207,14 +207,14 @@ IfStmt* if_node(Exp *cond, StmtList *then, StmtList *els){
     return i;
 }
 
-FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head){
+FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head, int line, int ch_begin, int ch_end){
     FormalArgs* fargs = (FormalArgs*)malloc(sizeof(FormalArgs));
     fargs->type = type;
     fargs->name = name;
     fargs->next = NULL;
-    fargs->line = 0;
-    fargs->ch_begin = 0;
-    fargs->ch_end = 0;
+    fargs->line = line;
+    fargs->ch_begin = ch_begin;
+    fargs->ch_end = ch_end;
 
     if(head == NULL)
         return fargs;

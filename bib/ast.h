@@ -227,7 +227,7 @@ ConstrDecl* constrDecl_node(char *name,
 FunctionDecl* functionDecl_node(char *type, char *name,
     FormalArgs *fargs, StmtList *stmtList, int line);
 
-FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head);
+FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head, int line, int ch_begin, int ch_end);
 
 StmtList* stmtList_node(Stmt *stmt, StmtList *head);
 

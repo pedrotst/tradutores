@@ -28,7 +28,7 @@ struct Variable_s{
 struct Function_s{
     char *name, *type;
     Class *tref;
-    int line, chbegin;
+    int line, name_begin, name_end;
     Variable *vars;
     StmtList *stmts;
     FormalArgs *fargs;

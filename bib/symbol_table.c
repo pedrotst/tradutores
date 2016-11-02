@@ -164,6 +164,8 @@ void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
         f->type = funs->type;
         f->tref = resolve_type(funs->type);
         f->line = funs->line;
+        f->name_begin = funs->name_begin;
+        f->name_end = funs->name_end;
         f->this = c;
         f->stmts = funs->stmts;
         f->fargs = funs->fargs;
@@ -174,7 +176,12 @@ void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
         HASH_ADD_KEYPTR(hh, *f_table, f->name, strlen(f->name), f);
     }
     else{
-        printf("WARN %d: Function %s already declared at line %d at class %s, this declaration will be disconsidered\n", funs->line, funs->name, f->line, f->this->selfName);
+        int ch_len = strlen(funs->type) + 2;
+        printf("WARN %d: Function %s already declared\n", funs->line, funs->name);
+        print_arq_line(funs->line, funs->name_begin, funs->name_end);
+        ch_len = strlen(f->type) + 2;
+        printf("Note %d: Last declaration was here\n", f->line);
+        print_arq_line(f->line, f->name_begin, f->name_end);
     }
 }
 

@@ -10,6 +10,8 @@ class bar extends Object {
         return a;
     }
 
+    int f(){}
+
     bar(Bool a, int a){
         return a + d;
         int c, d;

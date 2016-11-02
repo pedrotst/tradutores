@@ -42,7 +42,11 @@ void build_ct(Program *p){
         HASH_FIND_STR(ct, cdecl->selfName, tmp);         
         HASH_FIND_STR(ct, cdecl->superName, super);
         if(tmp != NULL){
-            printf("Line %d: WARN Class %s already declared at line %d, this declaration will be disconsidered\n", cdecl->line, tmp->selfName, tmp->line);
+            int ch_len = strlen("class ") + 1;
+            printf("WARN %d: Class %s already declared\n", cdecl->line, tmp->selfName);
+            print_arq_line(cdecl->line, ch_len, ch_len + strlen(cdecl->selfName) - 1);
+            printf("%d: Last declaration was here\n", tmp->line);
+            print_arq_line(tmp->line, ch_len, ch_len + strlen(tmp->selfName) - 1);
         } else{
             c = (Class*) malloc(sizeof(Class));
             c->selfName = cdecl->selfName;

@@ -19,6 +19,8 @@ class bar extends Object {
     }
 }
 
+class bar extends Object { }
+
 class foo extends bar {
     int x,k,c,d;
     foo(int a, boolean c, xit b){

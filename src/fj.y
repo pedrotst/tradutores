@@ -103,10 +103,10 @@ program
 classDecl
 : %empty {$$ = NULL;}
 | classDecl CLASS ID EXTENDS ID '{' classMembers '}' {
-    $$ = classDecl_node($3, $5, $7, $1, count_lines);
+    $$ = classDecl_node($3, $5, $7, $1, @2.first_line);
 }
 | classDecl CLASS ID EXTENDS ID '{' '}' {
-    $$ = classDecl_node($3, $5, NULL, $1, count_lines);
+    $$ = classDecl_node($3, $5, NULL, $1, @2.first_line);
 }
 
 

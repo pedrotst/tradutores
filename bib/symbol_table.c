@@ -55,8 +55,11 @@ void build_ct(Program *p){
             DEBUG_PRINT("Coloca %s na ct\n", c->selfName);
             HASH_ADD_KEYPTR(hh, ct, c->selfName, strlen(c->selfName), c);
         } 
-        if(super == NULL)
-            printf("Line %d: ERROR Class %s is not a defined class\n", cdecl->line, cdecl->superName);
+        if(super == NULL){
+            int ch_len = strlen("class  extends ") + strlen(cdecl->selfName) + 1;
+            printf("Line %d: ERROR Class %s is not a defined class at\n", cdecl->line, cdecl->superName);
+            print_arq_line(cdecl->line, ch_len, ch_len+strlen(cdecl->superName) - 1);
+        }
         cdecl = cdecl->next;
     }
     return;

@@ -4,13 +4,13 @@ class bar extends Object {
 
     bool qk(At x){}
 
-    int f(int aasdf){
+    int f(int a, bool a){
         int aasdf, a;
         if x { a=b; }
         return a;
     }
 
-    bar(Bool a){
+    bar(Bool a, int a){
         return a + d;
         int c, d;
         a = b <= d;

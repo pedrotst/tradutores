@@ -45,7 +45,7 @@ void build_ct(Program *p){
             int ch_len = strlen("class ") + 1;
             printf("WARN %d: Class %s already declared\n", cdecl->line, tmp->selfName);
             print_arq_line(cdecl->line, ch_len, ch_len + strlen(cdecl->selfName) - 1);
-            printf("%d: Last declaration was here\n", tmp->line);
+            printf("Note %d: Last declaration was here\n", tmp->line);
             print_arq_line(tmp->line, ch_len, ch_len + strlen(tmp->selfName) - 1);
         } else{
             c = (Class*) malloc(sizeof(Class));
@@ -146,7 +146,10 @@ void hash_insert_fargs(FormalArgs *fargs, Variable **v_table){
             v->ch_end = fargs->ch_end;
             HASH_ADD_KEYPTR(hh, *v_table, v->name, strlen(v->name), v);
         }else{
-            printf("WARN %d-[%d-%d]: Variable %s already declared at line %d, this declaration will be disconsidered\n", fargs->line, fargs->ch_begin, fargs->ch_end, fargs->name, tmp->line);
+            printf("WARN %d: Variable %s already declared\n", fargs->line, fargs->name);
+            print_arq_line(fargs->line, fargs->ch_begin , fargs->ch_end);
+            printf("Note %d:%d: Last declaration was here\n", tmp->line, tmp->ch_begin);
+            print_arq_line(tmp->line, tmp->ch_begin, tmp->ch_end);
         }
         fargs = fargs->next;
     }

@@ -1,8 +1,0 @@
-class foo extends Object {
-	int a;
-	bool a; // erro aqui
-
-	int bar (int a, bool a){ // erro aqui
-		Object a; // erro aqui
-	}
-}

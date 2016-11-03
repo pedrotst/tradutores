@@ -1,0 +1,1 @@
+class foo extends bar {} // bar undeclared

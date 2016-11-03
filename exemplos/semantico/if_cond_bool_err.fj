@@ -1,0 +1,5 @@
+class foo extends Object {
+	int bar (int u){
+		if u {}; // u is not a bool
+	}
+}

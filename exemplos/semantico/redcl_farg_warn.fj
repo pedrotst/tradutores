@@ -1,0 +1,5 @@
+class foo extends Object {
+	int bar (int a, bool a){ // warn aqui
+		Object a; // warn aqui
+	}
+}

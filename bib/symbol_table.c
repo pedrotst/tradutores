@@ -192,8 +192,60 @@ void check_stmts(StmtList *stmts, Function *f){
         else if(stmts->stmt->utype == IF_STMT){
             check_bool(stmts->stmt->stmt_u->ifStmt->cond, f);
         }
+        else if(stmts->stmt->utype == ASSGN_STMT){
+            Assignment *assgn = stmts->stmt->stmt_u->assgn;
+            if(assgn->lhs->utype == OBJ_VAR){
+                if(assgn->lhs->var_u->obj->utype == METH_OBJ){
+                    printf("Error %d: cannot assign a value to a method invocation in\n", stmts->line);
+                    print_arq_line(stmts->line, 0, 0);
+                }
+                else if(assgn->lhs->var_u->obj->utype == NEW_OBJ){
+                    printf("Error %d: cannot assign a value an object creation in\n", stmts->line);
+                    print_arq_line(stmts->line, 0, 0);
+                }
+            }
+            else{
+                char *lhs_type = var_type(assgn->lhs, f);
+                char *rhs_type = exp_type(assgn->rhs, f);
+                if(strcmp(lhs_type, rhs_type)){
+                    printf("Error %d: lhs of assignment of different type of rhs in\n", stmts->line);
+                    print_arq_line(stmts->line, 0, 0);
+                    printf("Note: lhs of type %s and rhs of type %s\n", lhs_type, rhs_type);
+                }
+            }
+        }
         stmts = stmts->next;
     }
+}
+
+char* var_type(Var *v, Function *f){
+    Variable *v_decl;
+    if(v->utype == ID_VAR){ // has to search at the class and its subclasses
+        HASH_FIND_STR(f->vars, v->var_u->id, v_decl);
+        return v_decl->type;
+    }
+    else if(v->utype == OBJ_VAR){
+        Class *c_decl;
+        if(v->var_u->obj->utype == NEW_OBJ){ // has to check for the arguments type yet
+            return v->var_u->obj->obj_u->newObj->cname;
+        }
+        else if(v->var_u->obj->utype == METH_OBJ){
+            HASH_FIND_STR(ct, v->var_u->obj->obj_u->newObj->cname, c_decl);
+            // 1) encontrar o tipo do objeto
+            // 2) encontrar a funcao na declaracao daquela classe 
+            // 3) retornar o tipo do retorno
+        }
+        else if(v->var_u->obj->utype == FIELD_OBJ){
+            // 1) encontrar o tipo do objeto
+            // 2) encontrar a declaracao daquela classe
+            // 3) retornar o tipo do field
+        }
+    }
+    return "";
+}
+
+char* exp_type(Exp *e, Function *f){
+    return "??";
 }
 
 void check_bool(Exp *e, Function *f){

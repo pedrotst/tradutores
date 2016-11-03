@@ -56,6 +56,8 @@ int function_insert_var(Variable *var, Function *fun);
 Class* resolve_type(char *type, int line, int ch_begin, int ch_end);
 void check_stmts(StmtList *stmts, Function *f);
 void check_bool(Exp *e, Function *f);
+char* var_type(Var *v, Function *f);
+char* exp_type(Exp *e, Function *f);
 
 void add_Object_ct();
 void build_ct(Program *p);

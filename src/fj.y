@@ -131,7 +131,7 @@ functionDecl
 
 stmtList
 : %empty {$$ = NULL;}
-| stmtList stmt {$$ = stmtList_node($2, $1);}
+| stmtList stmt {$$ = stmtList_node($2, $1, count_lines);}
 ;
 
 argList
@@ -240,7 +240,7 @@ stmt
 
 suite
 : '{' stmtList '}' {$$=$2;}
-| stmt { $$=stmtList_node($1, NULL);}
+| stmt { $$=stmtList_node($1, NULL, count_lines);}
 ;
 
 
@@ -292,10 +292,10 @@ int main(int argc, char **argv)
     yyin = fopen(file_name, "r");
     yyparse();
     if(yynerrs == 0){ // So printa se o parse foi ok
-        print_program(p);
+        // print_program(p);
         buff_file(file_name);
         build_ct(p);
-        print_ct();
+        // print_ct();
     }
     destruct_program(p);
     /*

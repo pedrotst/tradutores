@@ -149,6 +149,7 @@ struct Stmt_s{
 
 struct StmtList_s{
     Stmt *stmt;
+    int line;
     struct StmtList_s *next;
 };
 
@@ -231,7 +232,7 @@ FunctionDecl* functionDecl_node(char *type, char *name,
 
 FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head, int line, int ch_begin, int ch_end, int type_begin, int type_end);
 
-StmtList* stmtList_node(Stmt *stmt, StmtList *head);
+StmtList* stmtList_node(Stmt *stmt, StmtList *head, int line);
 
 Stmt* stmt_node(tag utype, VarDecl *varDecl, IfStmt *ifStmt,
     WhileStmt *whileStmt, Exp *returnStmt, Assignment *assgn);

@@ -1,0 +1,10 @@
+class bar extends Object{
+}
+
+class foo extends Object{
+	int f(){
+		bar b;
+		b.m() = 23; // error
+		new B() = 32; // error
+	}
+}

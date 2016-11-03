@@ -102,9 +102,10 @@ VarDecl* varDecl_node(char *type, IdList *ids,
 
 }
 
-StmtList* stmtList_node(Stmt *stmt, StmtList *head){
+StmtList* stmtList_node(Stmt *stmt, StmtList *head, int line){
     StmtList* stmt_list = (StmtList*)malloc(sizeof(StmtList));
     stmt_list->stmt = stmt;
+    stmt_list->line = line;
     stmt_list->next= NULL;
 
     if(head == NULL)

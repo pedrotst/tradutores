@@ -6,7 +6,8 @@ class bar extends Object {
 
     int f(int a, bool b){
         int aasdf, c;
-        if x { a=b; }
+        a = b;
+        new Bar() = a;
         return a;
     }
 
@@ -27,7 +28,10 @@ class foo extends bar {
         a = b;
     }
     int a, b, asdf, kct;
-    int fx () {}
+    int fx () {
+        bar b;
+        b.f(1, true) = 32;
+    }
 }
 
 class a extends foo{

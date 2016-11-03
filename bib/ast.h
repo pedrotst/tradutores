@@ -125,6 +125,7 @@ typedef union Var__u{
 
 struct Var_s{
     tag utype;
+    int line, ch_begin, ch_end;
     Var_u *var_u;
 };
 
@@ -242,7 +243,7 @@ Assignment* assignment_node(Var *lhs, Exp *rhs);
 Object* object_node(tag utype, FieldAccess *field,
     MethodInvoc *meth, New *newObj);
 
-Var* var_node(tag utype, char *id, Object *obj);
+Var* var_node(tag utype, char *id, Object *obj, int line, int ch_begin, int ch_end);
 Exp* exp_node(tag utype, Var *var, BinOp *binOp,
     Exp *parenthesis, Primary *primary);
 

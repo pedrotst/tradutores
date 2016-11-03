@@ -281,10 +281,13 @@ Object* object_node(tag utype, FieldAccess *field,
     return o;
 }
 
-Var* var_node(tag utype, char *id, Object *obj){
+Var* var_node(tag utype, char *id, Object *obj, int line, int ch_begin, int ch_end){
     Var *v = (Var*)malloc(sizeof(Var));
     Var_u *var = (Var_u*)malloc(sizeof(Var_u));
     v->utype = utype;
+    v->line = line;
+    v->ch_begin = ch_begin;
+    v->ch_end = ch_end;
     if(utype == ID_VAR)
         var->id = id;
     else if(utype == OBJ_VAR)

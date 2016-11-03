@@ -177,8 +177,8 @@ assignment
 ;
 
 var
-: ID {$$=var_node(ID_VAR, $1, NULL);}
-| object {$$=var_node(OBJ_VAR, NULL, $1);}
+: ID {$$=var_node(ID_VAR, $1, NULL, count_lines, @1.first_column, @1.last_column);}
+| object {$$=var_node(OBJ_VAR, NULL, $1, count_lines, @1.first_column, @1.last_column);}
 
 
 object

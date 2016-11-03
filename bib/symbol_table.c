@@ -202,10 +202,13 @@ void check_bool(Exp *e, Function *f){
             }
             // if variable isn't within class scope also then error
             if(decl_v == NULL){
-                printf("ERROR %d[%d-%d]: used variable %s not declared\n", 0, 0, 0, v->var_u->id);
+                printf("ERROR %d:%d: used variable %s not declared\n", v->line, v->ch_begin, v->var_u->id);
+                print_arq_line(v->line, v->ch_begin, v->ch_end);
             } // is it declared as bool?
-            else if(strcmp(decl_v->type, "bool"))
-                printf("ERROR %d[%d-%d]: if condition must be boolean\n", 0,0,0);
+            else if(strcmp(decl_v->type, "bool")){
+                printf("ERROR %d:%d: if condition must be boolean, but it is actually %s\n", v->line, v->ch_begin, decl_v->type);
+                print_arq_line(v->line, v->ch_begin, v->ch_end);
+            }
         }
     }
 }

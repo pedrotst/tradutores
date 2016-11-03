@@ -4,7 +4,7 @@ To compile run
   make
 
 Then you are ready to run you FJ+- code, like
-
+```
   class Int extends Object{
       Int(){super();}
   
@@ -35,3 +35,4 @@ Then you are ready to run you FJ+- code, like
   
   }
   new S(new S(new O())).add(new S(new O()))
+  ```

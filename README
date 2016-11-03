@@ -4,7 +4,7 @@ To compile run
   make
 
 Then you are ready to run you FJ+- code, like
-```javascript
+```java
 class Int extends Object{
     Int(){super();}
 

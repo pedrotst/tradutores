@@ -15,7 +15,7 @@ int yywrap();
 int yylex(void);
 
 extern FILE *yyin;
-char *file_name;
+char **source;
 
 
 // Global Vars
@@ -255,18 +255,54 @@ void yyerror(const char *str)
 int yywrap() {return 1;};
 
 
+void buff_file(const char *fname){
+    int i = 0, chs;
+    size_t ii = 0;
+    int lines = 0;
+    FILE *fp = fopen(fname, "r");
+    char *s = NULL, ch = 'i';
+
+    if (fp != NULL) {
+
+        while(ch != EOF) {
+            ch = fgetc(fp);
+            if(ch == '\n') {
+                lines++;
+            }
+        }
+
+        fseek(fp, 0, SEEK_SET);
+        source = malloc(sizeof(char*)*lines);
+        while((chs = getline(&s, &ii, fp)) != -1){
+            source[i] = s;
+            s = NULL;
+            ii = 0;
+            i++;
+        }
+
+        fclose(fp);
+    }
+
+}
+
 int main(int argc, char **argv)
 {
+    char *file_name = argv[1];
     ct = NULL;
-    file_name = argv[1];
     yyin = fopen(file_name, "r");
     yyparse();
     if(yynerrs == 0){ // So printa se o parse foi ok
         print_program(p);
+        buff_file(file_name);
         build_ct(p);
         print_ct();
     }
     destruct_program(p);
+    /*
+    for(int i=0; i<57; i++)
+        printf("%s", source[i]);
+    */
+    free(source);
     return 0;
 }
 

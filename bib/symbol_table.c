@@ -113,13 +113,8 @@ void hash_insert_varDecl(VarDecl *vars, Variable **v_table){
 
 void print_arq_line(int line, int ch_begin, int ch_end){
     int i;
-    char s[500];
-    FILE *f;
-    f = fopen(file_name, "r");
-    for(i=0; i < line; i++)
-        fgets(s, 500, f);
 
-    printf("%s", s);
+    printf("%s", source[line - 1]);
 
     for(i=0; i < ch_begin - 1; i++)
         printf(" ");
@@ -128,7 +123,6 @@ void print_arq_line(int line, int ch_begin, int ch_end){
 
     printf("\n");
 
-    fclose(f);
 
 }
 

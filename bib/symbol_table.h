@@ -16,7 +16,7 @@ typedef struct Type_s Type;
 #include "ast.h"
 
 extern Class *ct;
-extern char *file_name;
+extern char **source;
 
 struct Variable_s{
     char *name, *type;

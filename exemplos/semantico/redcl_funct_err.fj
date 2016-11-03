@@ -1,0 +1,4 @@
+class foo extends Object { 
+	int bar () {}
+	bool bar () {} // erro aqui
+}

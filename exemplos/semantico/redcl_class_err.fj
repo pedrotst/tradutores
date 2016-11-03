@@ -1,0 +1,2 @@
+class foo extends Object {}
+class foo extends Object {} // erro aqui

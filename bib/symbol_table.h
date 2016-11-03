@@ -53,7 +53,7 @@ struct Class_s{
 void class_insert_function(Function *fun, Class *cl); 
 void class_insert_var(Variable *var, Class *cl); 
 int function_insert_var(Variable *var, Function *fun); 
-Class* resolve_type(char *type);
+Class* resolve_type(char *type, int line, int ch_begin, int ch_end);
 void check_stmts(StmtList *stmts, Function *f);
 void check_bool(Exp *e, Function *f);
 

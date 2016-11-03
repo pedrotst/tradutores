@@ -19,10 +19,15 @@ void add_Object_ct(){
     HASH_ADD_KEYPTR(hh, ct, c->selfName, strlen(c->selfName), c);
 }
 
-Class* resolve_type(char *type){
+Class* resolve_type(char *type, int line, int ch_begin, int ch_end){
     Class *t = NULL;
-    if(strcmp(type, "int") || strcmp(type, "bool")){
+    if(strcmp(type, "int") && strcmp(type, "bool")){
         HASH_FIND_STR(ct, type, t);
+        if(t == NULL){
+            printf("ERROR %d:%d: class %s not declared\n", line, ch_begin, type);
+            print_arq_line(line, ch_begin, ch_end);
+        }
+
     }
     return t;
 }
@@ -88,13 +93,14 @@ void build_class_body(Class *c, ClassMember *cmem){
 void hash_insert_varDecl(VarDecl *vars, Variable **v_table){
     Variable *v, *tmp;
     IdList *ids = vars->idList;
+    Class *c = resolve_type(vars->type, vars->line, vars->type_begin, vars->type_end);
     while(ids != NULL){
         HASH_FIND_STR(*v_table, ids->id, tmp); // esta variavel ja foi declarada?
         if(tmp == NULL){
             v = (Variable*)malloc(sizeof(Variable));
             v->name = ids->id;
             v->type = vars->type;
-            v->tref = resolve_type(vars->type);
+            v->tref = c;
             v->line = vars->line;
             v->ch_begin = ids->ch_begin;
             v->ch_end = ids->ch_end;
@@ -134,7 +140,7 @@ void hash_insert_fargs(FormalArgs *fargs, Variable **v_table){
             v = (Variable*)malloc(sizeof(Variable));
             v->name = fargs->name;
             v->type = fargs->type;
-            v->tref = resolve_type(fargs->type);
+            v->tref = resolve_type(fargs->type, fargs->line, fargs->type_begin, fargs->type_end);
             v->line = fargs->line;
             v->ch_begin = fargs->ch_begin;
             v->ch_end = fargs->ch_end;
@@ -156,7 +162,7 @@ void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
         f = (Function*)malloc(sizeof(Function));
         f->name = funs->name;
         f->type = funs->type;
-        f->tref = resolve_type(funs->type);
+        f->tref = resolve_type(funs->type, funs->line, funs->type_begin, funs->type_end);
         f->line = funs->line;
         f->name_begin = funs->name_begin;
         f->name_end = funs->name_end;

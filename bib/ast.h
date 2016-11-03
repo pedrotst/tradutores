@@ -161,13 +161,13 @@ struct IdList_s{
 
 struct VarDecl_s{
     char *type;
-    int line;
+    int line, type_begin, type_end;
     IdList *idList;
 };
 
 struct FormalArgs_s{
     char *type, *name;
-    int line, ch_end, ch_begin;
+    int line, ch_end, ch_begin, type_begin, type_end;
     struct FormalArgs_s *next;
 };
 
@@ -180,7 +180,7 @@ struct ConstrDecl_s{
 struct FunctionDecl_s{
     char *name;
     char *type;
-    int line, name_begin, name_end;
+    int line, name_begin, name_end, type_begin, type_end;
     FormalArgs *fargs;
     StmtList *stmts;
 };
@@ -218,7 +218,7 @@ ClassMember* classMember_node(tag utype, VarDecl *varDecl,
     FunctionDecl *funDecl, ConstrDecl *constrDecl);
 
 VarDecl* varDecl_node(char *type, IdList *ids,
-    int line, int chbegin);
+    int line, int type_begin, int type_end);
 
 IdList* idList_node(char *id, int ch_begin, int ch_end, IdList *head);
 
@@ -226,9 +226,10 @@ ConstrDecl* constrDecl_node(char *name,
     FormalArgs *fargs, StmtList *stmtList);
 
 FunctionDecl* functionDecl_node(char *type, char *name,
-    FormalArgs *fargs, StmtList *stmtList, int line, int name_begin, int name_end);
+    FormalArgs *fargs, StmtList *stmtList, int line, 
+    int name_begin, int name_end, int type_begin, int type_end);
 
-FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head, int line, int ch_begin, int ch_end);
+FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head, int line, int ch_begin, int ch_end, int type_begin, int type_end);
 
 StmtList* stmtList_node(Stmt *stmt, StmtList *head);
 

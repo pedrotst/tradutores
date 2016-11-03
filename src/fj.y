@@ -126,7 +126,7 @@ constrDecl
 ;
 
 functionDecl
-: type ID '(' formalArgs ')' '{' stmtList '}' {$$ = functionDecl_node ($1, $2, $4, $7, @1.first_line, @2.first_column, @2.last_column);}
+: type ID '(' formalArgs ')' '{' stmtList '}' {$$ = functionDecl_node ($1, $2, $4, $7, @1.first_line, @2.first_column, @2.last_column, @1.first_column, @1.last_column);}
 ;
 
 stmtList
@@ -142,15 +142,15 @@ argList
 
 formalArgs
 : %empty {$$=NULL;}
-| type ID {$$=formalArgs_node($1, $2, NULL, count_lines, @1.first_column, @2.last_column);}
-| formalArgs ',' type ID {$$=formalArgs_node($3, $4, $1, count_lines, @3.first_column, @4.last_column);}
+| type ID {$$=formalArgs_node($1, $2, NULL, count_lines, @2.first_column, @2.last_column, @1.first_column, @1.last_column);}
+| formalArgs ',' type ID {$$=formalArgs_node($3, $4, $1, count_lines, @4.first_column, @4.last_column, @3.first_column, @3.last_column);}
 ;
 
 varDecl
 : type ID idList {
     IdList *ids = idList_node($2, @2.first_column, @2.last_column, NULL);
     ids->next = $3;
-    $$ = varDecl_node($1, ids, count_lines, @$.first_column);
+    $$ = varDecl_node($1, ids, count_lines, @1.first_column, @1.last_column);
 }
 ;
 

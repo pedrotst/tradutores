@@ -91,7 +91,8 @@ ClassMember* classMember_node(tag utype, VarDecl *varDecls,
     return c;
 }
 
-VarDecl* varDecl_node(char *type, IdList *ids, int line, int chbegin){
+VarDecl* varDecl_node(char *type, IdList *ids,
+    int line, int type_begin, int type_end){
     VarDecl* v = (VarDecl*)malloc(sizeof(VarDecl));
     v->line = line;
     v->type = type;
@@ -207,7 +208,7 @@ IfStmt* if_node(Exp *cond, StmtList *then, StmtList *els){
     return i;
 }
 
-FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head, int line, int ch_begin, int ch_end){
+FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head, int line, int ch_begin, int ch_end, int type_begin, int type_end){
     FormalArgs* fargs = (FormalArgs*)malloc(sizeof(FormalArgs));
     fargs->type = type;
     fargs->name = name;
@@ -215,6 +216,8 @@ FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head, int line, 
     fargs->line = line;
     fargs->ch_begin = ch_begin;
     fargs->ch_end = ch_end;
+    fargs->type_begin = type_begin;
+    fargs->type_end = type_end;
 
     if(head == NULL)
         return fargs;
@@ -240,7 +243,8 @@ ConstrDecl* constrDecl_node(char *name,
 }
 
 FunctionDecl* functionDecl_node(char *type, char *name,
-    FormalArgs *fargs, StmtList *stmtList, int line, int name_begin, int name_end){
+    FormalArgs *fargs, StmtList *stmtList, int line,
+    int name_begin, int name_end, int type_begin, int type_end){
 
     FunctionDecl* f_decl = (FunctionDecl*)malloc(sizeof(FunctionDecl));
 

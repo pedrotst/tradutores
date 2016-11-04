@@ -47,7 +47,6 @@ Class *ct;
     struct New_s*           new_v; 
     struct Int_s*           int_v; 
     struct Bool_s*          bool_v; 
-    struct Stmt_s*          stmt_v; 
     struct Object_s*        object_v; 
     struct Primary_s*       prim_v;
 
@@ -79,7 +78,7 @@ Class *ct;
 %type <functionDecl_v> functionDecl
 %type <assignment_v> assignment
 %type <var_v> var 
-%type <stmtList_v>stmtList suite
+%type <stmtList_v>stmtList suite stmt
 %type <argList_v> argList
 %type <formalArgs_v> formalArgs
 %type <varDecl_v> varDecl
@@ -90,7 +89,6 @@ Class *ct;
 %type <fieldAccess_v> fieldAccess
 %type <methodInvoc_v> methodInvoc
 %type <new_v> new
-%type <stmt_v> stmt
 %nonassoc IF
 %nonassoc ELSE
 

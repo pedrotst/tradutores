@@ -193,13 +193,13 @@ void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
 
 void check_stmts(StmtList *stmts, Function *f){
     while(stmts != NULL){
-        if(stmts->stmt->utype == VAR_DECL)
-            hash_insert_varDecl(stmts->stmt->stmt_u->varDecl, &(f->vars));
-        else if(stmts->stmt->utype == IF_STMT){
-            check_bool(stmts->stmt->stmt_u->ifStmt->cond, f);
+        if(stmts->utype == VAR_DECL)
+            hash_insert_varDecl(stmts->stmt_u->varDecl, &(f->vars));
+        else if(stmts->utype == IF_STMT){
+            check_bool(stmts->stmt_u->ifStmt->cond, f);
         }
-        else if(stmts->stmt->utype == ASSGN_STMT){
-            Assignment *assgn = stmts->stmt->stmt_u->assgn;
+        else if(stmts->utype == ASSGN_STMT){
+            Assignment *assgn = stmts->stmt_u->assgn;
             if(assgn->lhs->utype == OBJ_VAR){
                 if(assgn->lhs->var_u->obj->utype == METH_OBJ){
                     printf("Error %d: cannot assign a value to a method invocation in\n", stmts->line);

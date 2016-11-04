@@ -102,31 +102,31 @@ VarDecl* varDecl_node(char *type, IdList *ids,
 
 }
 
-StmtList* stmtList_node(Stmt *stmt, StmtList *head, int line){
-    StmtList* stmt_list = (StmtList*)malloc(sizeof(StmtList));
-    stmt_list->stmt = stmt;
-    stmt_list->line = line;
-    stmt_list->next= NULL;
+StmtList* stmtList_node(StmtList *stmt, StmtList *head, int line){
+    stmt->line = line;
+    stmt->next= NULL;
 
     if(head == NULL)
-        return stmt_list;
+        return stmt;
 
     StmtList *current = head;
     while(current->next != NULL){
         current = current->next;
     }
 
-    current->next = stmt_list;
+    current->next = stmt;
 
     return head;
 
 }
 
 
-Stmt* stmt_node(tag utype, VarDecl *varDecl, IfStmt *ifStmt,
+StmtList* stmt_node(tag utype, VarDecl *varDecl, IfStmt *ifStmt,
         WhileStmt *whileStmt, Exp *returnExp, Assignment *assgn){
-    Stmt *stmt = (Stmt*)malloc(sizeof(Stmt));
+    StmtList *stmt = (StmtList*)malloc(sizeof(StmtList));
     Stmt_u *stmt_u = (Stmt_u*)malloc(sizeof(Stmt_u));
+    stmt->line = 0;
+    stmt->next = NULL;
 
     switch(utype){
         case VAR_DECL:
@@ -385,13 +385,13 @@ void destruct_classDecl(ClassDecl *cDecl){
 
 void destruct_stmtList(StmtList *sl){
     if(sl != NULL){
-        destruct_stmt(sl->stmt);
+        destruct_stmt(sl);
         destruct_stmtList(sl->next);
         free(sl);
     }
 
 }
-void destruct_stmt(Stmt *stmt){
+void destruct_stmt(StmtList *stmt){
     if(stmt != NULL){
         if(stmt->utype == IF_STMT)
             destruct_ifStmt(stmt->stmt_u->ifStmt);
@@ -405,7 +405,6 @@ void destruct_stmt(Stmt *stmt){
             destruct_assignment(stmt->stmt_u->assgn);
 
         free(stmt->stmt_u);
-        free(stmt);
     }
 }
 
@@ -674,27 +673,25 @@ void print_idList(IdList *ids){
 }
 
 void print_stmt(StmtList *stmts, int tabs){
-    Stmt *stmt;
     while(stmts != NULL){
-        stmt = stmts->stmt;
-        switch(stmt->utype){
+        switch(stmts->utype){
             case VAR_DECL:
-                print_varDecl(stmt->stmt_u->varDecl, tabs);
+                print_varDecl(stmts->stmt_u->varDecl, tabs);
                 printf(";\n");
                 break;
             case RET_STMT:
-                print_return(stmt->stmt_u->returnExp, tabs);
+                print_return(stmts->stmt_u->returnExp, tabs);
                 printf(";\n");
                 break;
             case ASSGN_STMT:
-                print_assignment(stmt->stmt_u->assgn, tabs);
+                print_assignment(stmts->stmt_u->assgn, tabs);
                 printf(";\n");
                 break;
             case WHILE_STMT:
-                print_while(stmt->stmt_u->whileStmt, tabs);
+                print_while(stmts->stmt_u->whileStmt, tabs);
                 break;
             case IF_STMT:
-                print_if(stmt->stmt_u->ifStmt, tabs);
+                print_if(stmts->stmt_u->ifStmt, tabs);
                 break;
             default:
             break;

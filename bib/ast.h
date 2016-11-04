@@ -37,7 +37,6 @@ typedef struct IdList_s             IdList;
 typedef struct New_s                New;
 typedef struct Int_s                Int;
 typedef struct Bool_s               Bool;
-typedef struct Stmt_s                Stmt;
 typedef struct IfStmt_s             IfStmt;
 typedef struct WhileStmt_s          WhileStmt;
 typedef struct ReturnStmt_s         ReturnStmt;
@@ -142,13 +141,9 @@ typedef union Stmt__u{
     Assignment *assgn;
 }Stmt_u;
 
-struct Stmt_s{
+struct StmtList_s{
     tag utype;
     Stmt_u *stmt_u;
-};
-
-struct StmtList_s{
-    Stmt *stmt;
     int line;
     struct StmtList_s *next;
 };
@@ -232,9 +227,9 @@ FunctionDecl* functionDecl_node(char *type, char *name,
 
 FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head, int line, int ch_begin, int ch_end, int type_begin, int type_end);
 
-StmtList* stmtList_node(Stmt *stmt, StmtList *head, int line);
+StmtList* stmtList_node(StmtList *stmt, StmtList *head, int line);
 
-Stmt* stmt_node(tag utype, VarDecl *varDecl, IfStmt *ifStmt,
+StmtList* stmt_node(tag utype, VarDecl *varDecl, IfStmt *ifStmt,
     WhileStmt *whileStmt, Exp *returnStmt, Assignment *assgn);
 
 IfStmt* if_node(Exp *cond, StmtList *then, StmtList *els);
@@ -288,7 +283,7 @@ void print_tabs(int tabs);
 void destruct_program(Program *p);
 void destruct_classDecl(ClassDecl *cDecl);
 void destruct_stmtList(StmtList *sl);
-void destruct_stmt(Stmt *stmt);
+void destruct_stmt(StmtList *stmt);
 void destruct_classMembers(ClassMember *cMems);
 void destruct_classMember(ClassMember *cMem);
 void destruct_varDecl(VarDecl *vars);

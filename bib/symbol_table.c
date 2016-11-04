@@ -122,8 +122,14 @@ void print_arq_line(int line, int ch_begin, int ch_end){
 
     printf("%s", source[line - 1]);
 
-    for(i=0; i < ch_begin - 1; i++)
-        printf(" ");
+    for(i=0; i < ch_begin - 1; i++){
+        if(source[line -1][i] == '\r')
+            printf("\r");
+        else if(source[line -1][i] == '\t')
+            printf("\t");
+        else
+            printf(" ");
+    }
     for(; i < ch_end; i++)
         printf("^");
 
@@ -245,7 +251,56 @@ char* var_type(Var *v, Function *f){
 }
 
 char* exp_type(Exp *e, Function *f){
+    if(e->utype == VAR_EXP)
+        return var_type(e->exp_u->var, f);
+    else if(e->utype == BINOP_EXP){
+        BinOp *b_op = e->exp_u->binOp;
+        char op = b_op->op;
+        check_binOp(b_op, f);
+        return op_type(op);
+    }
+    else if(e->utype == PAR_EXP)
+        return exp_type(e->exp_u->parenthesis, f);
+    else if(e->utype == PRIM_EXP){
+        return e->exp_u->primary->type;
+    }
+
     return "??";
+}
+
+char* op_type(char op){
+    if(op == '&' || op == '(' || op == '!' || op == '|' 
+        || op == '=' || op == ')' || op == '>' || op == '<')
+        return "bool";
+    else if(op == '+' || op == '-' || op == '*' || op == '/')
+        return "int";
+    return "??";
+}
+    
+
+int check_binOp(BinOp *b, Function *f){
+    char *lhs_type = exp_type(b->lhs, f);
+    char *rhs_type = exp_type(b->rhs, f);
+    char *optype = op_type(b->op);
+    if(!strcmp(optype, lhs_type)){
+        if(!strcmp(optype, rhs_type))
+            return 1;
+        else{
+            printf("Error %d: rhs of operation is not %s\n", b->rhs->line, optype);
+            print_arq_line(b->rhs->line, b->rhs->ch_begin, b->rhs->ch_end);
+            return 0;
+        }
+    }
+    else{
+        printf("Error %d: lhs of operation is not %s\n", b->lhs->line, optype);
+        print_arq_line(b->lhs->line, b->lhs->ch_begin, b->lhs->ch_end);
+        if(strcmp(optype, rhs_type)){
+            printf("Error %d: rhs of operation is not %s\n", b->rhs->line, optype);
+            print_arq_line(b->rhs->line, b->rhs->ch_begin, b->rhs->ch_end);
+        }
+        return 0;
+    }
+    return 0;
 }
 
 void check_bool(Exp *e, Function *f){

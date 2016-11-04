@@ -326,10 +326,14 @@ New* new_node(char *cname, ArgList *args){
 }
 
 Exp* exp_node(tag utype, Var *var, BinOp *binOp,
-        Exp *parenthesis, Primary *primary){
+        Exp *parenthesis, Primary *primary,
+        int line, int ch_begin, int ch_end){
     Exp *e = (Exp*)malloc(sizeof(Exp));
     Exp_u *exp = (Exp_u*)malloc(sizeof(Exp_u));
     e->utype = utype;
+    e->line = line;
+    e->ch_begin = ch_begin;
+    e->ch_end = ch_end;
     if(utype == VAR_EXP)
         exp->var = var;
     else if(utype == BINOP_EXP)
@@ -351,7 +355,7 @@ BinOp* binOp_node(char op, Exp *lhs, Exp *rhs){
     return binOp;
 }
 
-Primary* primary_node(tag type, int val){
+Primary* primary_node(char *type, int val){
     Primary *primary = (Primary*)malloc(sizeof(Primary));
     primary->type = type;
     primary->val = val;
@@ -747,13 +751,13 @@ void print_exp(Exp *e){
 
 void print_prim(Primary *prim){
     if(prim != NULL){
-        if(prim->type == BOOL_PRIM){
+        if(!strcmp(prim->type, "bool")){
             if(prim->val == 1)
                 printf("true");
             else
                 printf("false");
         }
-        else if(prim->type == INT_PRIM)
+        else if(!strcmp(prim->type, "int"))
             printf("%d", prim->val);
     }
 }

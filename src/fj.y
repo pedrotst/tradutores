@@ -167,10 +167,10 @@ type
 ;
 
 exp
-: var {$$=exp_node(VAR_EXP, $1, NULL, NULL, NULL);}
-| binOp {$$=exp_node(BINOP_EXP, NULL, $1, NULL, NULL);}
-| '(' exp ')' {$$=exp_node(PAR_EXP, NULL, NULL, $2, NULL);}
-| primary {$$ = exp_node(PRIM_EXP, NULL, NULL, NULL, $1);}
+: var {$$=exp_node(VAR_EXP, $1, NULL, NULL, NULL, count_lines, @$.first_column, @$.last_column);}
+| binOp {$$=exp_node(BINOP_EXP, NULL, $1, NULL, NULL, count_lines, @$.first_column, @$.last_column);}
+| '(' exp ')' {$$=exp_node(PAR_EXP, NULL, NULL, $2, NULL, count_lines, @$.first_column, @$.last_column);}
+| primary {$$ = exp_node(PRIM_EXP, NULL, NULL, NULL, $1, count_lines, @$.first_column, @$.last_column);}
 
 assignment
 : var '=' exp {$$=assignment_node($1, $3);}
@@ -215,9 +215,9 @@ binOp
 | exp BGT exp {$$=binOp_node('>', $1, $3);}
 
 primary
-: TRUE { $$ = primary_node(BOOL_PRIM, 1);}
-| FALSE{$$ = primary_node(BOOL_PRIM, 0);}
-| NUM {$$ = primary_node(INT_PRIM, $1);}
+: TRUE { $$ = primary_node(strdup("bool"), 1);}
+| FALSE{$$ = primary_node(strdup("bool"), 0);}
+| NUM {$$ = primary_node(strdup("int"), $1);}
 ;
 
 stmt

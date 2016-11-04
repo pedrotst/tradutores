@@ -11,7 +11,6 @@ typedef enum type_enum{
     ID_VAR, OBJ_VAR,
     FIELD_OBJ, METH_OBJ, NEW_OBJ,
     VAR_EXP, BINOP_EXP, PAR_EXP, PRIM_EXP,
-    BOOL_PRIM, INT_PRIM,
     BASE_TYPE, CLASS_TYPE
 }tag;
 
@@ -77,12 +76,13 @@ typedef union Exp__u{
 }Exp_u;
 
 struct Primary_s{
-    tag type;
+    char *type;
     int val;
 };
 
 struct Exp_s{
     tag utype;
+    int line, ch_begin, ch_end;
     Exp_u *exp_u;
 };
 
@@ -246,8 +246,9 @@ Object* object_node(tag utype, FieldAccess *field,
     MethodInvoc *meth, New *newObj);
 
 Var* var_node(tag utype, char *id, Object *obj, int line, int ch_begin, int ch_end);
+
 Exp* exp_node(tag utype, Var *var, BinOp *binOp,
-    Exp *parenthesis, Primary *primary);
+    Exp *parenthesis, Primary *primary, int line, int ch_begin, int ch_end);
 
 MethodInvoc* methodInvoc_node(Var *obj, char *mname, ArgList *args);
 FieldAccess* fieldAccess_node(Var *obj, char *fname);
@@ -256,7 +257,7 @@ New* new_node(char *cname, ArgList *args);
 ArgList* argList_node(Exp *arg, ArgList *head);
 
 BinOp* binOp_node(char op, Exp *lhs, Exp *rhs);
-Primary* primary_node(tag type, int val);
+Primary* primary_node(char *type, int val);
 
 void print_program(Program* p);
 void print_class(ClassDecl *c);

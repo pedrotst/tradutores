@@ -58,6 +58,8 @@ void check_stmts(StmtList *stmts, Function *f);
 void check_bool(Exp *e, Function *f);
 char* var_type(Var *v, Function *f);
 char* exp_type(Exp *e, Function *f);
+int check_binOp(BinOp *b, Function *f);
+char* op_type(char op);
 
 void add_Object_ct();
 void build_ct(Program *p);

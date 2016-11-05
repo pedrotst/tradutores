@@ -55,6 +55,7 @@ void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c);
 void insert_class_functions(ConstrDecl *constrs, Function **f_table);
 void build_class_body(Class *c, ClassMember *cmem);
 
+Variable* class_get_field(Class* c, char* id);
 
 void print_ct();
 void print_vars(Variable *vt, int tabs);

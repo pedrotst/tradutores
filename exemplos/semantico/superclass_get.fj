@@ -1,0 +1,9 @@
+class bar extends Object{
+    int a;
+}
+
+class foo extends bar{
+    int f(){
+        if a {}
+    }
+}

@@ -308,12 +308,7 @@ void check_bool(Exp *e, Function *f){
         Variable *decl_v = NULL;
         Var *v = e->exp_u->var;
         if(v->utype == ID_VAR){
-            HASH_FIND_STR(f->vars, v->var_u->id, decl_v);
-            // if variable is not within function scope look at class scope
-            if(decl_v == NULL){
-                HASH_FIND_STR(f->this->fields, v->var_u->id, decl_v);
-            }
-            // if variable isn't within class scope also then error
+            decl_v = class_get_field(f->this, v->var_u->id);
             if(decl_v == NULL){
                 printf("ERROR %d:%d: used variable %s not declared\n", v->line, v->ch_begin, v->var_u->id);
                 print_arq_line(v->line, v->ch_begin, v->ch_end);
@@ -321,19 +316,35 @@ void check_bool(Exp *e, Function *f){
             else if(strcmp(decl_v->type, "bool")){
                 printf("ERROR %d:%d: if condition must be boolean, but it is actually %s\n", v->line, v->ch_begin, decl_v->type);
                 print_arq_line(v->line, v->ch_begin, v->ch_end);
+                printf("Note %d:%d: it was declared here\n", decl_v->line, decl_v->ch_begin);
+                print_arq_line(decl_v->line, decl_v->ch_begin, decl_v->ch_end);
             }
         }
     }
 }
 
+Variable* class_get_field(Class* c, char* id){
+    Variable *decl_v = NULL;
+
+    HASH_FIND_STR(c->fields, id, decl_v);
+    // try to find field on superClasses
+    while(decl_v == NULL && c != NULL){
+        // object->super is NULL; i.e. end of recursion
+        c = c->super; 
+        HASH_FIND_STR(c->fields, id, decl_v);
+    }
+
+    return decl_v;
+}
+
 
 /*
-    ---------------------- # Print Functions # -------------------------
+---------------------- # Print Functions # -------------------------
 */
 
 void print_ct(){
-   Class *c = NULL;
-   /*
+Class *c = NULL;
+/*
    HASH_FIND_STR(ct, "a", c);
    printf("Achei %d:%s extd %s na ct\n", c->line, c->selfName, c->superName);
    */

@@ -6,6 +6,7 @@
 #include <err.h>
 #include "structs.h"
 #include "symbol_table.h"
+
 /*tags serão utilizadas para tipagem das unions*/
 typedef enum type_enum{
     VAR_DECL, FUN_DECL, CONSTR_DECL,

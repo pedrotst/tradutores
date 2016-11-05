@@ -2,18 +2,17 @@
 #define __sTable_h
 #include "uthash.h"
 #include "debug.h"
+#include "structs.h"
+#include "ast.h"
 
 typedef enum SymbolType_e{
     VAR, FUN
 }SymbolType;
 
+#ifndef __structs_t
+#define __structs_t
 // a main sera armazenada numa classe chamada Object
-typedef struct ClassTable_s ClassTable;
-typedef struct Class_s Class;
-typedef struct Function_s Function; 
-typedef struct Variable_s Variable;
-typedef struct Type_s Type;
-#include "ast.h"
+#endif
 
 extern Class *ct;
 extern char **source;

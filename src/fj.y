@@ -3,9 +3,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <err.h>
-#include "bib/debug.h"
-#include "bib/ast.h"
-#include "bib/symbol_table.h"
+#include "debug.h"
+#include "ast.h"
+#include "symbol_table.h"
 
 
 int count_lines = 1;

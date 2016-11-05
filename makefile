@@ -1,4 +1,4 @@
-FLAGS = -g 
+FLAGS = -g -I ./include
 
 all: lex yacc ast sTable linkAll moveObjs 	
 
@@ -12,10 +12,10 @@ lex:
 	lex ./src/fj.l 
 
 ast:
-	gcc $(FLAGS) -c ./bib/ast.c
+	gcc $(FLAGS) -c ./src/ast.c
 
 sTable:
-	gcc $(FLAGS) -c ./bib/symbol_table.c 
+	gcc $(FLAGS) -c ./src/symbol_table.c 
 
 moveObjs:
 	mkdir -p obj

@@ -216,7 +216,7 @@ void check_stmts(StmtList *stmts, Function *f){
                 if(strcmp(lhs_type, rhs_type)){
                     printf("Error %d: lhs of assignment of different type of rhs in\n", stmts->line);
                     print_arq_line(stmts->line, 0, 0);
-                    printf("Note: lhs of type %s and rhs of type %s\n", lhs_type, rhs_type);
+                    printf("Note: lhs of assignment of type %s and rhs of type %s\n", lhs_type, rhs_type);
                 }
             }
         }

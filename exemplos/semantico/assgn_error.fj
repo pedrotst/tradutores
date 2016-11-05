@@ -8,5 +8,6 @@ class foo extends Object{
 		new B() = 32; // error
 		int a;
 		a = 32 + true;
+		b = 44;
 	}
 }

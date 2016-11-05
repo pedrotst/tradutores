@@ -5,15 +5,6 @@
 #include "structs.h"
 #include "ast.h"
 
-typedef enum SymbolType_e{
-    VAR, FUN
-}SymbolType;
-
-#ifndef __structs_t
-#define __structs_t
-// a main sera armazenada numa classe chamada Object
-#endif
-
 extern Class *ct;
 extern char **source;
 
@@ -44,10 +35,6 @@ struct Class_s{
     Variable *fields;
     UT_hash_handle hh;
 };
-
-// ClassTable* classTable_insert(char *className, char *superName, 
-/* Hash Functions */
-// int ct_insert_class(Class **ctable, Class *ct);
 
 void class_insert_function(Function *fun, Class *cl); 
 void class_insert_var(Variable *var, Class *cl); 

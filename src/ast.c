@@ -260,8 +260,9 @@ FunctionDecl* functionDecl_node(char *type, char *name,
     return f_decl;
 }
 
-Assignment* assignment_node(Var *lhs, Exp *rhs){
+Assignment* assignment_node(Var *lhs, Exp *rhs, int line){
     Assignment *a = (Assignment*)malloc(sizeof(Assignment));
+    a->line = line;
     a->lhs = lhs;
     a->rhs = rhs;
 

@@ -45,6 +45,7 @@ void check_bool(Exp *e, Function *f);
 char* var_type(Var *v, Function *f);
 char* exp_type(Exp *e, Function *f);
 int check_binOp(BinOp *b, Function *f);
+void check_assignment(Assignment *assgn, Function *f);
 char* op_type(char op);
 
 void add_Object_ct();

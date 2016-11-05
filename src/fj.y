@@ -171,7 +171,7 @@ exp
 | primary {$$ = exp_node(PRIM_EXP, NULL, NULL, NULL, $1, count_lines, @$.first_column, @$.last_column);}
 
 assignment
-: var '=' exp {$$=assignment_node($1, $3);}
+: var '=' exp {$$=assignment_node($1, $3, count_lines);}
 ;
 
 var

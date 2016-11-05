@@ -102,6 +102,7 @@ struct Var_s{
 };
 
 struct Assignment_s{
+    int line;
     Var *lhs;
     Exp *rhs;
 };
@@ -208,7 +209,7 @@ StmtList* stmt_node(tag utype, VarDecl *varDecl, IfStmt *ifStmt,
 IfStmt* if_node(Exp *cond, StmtList *then, StmtList *els);
 WhileStmt* while_node(Exp *cond, StmtList *loop);
 
-Assignment* assignment_node(Var *lhs, Exp *rhs);
+Assignment* assignment_node(Var *lhs, Exp *rhs, int line);
 
 Object* object_node(tag utype, FieldAccess *field,
     MethodInvoc *meth, New *newObj);

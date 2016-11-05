@@ -199,35 +199,38 @@ void check_stmts(StmtList *stmts, Function *f){
             check_bool(stmts->stmt_u->ifStmt->cond, f);
         }
         else if(stmts->utype == ASSGN_STMT){
-            Assignment *assgn = stmts->stmt_u->assgn;
-            if(assgn->lhs->utype == OBJ_VAR){
-                if(assgn->lhs->var_u->obj->utype == METH_OBJ){
-                    printf("Error %d: cannot assign a value to a method invocation in\n", stmts->line);
-                    print_arq_line(stmts->line, 0, 0);
-                }
-                else if(assgn->lhs->var_u->obj->utype == NEW_OBJ){
-                    printf("Error %d: cannot assign a value an object creation in\n", stmts->line);
-                    print_arq_line(stmts->line, 0, 0);
-                }
-            }
-            else{
-                char *lhs_type = var_type(assgn->lhs, f);
-                char *rhs_type = exp_type(assgn->rhs, f);
-                if(strcmp(lhs_type, rhs_type)){
-                    printf("Error %d: lhs of assignment of different type of rhs in\n", stmts->line);
-                    print_arq_line(stmts->line, 0, 0);
-                    printf("Note: lhs of assignment of type %s and rhs of type %s\n", lhs_type, rhs_type);
-                }
-            }
+            check_assignment(stmts->stmt_u->assgn, f);
         }
         stmts = stmts->next;
+    }
+}
+
+void check_assignment(Assignment *assgn, Function *f){
+    if(assgn->lhs->utype == OBJ_VAR){
+        if(assgn->lhs->var_u->obj->utype == METH_OBJ){
+            printf("Error %d: cannot assign a value to a method invocation in\n", assgn->line);
+            print_arq_line(assgn->line, 0, 0);
+        }
+        else if(assgn->lhs->var_u->obj->utype == NEW_OBJ){
+            printf("Error %d: cannot assign a value an object creation in\n", assgn->line);
+            print_arq_line(assgn->line, 0, 0);
+        }
+    }
+    else{
+        char *lhs_type = var_type(assgn->lhs, f);
+        char *rhs_type = exp_type(assgn->rhs, f);
+        if(strcmp(lhs_type, rhs_type)){
+            printf("Error %d: lhs of assignment of different type of rhs in\n", assgn->line);
+            print_arq_line(assgn->line, 0, 0);
+            printf("Note: lhs of assignment of type %s and rhs of type %s\n", lhs_type, rhs_type);
+        }
     }
 }
 
 char* var_type(Var *v, Function *f){
     Variable *v_decl;
     if(v->utype == ID_VAR){ // has to search at the class and its subclasses
-        HASH_FIND_STR(f->vars, v->var_u->id, v_decl);
+        v_decl = class_get_field(f->this, v->var_u->id);
         return v_decl->type;
     }
     else if(v->utype == OBJ_VAR){

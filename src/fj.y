@@ -8,13 +8,12 @@
 #include "symbol_table.h"
 
 
-int count_lines = 1;
-
 void yyerror(const char*);
 int yywrap();
 int yylex(void);
 
 extern FILE *yyin;
+extern int yylineno;
 char **source;
 
 
@@ -129,7 +128,7 @@ functionDecl
 
 stmtList
 : %empty {$$ = NULL;}
-| stmtList stmt {$$ = stmtList_node($2, $1, count_lines);}
+| stmtList stmt {$$ = stmtList_node($2, $1, @$.first_line);}
 ;
 
 argList
@@ -140,15 +139,15 @@ argList
 
 formalArgs
 : %empty {$$=NULL;}
-| type ID {$$=formalArgs_node($1, $2, NULL, count_lines, @2.first_column, @2.last_column, @1.first_column, @1.last_column);}
-| formalArgs ',' type ID {$$=formalArgs_node($3, $4, $1, count_lines, @4.first_column, @4.last_column, @3.first_column, @3.last_column);}
+| type ID {$$=formalArgs_node($1, $2, NULL, @$.first_line, @2.first_column, @2.last_column, @1.first_column, @1.last_column);}
+| formalArgs ',' type ID {$$=formalArgs_node($3, $4, $1, @$.first_line, @4.first_column, @4.last_column, @3.first_column, @3.last_column);}
 ;
 
 varDecl
 : type ID idList {
     IdList *ids = idList_node($2, @2.first_column, @2.last_column, NULL);
     ids->next = $3;
-    $$ = varDecl_node($1, ids, count_lines, @1.first_column, @1.last_column);
+    $$ = varDecl_node($1, ids, @$.first_line, @1.first_column, @1.last_column);
 }
 ;
 
@@ -165,18 +164,18 @@ type
 ;
 
 exp
-: var {$$=exp_node(VAR_EXP, $1, NULL, NULL, NULL, count_lines, @$.first_column, @$.last_column);}
-| binOp {$$=exp_node(BINOP_EXP, NULL, $1, NULL, NULL, count_lines, @$.first_column, @$.last_column);}
-| '(' exp ')' {$$=exp_node(PAR_EXP, NULL, NULL, $2, NULL, count_lines, @$.first_column, @$.last_column);}
-| primary {$$ = exp_node(PRIM_EXP, NULL, NULL, NULL, $1, count_lines, @$.first_column, @$.last_column);}
+: var {$$=exp_node(VAR_EXP, $1, NULL, NULL, NULL, @$.first_line, @$.first_column, @$.last_column);}
+| binOp {$$=exp_node(BINOP_EXP, NULL, $1, NULL, NULL, @$.first_line, @$.first_column, @$.last_column);}
+| '(' exp ')' {$$=exp_node(PAR_EXP, NULL, NULL, $2, NULL, @$.first_line, @$.first_column, @$.last_column);}
+| primary {$$ = exp_node(PRIM_EXP, NULL, NULL, NULL, $1, @$.first_line, @$.first_column, @$.last_column);}
 
 assignment
-: var '=' exp {$$=assignment_node($1, $3, count_lines);}
+: var '=' exp {$$=assignment_node($1, $3, @$.first_line);}
 ;
 
 var
-: ID {$$=var_node(ID_VAR, $1, NULL, count_lines, @1.first_column, @1.last_column);}
-| object {$$=var_node(OBJ_VAR, NULL, $1, count_lines, @1.first_column, @1.last_column);}
+: ID {$$=var_node(ID_VAR, $1, NULL, @$.first_line, @1.first_column, @1.last_column);}
+| object {$$=var_node(OBJ_VAR, NULL, $1, @$.first_line, @1.first_column, @1.last_column);}
 
 
 object
@@ -186,8 +185,8 @@ object
 
 
 methodInvoc
-: var DOT ID '(' argList ')' {$$=methodInvoc_node($1, $3, $5, count_lines, @3.first_column, @3.last_column);}
-| ID '(' argList ')' {$$=methodInvoc_node(NULL, $1, $3, count_lines, @3.first_column, @3.last_column);}
+: var DOT ID '(' argList ')' {$$=methodInvoc_node($1, $3, $5, @$.first_line, @3.first_column, @3.last_column);}
+| ID '(' argList ')' {$$=methodInvoc_node(NULL, $1, $3, @$.first_line, @3.first_column, @3.last_column);}
 ;
 
 fieldAccess
@@ -238,7 +237,7 @@ stmt
 
 suite
 : '{' stmtList '}' {$$=$2;}
-| stmt { $$=stmtList_node($1, NULL, count_lines);}
+| stmt { $$=stmtList_node($1, NULL, @$.first_line);}
 ;
 
 
@@ -247,7 +246,7 @@ suite
 
 void yyerror(const char *str)
 {
-    fprintf(stderr,"Error line %d: %s\n",count_lines, str);
+    fprintf(stderr,"Error line %d: %s\n", yylineno, str);
 }
 
 int yywrap() {return 1;};

@@ -3,7 +3,6 @@
 #include <string.h>
 #include "y.tab.h"
 
-extern int count_lines;
 void parse_comment(char* yytext);
 extern int yywrap(void);
 
@@ -32,7 +31,7 @@ SEP	\(|\)|;|,|=|\{|\}|\*|\/|\+|-
 %%
 
 \/\*([^*]|[\n]|[\r\n]|(\*+([^*/]|[\n][\r\n])))*\*+\/   {parse_comment(yytext);/*Comentario*/}
-"//".*\n    {count_lines++; yycolumn = 1; /* Comentario */}
+"//".*\n    { yycolumn = 1; /* Comentario */}
 
 
 
@@ -62,8 +61,8 @@ SEP	\(|\)|;|,|=|\{|\}|\*|\/|\+|-
 
 {DIGIT}*    {yylval.num = atoi(yytext); return NUM;}
 [ \t\r]+    { }
-[\n]		{count_lines++;yycolumn = 1;}
-.	        {printf("Line %d, %d: Character %s not recognized\n", count_lines, yycolumn, yytext);}
+[\n]		{yycolumn = 1;}
+.	        {printf("Line %d, %d: Character %s not recognized\n", yylineno, yycolumn, yytext);}
 
 %%
 
@@ -71,7 +70,7 @@ void parse_comment(char* yytext){
     int i; 
     for(i=0; i < strlen(yytext); i++){
         if (yytext[i]=='\n'){
-            count_lines++;
+            yylloc.first_line = yylloc.last_line = yylineno;
             yycolumn = 1;
         }
     }

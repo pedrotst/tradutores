@@ -400,22 +400,10 @@ int check_binOp(BinOp *b, Function *f){
 }
 
 void check_bool(Exp *e, Function *f){
-    if(e->utype == VAR_EXP){
-        Variable *decl_v = NULL;
-        Var *v = e->exp_u->var;
-        if(v->utype == ID_VAR){
-            decl_v = class_get_field(f->this, v->var_u->id);
-            if(decl_v == NULL){
-                printf("ERROR %d:%d: used variable %s not declared\n", v->line, v->ch_begin, v->var_u->id);
-                print_arq_line(v->line, v->ch_begin, v->ch_end);
-            } // is it declared as bool?
-            else if(strcmp(decl_v->type, "bool")){
-                printf("ERROR %d:%d: if condition must be boolean, but it is actually %s\n", v->line, v->ch_begin, decl_v->type);
-                print_arq_line(v->line, v->ch_begin, v->ch_end);
-                printf("Note %d:%d: it was declared here\n", decl_v->line, decl_v->ch_begin);
-                print_arq_line(decl_v->line, decl_v->ch_begin, decl_v->ch_end);
-            }
-        }
+    char *e_type = exp_type(e,f);
+    if(strcmp(e_type, "bool")){
+        printf("Error %d:%d: expected a bool, but %s was given at\n", e->line, e->ch_begin, e_type);
+        print_arq_line(e->line, e->ch_begin, e->ch_end);
     }
 }
 

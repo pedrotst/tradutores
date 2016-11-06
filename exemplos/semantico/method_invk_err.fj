@@ -8,6 +8,8 @@ class bbar extends Object{
 class bar extends bbar{
 
 }
+// asodifjsaiodfj
+// asdfasdf
 
 class foo extends Object{
     bar b;

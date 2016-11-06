@@ -1,5 +1,5 @@
 class bbar extends Object{
-    int x(){
+    bool x(){
         return 0;
     }
 }

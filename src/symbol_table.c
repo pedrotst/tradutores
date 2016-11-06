@@ -269,7 +269,7 @@ char* var_type(Var *v, Function *f){
             // 2) encontrar a declaracao daquela classe 
             HASH_FIND_STR(ct, obj_type, c_decl);
             // 3) encontrar a funcao na declaracao daquela classe 
-            HASH_FIND_STR(c_decl->functions, m_invk->mname, f_decl);
+            f_decl = class_get_function(c_decl, m_invk->mname);
             // 4) Match the arg types with the fargs types
             // 5) retornar o tipo do retorno
             if(f_decl == NULL){
@@ -362,19 +362,34 @@ void check_bool(Exp *e, Function *f){
     }
 }
 
-Variable* class_get_field(Class* c, char* id){
-    Variable *decl_v = NULL;
+Function* class_get_function(Class* c, char* id){
+    Function *f_decl = NULL;
 
-    HASH_FIND_STR(c->fields, id, decl_v);
+    HASH_FIND_STR(c->functions, id, f_decl);
     // try to find field on superClasses
     c = c->super; 
-    while(decl_v == NULL && c != NULL){
+    while(f_decl == NULL && c != NULL){
         // object->super is NULL; i.e. end of recursion
-        HASH_FIND_STR(c->fields, id, decl_v);
+        HASH_FIND_STR(c->functions, id, f_decl);
         c = c->super; 
     }
 
-    return decl_v;
+    return f_decl;
+}
+
+Variable* class_get_field(Class* c, char* id){
+    Variable *v_decl = NULL;
+
+    HASH_FIND_STR(c->fields, id, v_decl);
+    // try to find field on superClasses
+    c = c->super; 
+    while(v_decl== NULL && c != NULL){
+        // object->super is NULL; i.e. end of recursion
+        HASH_FIND_STR(c->fields, id, v_decl);
+        c = c->super; 
+    }
+
+    return v_decl;
 }
 
 

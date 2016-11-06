@@ -77,6 +77,7 @@ struct ArgList_s{
 struct MethodInvoc_s{
     Var *obj; 
     char *mname;
+    int line, name_begin, name_end;
     ArgList *args;
 };
 
@@ -219,7 +220,8 @@ Var* var_node(tag utype, char *id, Object *obj, int line, int ch_begin, int ch_e
 Exp* exp_node(tag utype, Var *var, BinOp *binOp,
     Exp *parenthesis, Primary *primary, int line, int ch_begin, int ch_end);
 
-MethodInvoc* methodInvoc_node(Var *obj, char *mname, ArgList *args);
+MethodInvoc* methodInvoc_node(Var *obj, char *mname, ArgList *args, 
+    int line, int ch_begin, int ch_end);
 FieldAccess* fieldAccess_node(Var *obj, char *fname);
 New* new_node(char *cname, ArgList *args);
 

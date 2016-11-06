@@ -1,7 +1,7 @@
 class bbar extends Object{
     int i;
-    bool x(){
-        return 0;
+    bool x(int q, bool p){
+        return false;
     }
 }
 
@@ -13,7 +13,14 @@ class foo extends Object{
     bar b;
     int f() {
         bar i;
+        bool uu;
         i = b.x();
         i = b.i; 
+        b.i = b.x(1); 
+        uu = b.x(true); 
+        uu = b.x(true, 1); 
+        uu = b.x(1, false); 
+        uu = b.x(); 
+        
     }
 }

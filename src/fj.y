@@ -186,8 +186,8 @@ object
 
 
 methodInvoc
-: var DOT ID '(' argList ')' {$$=methodInvoc_node($1, $3, $5);}
-| ID '(' argList ')' {$$=methodInvoc_node(NULL, $1, $3);}
+: var DOT ID '(' argList ')' {$$=methodInvoc_node($1, $3, $5, count_lines, @3.first_column, @3.last_column);}
+| ID '(' argList ')' {$$=methodInvoc_node(NULL, $1, $3, count_lines, @3.first_column, @3.last_column);}
 ;
 
 fieldAccess

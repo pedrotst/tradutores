@@ -303,9 +303,14 @@ Var* var_node(tag utype, char *id, Object *obj, int line, int ch_begin, int ch_e
 
 }
 
-MethodInvoc* methodInvoc_node(Var *obj, char *mname, ArgList *args){
+MethodInvoc* methodInvoc_node(Var *obj, char *mname, ArgList *args,
+    int line, int ch_begin, int ch_end){
+
     MethodInvoc* m = (MethodInvoc*)malloc(sizeof(MethodInvoc));
     m->obj = obj;
+    m->line = line;
+    m->name_begin = ch_begin;
+    m->name_end = ch_end;
     m->mname = mname;
     m->args = args;
     return m;

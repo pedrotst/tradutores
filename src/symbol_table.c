@@ -218,7 +218,8 @@ void check_stmts(StmtList *stmts, Function *f){
 }
 
 void check_assignment(Assignment *assgn, Function *f){
-    if(assgn->lhs->utype == OBJ_VAR){
+    if(assgn->lhs->utype == OBJ_VAR
+        && assgn->lhs->var_u->obj->utype != FIELD_OBJ){ // if its field_obj, then treat as a variable
         if(assgn->lhs->var_u->obj->utype == METH_OBJ){
             printf("Error %d: cannot assign a value to a method invocation in\n", assgn->line);
             print_arq_line(assgn->line, 0, 0);
@@ -271,6 +272,7 @@ char* var_type(Var *v, Function *f){
             // 3) encontrar o metodo na declaracao daquela classe 
             f_decl = class_get_function(c_decl, m_invk->mname);
             // 4) Match the arg types with the fargs types
+            function_check_argTypes(f_decl, m_invk);
             // 5) retornar o tipo do retorno
             if(f_decl == NULL){
                 printf("Error %d:%d: class %s does not have a method %s\n", v->line, v->ch_begin, c_decl->selfName, m_invk->mname);
@@ -298,6 +300,45 @@ char* var_type(Var *v, Function *f){
         }
     }
     return "??";
+}
+
+void function_check_argTypes(Function *f, MethodInvoc *m_invk){
+    FormalArgs *fargs = f->fargs;
+    ArgList *args = m_invk->args;
+    Exp *arg;
+    char *argType;
+    int arg_num = 0;
+
+    while(fargs != NULL && args != NULL){
+        arg = args->arg;
+        argType = exp_type(args->arg, f);
+        if(strcmp(fargs->type, argType) != 0){
+            printf("Error %d:%d: method %s expected argument of type %s but received has type %s at \n", arg->line, arg->ch_begin, f->name, fargs->type, argType);
+            print_arq_line(arg->line, arg->ch_begin, arg->ch_end);
+        }
+        args = args->next;
+        fargs = fargs->next;
+        arg_num++;
+    }
+
+    if(fargs != NULL){
+        int farg_num = arg_num;
+        while(fargs != NULL){
+            fargs = fargs->next;
+            arg_num++;
+        }
+        printf("Error %d:%d: method %s expected %d arguments but %d was given\n", m_invk->line, m_invk->name_begin, m_invk->mname, farg_num, arg_num);
+        print_arq_line(m_invk->line, m_invk->name_begin, m_invk->name_end);
+    } else if (args != NULL){
+        printf("Error %d:%d: method %s expected %d arguments ", m_invk->line, m_invk->name_begin, m_invk->mname, arg_num);
+        while(args != NULL){
+            args = args->next;
+            arg_num++;
+        }
+        printf("but %d was given\n", arg_num);
+        print_arq_line(m_invk->line, m_invk->name_begin, m_invk->name_end);
+    }
+
 }
 
 char* exp_type(Exp *e, Function *f){

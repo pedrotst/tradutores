@@ -1,0 +1,8 @@
+class foo extends Object{
+    foo(){
+    }
+
+    foo(){
+        return 1;
+    }
+}

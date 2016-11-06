@@ -73,8 +73,7 @@ Class *ct;
 %type <class_v> classDecl
 %type <classMember_v> classMembers
 %type <classMember_v> classMember
-%type <constrDecl_v> constrDecl
-%type <functionDecl_v> functionDecl
+%type <functionDecl_v> functionDecl constrDecl
 %type <assignment_v> assignment
 %type <var_v> var 
 %type <stmtList_v>stmtList suite stmt
@@ -110,20 +109,20 @@ classDecl
 
 
 classMembers
-: classMember {$$ = classMembers_node($1, NULL);}
-| classMembers classMember {$$ = classMembers_node($2, $1);}
+: classMember {$$ = classMembers_node($1, NULL, @1.first_line);}
+| classMembers classMember {$$ = classMembers_node($2, $1, @2.first_line);}
 
 classMember
 : varDecl ';' {$$ = classMember_node(VAR_DECL, $1, NULL, NULL);}
-| constrDecl {$$ = classMember_node(CONSTR_DECL, NULL, NULL, $1);}
+| constrDecl {$$ = classMember_node(FUN_DECL, NULL, $1, NULL);}
 | functionDecl {$$ = classMember_node(FUN_DECL, NULL, $1, NULL);}
 
 constrDecl
-:  ID '(' formalArgs ')' '{' stmtList '}' {$$ = constrDecl_node($1, $3, $6); }
+:  ID '(' formalArgs ')' '{' stmtList '}' {$$ = functionDecl_node(NULL, $1, $3, $6, @1.first_line, @1.first_column, @1.last_column, 0, 0);}
 ;
 
 functionDecl
-: type ID '(' formalArgs ')' '{' stmtList '}' {$$ = functionDecl_node ($1, $2, $4, $7, @1.first_line, @2.first_column, @2.last_column, @1.first_column, @1.last_column);}
+: type ID '(' formalArgs ')' '{' stmtList '}' {$$ = functionDecl_node($1, $2, $4, $7, @1.first_line, @2.first_column, @2.last_column, @1.first_column, @1.last_column);}
 ;
 
 stmtList

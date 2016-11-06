@@ -21,6 +21,9 @@ void add_Object_ct(){
 
 Class* resolve_type(char *type, int line, int ch_begin, int ch_end){
     Class *t = NULL;
+    if(type == NULL)
+        return NULL;
+
     if(strcmp(type, "int") && strcmp(type, "bool")){
         HASH_FIND_STR(ct, type, t);
         if(t == NULL){
@@ -88,6 +91,8 @@ void build_ct(Program *p){
 }
 
 void build_class_body(Class *c, ClassMember *cmem){
+    int constr_count = 0;
+    int constr_line = 0;
     while(cmem != NULL){
         if(cmem->utype == VAR_DECL)
             hash_insert_varDecl(cmem->member->varDecls, &(c->fields));
@@ -96,6 +101,12 @@ void build_class_body(Class *c, ClassMember *cmem){
 
         cmem = cmem->next;
     }
+    /*
+    if(constr_count > 1){
+        printf("Error %d: Only one constructor per class is permited at class %s\n", constr_line, c->selfName);
+        print_arq_line(constr_line, 0, 0);
+    }
+    */
 
 }
 
@@ -175,6 +186,14 @@ void hash_insert_fargs(FormalArgs *fargs, Variable **v_table){
 
 void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
     Function *f;
+
+    // if function has constr name, err return
+    if(funs->type != NULL && !strcmp(funs->name, c->selfName)){
+        printf("Error %d: only constructor may have the same name as the class\n", funs->line);
+        print_arq_line(f->line, 0, 0);
+        return;
+    }
+    
     HASH_FIND_STR(*f_table, funs->name, f); // funcao declarada?
     if(f == NULL){
         f = (Function*)malloc(sizeof(Function));
@@ -194,13 +213,12 @@ void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
         HASH_ADD_KEYPTR(hh, *f_table, f->name, strlen(f->name), f);
     }
     else{
-        int ch_len = strlen(funs->type) + 2;
-        printf("WARN %d: Function %s already declared\n", funs->line, funs->name);
+        printf("WARN %d: Function %s already declared in class %s\n", funs->line, funs->name, c->selfName);
         print_arq_line(funs->line, funs->name_begin, funs->name_end);
-        ch_len = strlen(f->type) + 2;
         printf("Note %d: Last declaration was here\n", f->line);
         print_arq_line(f->line, f->name_begin, f->name_end);
     }
+    
 }
 
 void check_stmts(StmtList *stmts, Function *f){

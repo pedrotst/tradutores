@@ -164,6 +164,7 @@ typedef union ClassMember__u{
 
 struct ClassMember_s{
     tag utype;
+    int line;
     ClassMember_u *member;
     ClassMember *next;
 };
@@ -183,7 +184,7 @@ ClassDecl* classDecl_node(char *Selfname, char *superName,
     int line);
 
 ClassMember* classMembers_node(ClassMember *member,
-    ClassMember *head);
+    ClassMember *head, int line);
 
 ClassMember* classMember_node(tag utype, VarDecl *varDecl,
     FunctionDecl *funDecl, ConstrDecl *constrDecl);
@@ -193,8 +194,6 @@ VarDecl* varDecl_node(char *type, IdList *ids,
 
 IdList* idList_node(char *id, int ch_begin, int ch_end, IdList *head);
 
-ConstrDecl* constrDecl_node(char *name,
-    FormalArgs *fargs, StmtList *stmtList);
 
 FunctionDecl* functionDecl_node(char *type, char *name,
     FormalArgs *fargs, StmtList *stmtList, int line, 

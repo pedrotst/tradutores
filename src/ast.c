@@ -46,7 +46,8 @@ ClassDecl* classDecl_node(char *selfName, char *superName,
     return head;
 }
 
-ClassMember* classMembers_node(ClassMember *member, ClassMember *head){
+ClassMember* classMembers_node(ClassMember *member, ClassMember *head, int line){
+    member->line = line;
     if(head == NULL)
         return member;
 

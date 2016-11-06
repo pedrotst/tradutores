@@ -86,6 +86,20 @@ void build_ct(Program *p){
         }
         cdecl = cdecl->next;
     }
+
+    Function *main=(Function*)malloc(sizeof(Function));
+    HASH_FIND_STR(ct, "Object", tmp);         
+    main->name = strdup("main");
+    main->type = NULL;
+    main->tref = NULL;
+    main->line = main->name_begin = main->name_end = 0;
+    main->vars = NULL;
+    main->stmts = p->stmts;
+    main->fargs = NULL;
+    main->this = tmp;
+    check_stmts(p->stmts, main);
+    HASH_ADD_KEYPTR(hh, tmp->functions, main->name, strlen(main->name), main);
+
     return;
 
 }
@@ -209,7 +223,6 @@ void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
         // insert the arguments to the function var table
         hash_insert_fargs(funs->fargs, &(f->vars));
         check_stmts(funs->stmts, f);
-
         HASH_ADD_KEYPTR(hh, *f_table, f->name, strlen(f->name), f);
     }
     else{

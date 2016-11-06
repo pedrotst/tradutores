@@ -1,4 +1,5 @@
 class bbar extends Object{
+    int i;
     bool x(){
         return 0;
     }
@@ -11,7 +12,8 @@ class bar extends bbar{
 class foo extends Object{
     bar b;
     int f() {
-        int i;
+        bar i;
         i = b.x();
+        i = b.i; 
     }
 }

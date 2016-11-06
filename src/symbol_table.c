@@ -232,9 +232,9 @@ void check_assignment(Assignment *assgn, Function *f){
         char *lhs_type = var_type(assgn->lhs, f);
         char *rhs_type = exp_type(assgn->rhs, f);
         if(strcmp(lhs_type, rhs_type)){
-            printf("Error %d: lhs of assignment of different type of rhs in\n", assgn->line);
+            printf("Error %d: lhs of assignment has different type then rhs in\n", assgn->line);
             print_arq_line(assgn->line, 0, 0);
-            printf("Note: lhs of assignment of type %s and rhs of type %s\n", lhs_type, rhs_type);
+            printf("Note: lhs of assignment has type %s and rhs has type %s\n", lhs_type, rhs_type);
         }
     }
 }
@@ -268,7 +268,7 @@ char* var_type(Var *v, Function *f){
             obj_type = var_type(m_invk->obj, f);
             // 2) encontrar a declaracao daquela classe 
             HASH_FIND_STR(ct, obj_type, c_decl);
-            // 3) encontrar a funcao na declaracao daquela classe 
+            // 3) encontrar o metodo na declaracao daquela classe 
             f_decl = class_get_function(c_decl, m_invk->mname);
             // 4) Match the arg types with the fargs types
             // 5) retornar o tipo do retorno
@@ -281,9 +281,20 @@ char* var_type(Var *v, Function *f){
 
         }
         else if(v->var_u->obj->utype == FIELD_OBJ){
+            FieldAccess *f_acc = v->var_u->obj->obj_u->field;
             // 1) encontrar o tipo do objeto
-            // 2) encontrar a declaracao daquela classe
+            obj_type = var_type(f_acc->obj, f);
+            HASH_FIND_STR(ct, obj_type, c_decl);
+            v_decl = class_get_field(c_decl, f_acc->fname);
+            if(v_decl == NULL){
+                printf("Error %d:%d: class %s does not have a field %s\n", v->line, v->ch_begin, f->this->selfName, f_acc->fname);
+                print_arq_line(v->line, v->ch_begin, v->ch_end);
+            }
+            else 
             // 3) retornar o tipo do field
+                return v_decl->type;
+
+
         }
     }
     return "??";

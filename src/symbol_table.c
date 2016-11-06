@@ -209,6 +209,11 @@ void check_stmts(StmtList *stmts, Function *f){
             hash_insert_varDecl(stmts->stmt_u->varDecl, &(f->vars));
         else if(stmts->utype == IF_STMT){
             check_bool(stmts->stmt_u->ifStmt->cond, f);
+            check_stmts(stmts->stmt_u->ifStmt->then, f);
+            check_stmts(stmts->stmt_u->ifStmt->els, f);
+        }else if(stmts->utype == WHILE_STMT){
+            check_bool(stmts->stmt_u->whileStmt->cond, f);
+            check_stmts(stmts->stmt_u->whileStmt->loop, f);
         }
         else if(stmts->utype == ASSGN_STMT){
             check_assignment(stmts->stmt_u->assgn, f);

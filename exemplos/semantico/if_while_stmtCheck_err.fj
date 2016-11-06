@@ -1,0 +1,12 @@
+class foo extends Object{
+    int f(){
+        bool a;
+        if 1+1
+            a = 1;
+        else 
+            a = 2;
+        
+        while 2+2
+            a = 3;
+    }
+}

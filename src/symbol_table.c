@@ -240,21 +240,45 @@ void check_assignment(Assignment *assgn, Function *f){
 }
 
 char* var_type(Var *v, Function *f){
-    Variable *v_decl;
-    if(v->utype == ID_VAR){ // has to search at the class and its subclasses
-        v_decl = class_get_field(f->this, v->var_u->id);
-        return v_decl->type;
+    Class *c_decl;
+    Variable *v_decl = NULL;
+    char *obj_type;
+    if(v->utype == ID_VAR){ 
+        // 1) look on class scope
+        HASH_FIND_STR(f->vars, v->var_u->id, v_decl);
+        // 2) then look on field scope
+        if(v_decl == NULL)
+            v_decl = class_get_field(f->this, v->var_u->id);
+        if(v_decl == NULL){
+            printf("Error %d:%d: variable %s was not declared at\n", v->line, v->ch_begin, v->var_u->id);
+            print_arq_line(v->line, v->ch_begin, v->ch_end);
+
+        }
+        else
+            return v_decl->type;
     }
     else if(v->utype == OBJ_VAR){
-        Class *c_decl;
         if(v->var_u->obj->utype == NEW_OBJ){ // has to check for the arguments type yet
             return v->var_u->obj->obj_u->newObj->cname;
         }
         else if(v->var_u->obj->utype == METH_OBJ){
-            HASH_FIND_STR(ct, v->var_u->obj->obj_u->newObj->cname, c_decl);
+            MethodInvoc *m_invk = v->var_u->obj->obj_u->meth;
+            Function *f_decl;
             // 1) encontrar o tipo do objeto
-            // 2) encontrar a funcao na declaracao daquela classe 
-            // 3) retornar o tipo do retorno
+            obj_type = var_type(m_invk->obj, f);
+            // 2) encontrar a declaracao daquela classe 
+            HASH_FIND_STR(ct, obj_type, c_decl);
+            // 3) encontrar a funcao na declaracao daquela classe 
+            HASH_FIND_STR(c_decl->functions, m_invk->mname, f_decl);
+            // 4) Match the arg types with the fargs types
+            // 5) retornar o tipo do retorno
+            if(f_decl == NULL){
+                printf("Error %d:%d: class %s does not have a method %s\n", v->line, v->ch_begin, c_decl->selfName, m_invk->mname);
+                print_arq_line(v->line, v->ch_begin, v->ch_end);
+            }
+            else 
+                return f_decl->type;
+
         }
         else if(v->var_u->obj->utype == FIELD_OBJ){
             // 1) encontrar o tipo do objeto
@@ -262,7 +286,7 @@ char* var_type(Var *v, Function *f){
             // 3) retornar o tipo do field
         }
     }
-    return "";
+    return "??";
 }
 
 char* exp_type(Exp *e, Function *f){
@@ -343,10 +367,11 @@ Variable* class_get_field(Class* c, char* id){
 
     HASH_FIND_STR(c->fields, id, decl_v);
     // try to find field on superClasses
+    c = c->super; 
     while(decl_v == NULL && c != NULL){
         // object->super is NULL; i.e. end of recursion
-        c = c->super; 
         HASH_FIND_STR(c->fields, id, decl_v);
+        c = c->super; 
     }
 
     return decl_v;

@@ -1,0 +1,17 @@
+class bbar extends Object{
+    int x(){
+        return 0;
+    }
+}
+
+class bar extends bbar{
+
+}
+
+class foo extends Object{
+    bar b;
+    int f() {
+        int i;
+        i = b.x();
+    }
+}

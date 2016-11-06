@@ -1,0 +1,10 @@
+class foo extends Object{
+    int i;
+    int f(){
+        int j;
+        return j;
+    }
+}
+
+foo f;
+f.i = f.f();

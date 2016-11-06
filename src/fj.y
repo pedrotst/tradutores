@@ -14,12 +14,14 @@ int yylex(void);
 
 extern FILE *yyin;
 extern int yylineno;
+extern int sem_errs;
+
 char **source;
 
 
 // Global Vars
-Program *p; 
-Class *ct;
+Program *p = NULL; 
+Class *ct = NULL;
 %}
 
 
@@ -290,8 +292,10 @@ int main(int argc, char **argv)
     if(yynerrs == 0){ // So printa se o parse foi ok
         // print_program(p);
         buff_file(file_name);
-        build_ct(p);
-        // print_ct();
+        sem_errs = build_ct(p);
+
+        if(!sem_errs) 
+            print_ct();
     }
     destruct_program(p);
     /*

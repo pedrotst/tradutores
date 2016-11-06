@@ -7,6 +7,7 @@
 
 extern Class *ct;
 extern char **source;
+int sem_errs;
 
 struct Variable_s{
     char *name, *type;
@@ -54,7 +55,7 @@ char* op_type(char op);
 
 void add_Object_ct();
 void add_raw_classes_ct(Program *p);
-void build_ct(Program *p);
+int build_ct(Program *p);
 void hash_insert_fargs(FormalArgs *fargs, Variable **v_table);
 void hash_insert_varDecl(VarDecl *vars, Variable **v_table);
 void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c);

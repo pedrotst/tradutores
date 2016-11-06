@@ -34,5 +34,6 @@ typedef struct Class_s Class;
 typedef struct Function_s Function; 
 typedef struct Variable_s Variable;
 typedef struct Type_s Type;
+
 #endif
 

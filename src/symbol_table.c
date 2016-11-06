@@ -61,12 +61,12 @@ void add_raw_classes_ct(Program *p){
     }
 }
 
-void build_ct(Program *p){
+int build_ct(Program *p){
     Class *c, *tmp, *super;
-
+    sem_errs = 0;
     // Construa a CT somente para programas validos
     if(p == NULL)
-        return;
+        return sem_errs;
 
     add_Object_ct();
     add_raw_classes_ct(p);
@@ -81,8 +81,9 @@ void build_ct(Program *p){
             build_class_body(tmp, cdecl->cMembers);
         } else {
             int ch_len = strlen("class  extends ") + strlen(cdecl->selfName) + 1;
-            printf("Line %d: ERROR Class %s is not a defined class at\n", cdecl->line, cdecl->superName);
+            printf("Error %d: Class %s is not a defined class at\n", cdecl->line, cdecl->superName);
             print_arq_line(cdecl->line, ch_len, ch_len+strlen(cdecl->superName) - 1);
+            sem_errs++;
         }
         cdecl = cdecl->next;
     }
@@ -100,7 +101,7 @@ void build_ct(Program *p){
     check_stmts(p->stmts, main);
     HASH_ADD_KEYPTR(hh, tmp->functions, main->name, strlen(main->name), main);
 
-    return;
+    return sem_errs;
 
 }
 
@@ -119,6 +120,7 @@ void build_class_body(Class *c, ClassMember *cmem){
     if(constr_count > 1){
         printf("Error %d: Only one constructor per class is permited at class %s\n", constr_line, c->selfName);
         print_arq_line(constr_line, 0, 0);
+        sem_errs++;
     }
     */
 
@@ -201,10 +203,11 @@ void hash_insert_fargs(FormalArgs *fargs, Variable **v_table){
 void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
     Function *f;
 
-    // if function has constr name, err return
+    // if function has constr name, sem_errs return
     if(funs->type != NULL && !strcmp(funs->name, c->selfName)){
         printf("Error %d: only constructor may have the same name as the class\n", funs->line);
         print_arq_line(f->line, 0, 0);
+        sem_errs++;
         return;
     }
     
@@ -262,11 +265,13 @@ void check_return(Exp *e, Function *f){
     if(f->type == NULL){
         printf("Error %d: main and constructors cannot have a return at\n", e->line);
         print_arq_line(e->line, e->ch_begin, e->ch_begin);
+        sem_errs++;
 
     }
     else if(strcmp(e_type, f->type)){
         printf("Error %d: return must have type %s or some subtype, but was %s at\n", e->line, f->type, e_type);
         print_arq_line(e->line, e->ch_begin, e->ch_begin);
+        sem_errs++;
     }
 }
 
@@ -276,10 +281,12 @@ void check_assignment(Assignment *assgn, Function *f){
         if(assgn->lhs->var_u->obj->utype == METH_OBJ){
             printf("Error %d: cannot assign a value to a method invocation in\n", assgn->line);
             print_arq_line(assgn->line, 0, 0);
+        sem_errs++;
         }
         else if(assgn->lhs->var_u->obj->utype == NEW_OBJ){
             printf("Error %d: cannot assign a value an object creation in\n", assgn->line);
             print_arq_line(assgn->line, 0, 0);
+        sem_errs++;
         }
     }
     else{
@@ -289,6 +296,7 @@ void check_assignment(Assignment *assgn, Function *f){
             printf("Error %d: lhs of assignment has different type then rhs in\n", assgn->line);
             print_arq_line(assgn->line, 0, 0);
             printf("Note: lhs of assignment has type %s and rhs has type %s\n", lhs_type, rhs_type);
+        sem_errs++;
         }
     }
 }
@@ -306,6 +314,7 @@ char* var_type(Var *v, Function *f){
         if(v_decl == NULL){
             printf("Error %d:%d: variable %s was not declared at\n", v->line, v->ch_begin, v->var_u->id);
             print_arq_line(v->line, v->ch_begin, v->ch_end);
+            sem_errs++;
 
         }
         else
@@ -330,6 +339,7 @@ char* var_type(Var *v, Function *f){
             if(f_decl == NULL){
                 printf("Error %d:%d: class %s does not have a method %s\n", v->line, v->ch_begin, c_decl->selfName, m_invk->mname);
                 print_arq_line(v->line, v->ch_begin, v->ch_end);
+                sem_errs++;
             }
             else 
                 return f_decl->type;
@@ -344,6 +354,7 @@ char* var_type(Var *v, Function *f){
             if(v_decl == NULL){
                 printf("Error %d:%d: class %s does not have a field %s\n", v->line, v->ch_begin, f->this->selfName, f_acc->fname);
                 print_arq_line(v->line, v->ch_begin, v->ch_end);
+                sem_errs++;
             }
             else 
             // 3) retornar o tipo do field
@@ -368,6 +379,7 @@ void function_check_argTypes(Function *f, MethodInvoc *m_invk){
         if(strcmp(fargs->type, argType) != 0){
             printf("Error %d:%d: method %s expected argument of type %s but received has type %s at \n", arg->line, arg->ch_begin, f->name, fargs->type, argType);
             print_arq_line(arg->line, arg->ch_begin, arg->ch_end);
+            sem_errs++;
         }
         args = args->next;
         fargs = fargs->next;
@@ -382,6 +394,7 @@ void function_check_argTypes(Function *f, MethodInvoc *m_invk){
         }
         printf("Error %d:%d: method %s expected %d arguments but %d was given\n", m_invk->line, m_invk->name_begin, m_invk->mname, farg_num, arg_num);
         print_arq_line(m_invk->line, m_invk->name_begin, m_invk->name_end);
+        sem_errs++;
     } else if (args != NULL){
         printf("Error %d:%d: method %s expected %d arguments ", m_invk->line, m_invk->name_begin, m_invk->mname, arg_num);
         while(args != NULL){
@@ -390,6 +403,7 @@ void function_check_argTypes(Function *f, MethodInvoc *m_invk){
         }
         printf("but %d was given\n", arg_num);
         print_arq_line(m_invk->line, m_invk->name_begin, m_invk->name_end);
+        sem_errs++;
     }
 
 }
@@ -432,12 +446,14 @@ int check_binOp(BinOp *b, Function *f){
         else{
             printf("Error %d: rhs of operation is not %s\n", b->rhs->line, optype);
             print_arq_line(b->rhs->line, b->rhs->ch_begin, b->rhs->ch_end);
+            sem_errs++;
             return 0;
         }
     }
     else{
         printf("Error %d: lhs of operation is not %s\n", b->lhs->line, optype);
         print_arq_line(b->lhs->line, b->lhs->ch_begin, b->lhs->ch_end);
+        sem_errs++;
         if(strcmp(optype, rhs_type)){
             printf("Error %d: rhs of operation is not %s\n", b->rhs->line, optype);
             print_arq_line(b->rhs->line, b->rhs->ch_begin, b->rhs->ch_end);
@@ -452,6 +468,7 @@ void check_bool(Exp *e, Function *f){
     if(strcmp(e_type, "bool")){
         printf("Error %d:%d: expected a bool, but %s was given at\n", e->line, e->ch_begin, e_type);
         print_arq_line(e->line, e->ch_begin, e->ch_end);
+        sem_errs++;
     }
 }
 

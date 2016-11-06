@@ -214,11 +214,20 @@ void check_stmts(StmtList *stmts, Function *f){
         }else if(stmts->utype == WHILE_STMT){
             check_bool(stmts->stmt_u->whileStmt->cond, f);
             check_stmts(stmts->stmt_u->whileStmt->loop, f);
-        }
-        else if(stmts->utype == ASSGN_STMT){
+        } else if(stmts->utype == ASSGN_STMT){
             check_assignment(stmts->stmt_u->assgn, f);
+        } else if(stmts->utype == RET_STMT){
+            check_return(stmts->stmt_u->returnExp, f);
         }
         stmts = stmts->next;
+    }
+}
+
+void check_return(Exp *e, Function *f){
+    char *e_type = exp_type(e, f);
+    if(strcmp(e_type, f->type)){
+        printf("Error %d: return must have type %s or some subtype, but was %s at\n", e->line, f->type, e_type);
+        print_arq_line(e->line, e->ch_begin, e->ch_begin);
     }
 }
 

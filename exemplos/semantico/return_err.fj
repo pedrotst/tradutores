@@ -1,0 +1,5 @@
+class foo extends Object{
+    int f(){
+        return true;
+    }
+}

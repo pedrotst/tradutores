@@ -1,0 +1,12 @@
+class bar extends Object{
+    foo f;
+    bar b;
+}
+
+class foo extends bar{
+    bar b;
+
+    bar fu(){
+        return b;
+    }
+}

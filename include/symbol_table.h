@@ -49,6 +49,7 @@ void check_assignment(Assignment *assgn, Function *f);
 char* op_type(char op);
 
 void add_Object_ct();
+void add_raw_classes_ct(Program *p);
 void build_ct(Program *p);
 void hash_insert_fargs(FormalArgs *fargs, Variable **v_table);
 void hash_insert_varDecl(VarDecl *vars, Variable **v_table);

@@ -32,6 +32,32 @@ Class* resolve_type(char *type, int line, int ch_begin, int ch_end){
     return t;
 }
 
+void add_raw_classes_ct(Program *p){
+    Class *c, *tmp;
+    ClassDecl *cdecl = p->classes;
+    while(cdecl != NULL){
+        HASH_FIND_STR(ct, cdecl->selfName, tmp);         
+        if(tmp != NULL){
+            int ch_len = strlen("class ") + 1;
+            printf("WARN %d: Class %s already declared\n", cdecl->line, tmp->selfName);
+            print_arq_line(cdecl->line, ch_len, ch_len + strlen(cdecl->selfName) - 1);
+            printf("Note %d: Last declaration was here\n", tmp->line);
+            print_arq_line(tmp->line, ch_len, ch_len + strlen(tmp->selfName) - 1);
+        }else{
+            c = (Class*) malloc(sizeof(Class));
+            c->selfName = cdecl->selfName;
+            c->super = NULL;
+            c->superName = cdecl->superName;
+            c->line = cdecl->line;
+            c->functions = NULL;
+            c->fields = NULL;
+            DEBUG_PRINT("Coloca %s na ct\n", c->selfName);
+            HASH_ADD_KEYPTR(hh, ct, c->selfName, strlen(c->selfName), c);
+        } 
+        cdecl = cdecl->next;
+    }
+}
+
 void build_ct(Program *p){
     Class *c, *tmp, *super;
 
@@ -40,31 +66,17 @@ void build_ct(Program *p){
         return;
 
     add_Object_ct();
+    add_raw_classes_ct(p);
 
     ClassDecl *cdecl = p->classes;
     while(cdecl != NULL){
         // esta classe ja foi declarada?
         HASH_FIND_STR(ct, cdecl->selfName, tmp);         
         HASH_FIND_STR(ct, cdecl->superName, super);
-        if(tmp != NULL){
-            int ch_len = strlen("class ") + 1;
-            printf("WARN %d: Class %s already declared\n", cdecl->line, tmp->selfName);
-            print_arq_line(cdecl->line, ch_len, ch_len + strlen(cdecl->selfName) - 1);
-            printf("Note %d: Last declaration was here\n", tmp->line);
-            print_arq_line(tmp->line, ch_len, ch_len + strlen(tmp->selfName) - 1);
-        } else{
-            c = (Class*) malloc(sizeof(Class));
-            c->selfName = cdecl->selfName;
-            c->super = super;
-            c->superName = cdecl->superName;
-            c->line = cdecl->line;
-            c->functions = NULL;
-            c->fields = NULL;
-            build_class_body(c, cdecl->cMembers);
-            DEBUG_PRINT("Coloca %s na ct\n", c->selfName);
-            HASH_ADD_KEYPTR(hh, ct, c->selfName, strlen(c->selfName), c);
-        } 
-        if(super == NULL){
+        if(super != NULL){
+            tmp->super = super;
+            build_class_body(tmp, cdecl->cMembers);
+        } else {
             int ch_len = strlen("class  extends ") + strlen(cdecl->selfName) + 1;
             printf("Line %d: ERROR Class %s is not a defined class at\n", cdecl->line, cdecl->superName);
             print_arq_line(cdecl->line, ch_len, ch_len+strlen(cdecl->superName) - 1);
@@ -163,7 +175,7 @@ void hash_insert_fargs(FormalArgs *fargs, Variable **v_table){
 
 void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
     Function *f;
-    HASH_FIND_STR(*f_table, funs->name, f);
+    HASH_FIND_STR(*f_table, funs->name, f); // funcao declarada?
     if(f == NULL){
         f = (Function*)malloc(sizeof(Function));
         f->name = funs->name;

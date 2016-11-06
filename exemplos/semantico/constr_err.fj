@@ -1,5 +1,10 @@
 class foo extends Object{
     foo(){
+        int a;
+        Object b;
+
+        if true
+            return false;
     }
 
     foo(){

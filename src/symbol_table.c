@@ -218,6 +218,9 @@ void check_stmts(StmtList *stmts, Function *f){
             check_assignment(stmts->stmt_u->assgn, f);
         } else if(stmts->utype == RET_STMT){
             check_return(stmts->stmt_u->returnExp, f);
+            if(stmts->next != NULL){
+                printf("WARN %d: unreachable code after return\n", stmts->line);
+            }
         }
         stmts = stmts->next;
     }

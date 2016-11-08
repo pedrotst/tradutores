@@ -156,27 +156,6 @@ void hash_insert_varDecl(VarDecl *vars, Variable **v_table){
     
 }
 
-void print_arq_line(int line, int ch_begin, int ch_end){
-    int i;
-
-    printf("%s", source[line - 1]);
-
-    for(i=0; i < ch_begin - 1; i++){
-        if(source[line -1][i] == '\r')
-            printf("\r");
-        else if(source[line -1][i] == '\t')
-            printf("\t");
-        else
-            printf(" ");
-    }
-    for(; i < ch_end; i++)
-        printf("^");
-
-    printf("\n");
-
-
-}
-
 void hash_insert_fargs(FormalArgs *fargs, Variable **v_table){
     Variable *v, *tmp;
     while(fargs != NULL){
@@ -318,6 +297,7 @@ void check_assignment(Assignment *assgn, Function *f){
 
 char* var_type(Var *v, Function *f){
     Class *c_decl;
+    Function *f_decl;
     Variable *v_decl = NULL;
     char *obj_type;
     if(v->utype == ID_VAR){ 
@@ -338,7 +318,19 @@ char* var_type(Var *v, Function *f){
     }
     else if(v->utype == OBJ_VAR){
         if(v->var_u->obj->utype == NEW_OBJ){ // has to check for the arguments type yet
-            return v->var_u->obj->obj_u->newObj->cname;
+            New *obj = v->var_u->obj->obj_u->newObj;
+            HASH_FIND_STR(ct, obj->cname, c_decl);
+            if(c_decl != NULL){
+                HASH_FIND_STR(c_decl->functions, obj->cname, f_decl);
+                function_check_argTypes(f_decl, obj->args);
+            } else {
+                if(obj->args != NULL){
+                    printf("Error %d: class %s constructor expected 0 arguments at\n", v->line, obj->cname);
+                    print_arq_line(v->line, 0, 0);
+                    sem_errs++;
+                }
+            }
+            return obj->cname;
         }
         else if(v->var_u->obj->utype == METH_OBJ){
             MethodInvoc *m_invk = v->var_u->obj->obj_u->meth;
@@ -359,7 +351,7 @@ char* var_type(Var *v, Function *f){
                 return "??";
             }
             // 4) Match the arg types with the fargs types
-            function_check_argTypes(f_decl, m_invk);
+            function_check_argTypes(f_decl, m_invk->args);
             // 5) retornar o tipo do retorno
             return f_decl->type;
 
@@ -386,9 +378,8 @@ char* var_type(Var *v, Function *f){
     return "??";
 }
 
-void function_check_argTypes(Function *f, MethodInvoc *m_invk){
+void function_check_argTypes(Function *f, ArgList *args){
     FormalArgs *fargs = f->fargs;
-    ArgList *args = m_invk->args;
     Exp *arg;
     char *argType;
     int arg_num = 0;
@@ -412,17 +403,17 @@ void function_check_argTypes(Function *f, MethodInvoc *m_invk){
             fargs = fargs->next;
             farg_num++;
         }
-        printf("Error %d:%d: method %s expected %d arguments but %d was given\n", m_invk->line, m_invk->name_begin, m_invk->mname, farg_num, arg_num);
-        print_arq_line(m_invk->line, m_invk->name_begin, m_invk->name_end);
+        printf("Error %d: method %s expected %d arguments but %d was given\n", args->line, f->name, farg_num, arg_num);
+        print_arq_line(args->line, 0, 0);
         sem_errs++;
     } else if (args != NULL){
-        printf("Error %d:%d: method %s expected %d arguments ", m_invk->line, m_invk->name_begin, m_invk->mname, arg_num);
+        printf("Error %d: method %s expected %d arguments ", args->line, f->name, arg_num);
         while(args != NULL){
             args = args->next;
             arg_num++;
         }
         printf("but %d was given\n", arg_num);
-        print_arq_line(m_invk->line, m_invk->name_begin, m_invk->name_end);
+        print_arq_line(args->line, 0, 0);
         sem_errs++;
     }
 
@@ -582,3 +573,25 @@ void print_functions(Function *ft){
         printf("\t}\n");
     }
 }
+
+void print_arq_line(int line, int ch_begin, int ch_end){
+    int i;
+
+    printf("%s", source[line - 1]);
+
+    for(i=0; i < ch_begin - 1; i++){
+        if(source[line -1][i] == '\r')
+            printf("\r");
+        else if(source[line -1][i] == '\t')
+            printf("\t");
+        else
+            printf(" ");
+    }
+    for(; i < ch_end; i++)
+        printf("^");
+
+    printf("\n");
+
+
+}
+

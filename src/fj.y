@@ -135,8 +135,8 @@ stmtList
 
 argList
 : %empty {$$=NULL;}
-| exp {$$ = argList_node($1, NULL);}
-| argList ',' exp {$$=argList_node($3, $1);}
+| exp {$$ = argList_node($1, NULL, @$.first_line);}
+| argList ',' exp {$$=argList_node($3, $1, @$.first_line);}
 ;
 
 formalArgs

@@ -71,6 +71,7 @@ struct Object_s{
 
 struct ArgList_s{
     Exp *arg;
+    int line;
     struct ArgList_s *next;
 };
 
@@ -225,7 +226,7 @@ MethodInvoc* methodInvoc_node(Var *obj, char *mname, ArgList *args,
 FieldAccess* fieldAccess_node(Var *obj, char *fname);
 New* new_node(char *cname, ArgList *args);
 
-ArgList* argList_node(Exp *arg, ArgList *head);
+ArgList* argList_node(Exp *arg, ArgList *head, int line);
 
 BinOp* binOp_node(char op, Exp *lhs, Exp *rhs);
 Primary* primary_node(char *type, int val);

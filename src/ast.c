@@ -156,9 +156,10 @@ StmtList* stmt_node(tag utype, VarDecl *varDecl, IfStmt *ifStmt,
     return stmt;
 }
 
-ArgList* argList_node(Exp *arg, ArgList *head){
+ArgList* argList_node(Exp *arg, ArgList *head, int line){
     ArgList *arg_list = (ArgList*)malloc(sizeof(ArgList));
     arg_list->arg = arg;
+    arg_list->line = line;
     arg_list->next = NULL;
 
     if(head == NULL)

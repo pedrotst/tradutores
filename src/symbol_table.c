@@ -342,7 +342,10 @@ char* var_type(Var *v, Function *f){
             MethodInvoc *m_invk = v->var_u->obj->obj_u->meth;
             Function *f_decl;
             // 1) encontrar o tipo do objeto
-            obj_type = var_type(m_invk->obj, f);
+            if(m_invk->obj == NULL)
+                obj_type = f->this->selfName;
+            else
+                obj_type = var_type(m_invk->obj, f);
             // 2) encontrar a declaracao daquela classe 
             HASH_FIND_STR(ct, obj_type, c_decl);
             // 3) encontrar o metodo na declaracao daquela classe 
@@ -540,6 +543,10 @@ Class *c = NULL;
            printf("%d: %s extd %s{\n", c->line, c->selfName, c->superName);
            print_vars(c->fields, 1);
            print_functions(c->functions);
+           printf("}\n");
+       } else{
+           printf("Main:{\n");
+           print_vars(c->fields, 1);
            printf("}\n");
        }
    }

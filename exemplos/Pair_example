@@ -35,6 +35,7 @@ Pair myPair;
 myA = new A();
 myB = new B();
 myPair = new Pair(myA, myB);
+myA = x();
 // myPair.setfst(new B());
 
 /* Note que este setfst irá modificar de fato o objeto myPair. Portanto nossos métodos não serão mais puros */

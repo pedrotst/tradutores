@@ -5,7 +5,7 @@
 
 void parse_comment(char* yytext);
 extern int yywrap(void);
-
+int l_errs = 0;
 /* 
 extern YYSTYPE yylval;
 "super"     {chars+=strlen(yytext); return SUPER;}
@@ -62,7 +62,7 @@ SEP	\(|\)|;|,|=|\{|\}|\*|\/|\+|-
 {DIGIT}*    {yylval.num = atoi(yytext); return NUM;}
 [ \t\r]+    { }
 [\n]		{yycolumn = 1;}
-.	        {printf("Line %d, %d: Character %s not recognized\n", yylineno, yycolumn, yytext);}
+.	        {printf("Line %d, %d: Character %s not recognized\n", yylineno, yycolumn, yytext); l_errs++;}
 
 %%
 

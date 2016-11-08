@@ -15,6 +15,7 @@ int yylex(void);
 extern FILE *yyin;
 extern int yylineno;
 extern int sem_errs;
+extern int l_errs;
 
 char **source;
 
@@ -233,6 +234,7 @@ stmt
 | varDecl ';' { $$=stmt_node(VAR_DECL, $1, NULL, NULL, NULL, NULL); }
 | assignment ';' {$$ = stmt_node(ASSGN_STMT, NULL, NULL, NULL, NULL, $1);}
 | RETURN exp ';' {$$=stmt_node(RET_STMT, NULL, NULL, NULL, $2, NULL);}
+| var ';' {$$=NULL;}
 | error ';' {yyerrok;$$ = NULL;}
 ;
 
@@ -289,7 +291,7 @@ int main(int argc, char **argv)
     ct = NULL;
     yyin = fopen(file_name, "r");
     yyparse();
-    if(yynerrs == 0){ // So printa se o parse foi ok
+    if(!yynerrs && !l_errs){ // So printa se o parse foi ok
         // print_program(p);
         buff_file(file_name);
         sem_errs = build_ct(p);

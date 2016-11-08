@@ -18,7 +18,7 @@ class foo extends Object{
         bool uu;
         i = b.x();
         i = b.i; 
-        b.i = b.x(1); 
+        b.i = b.y(1); 
         uu = b.x(true); 
         uu = b.x(true, 1); 
         uu = b.x(1, false); 

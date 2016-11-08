@@ -327,6 +327,7 @@ char* var_type(Var *v, Function *f){
             printf("Error %d:%d: variable %s was not declared at\n", v->line, v->ch_begin, v->var_u->id);
             print_arq_line(v->line, v->ch_begin, v->ch_end);
             sem_errs++;
+            return "??";
 
         }
         else
@@ -345,16 +346,16 @@ char* var_type(Var *v, Function *f){
             HASH_FIND_STR(ct, obj_type, c_decl);
             // 3) encontrar o metodo na declaracao daquela classe 
             f_decl = class_get_function(c_decl, m_invk->mname);
+            if(f_decl == NULL){
+                printf("Error %d:%d: class %s does not have a method %s\n", v->line, v->ch_begin, c_decl->selfName, m_invk->mname);
+                print_arq_line(v->line, m_invk->name_begin, m_invk->name_end);
+                sem_errs++;
+                return "??";
+            }
             // 4) Match the arg types with the fargs types
             function_check_argTypes(f_decl, m_invk);
             // 5) retornar o tipo do retorno
-            if(f_decl == NULL){
-                printf("Error %d:%d: class %s does not have a method %s\n", v->line, v->ch_begin, c_decl->selfName, m_invk->mname);
-                print_arq_line(v->line, v->ch_begin, v->ch_end);
-                sem_errs++;
-            }
-            else 
-                return f_decl->type;
+            return f_decl->type;
 
         }
         else if(v->var_u->obj->utype == FIELD_OBJ){
@@ -367,6 +368,7 @@ char* var_type(Var *v, Function *f){
                 printf("Error %d:%d: class %s does not have a field %s\n", v->line, v->ch_begin, f->this->selfName, f_acc->fname);
                 print_arq_line(v->line, v->ch_begin, v->ch_end);
                 sem_errs++;
+                return "??";
             }
             else 
             // 3) retornar o tipo do field
@@ -485,6 +487,9 @@ void check_bool(Exp *e, Function *f){
 }
 
 Function* class_get_function(Class* c, char* id){
+    if(c==NULL)
+        return NULL;
+
     Function *f_decl = NULL;
 
     HASH_FIND_STR(c->functions, id, f_decl);
@@ -500,8 +505,10 @@ Function* class_get_function(Class* c, char* id){
 }
 
 Variable* class_get_field(Class* c, char* id){
-    Variable *v_decl = NULL;
+    if(c==NULL)
+        return NULL;
 
+    Variable *v_decl = NULL;
     HASH_FIND_STR(c->fields, id, v_decl);
     // try to find field on superClasses
     c = c->super; 

@@ -647,7 +647,8 @@ void print_constrDecl(ConstrDecl *constrDecl){
 void print_funDecl(FunctionDecl *funDecl){
     if(funDecl != NULL){
         printf("\t");
-        printf("%s ", funDecl->type);
+        if(funDecl->type != NULL)
+            printf("%s ", funDecl->type);
         printf("%s (", funDecl->name);
         print_fargs(funDecl->fargs);
         printf(") {\n");

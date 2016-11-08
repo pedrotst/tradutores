@@ -287,23 +287,33 @@ void buff_file(const char *fname){
 
 int main(int argc, char **argv)
 {
-    char *file_name = argv[1];
+    char *file_name;
+    int p_ast = 0, p_ct = 0;
+
+    // parse arguments
+    for(int i=1; i<argc-1; i++){
+        if(!strcmp(argv[i], "-ast"))
+            p_ast = 1;
+        else if(!strcmp(argv[i], "-ct"))
+            p_ct = 1;
+    }
+
+    // file name is the last arg
+    file_name = argv[argc-1];
     ct = NULL;
     yyin = fopen(file_name, "r");
     yyparse();
     if(!yynerrs && !l_errs){ // So printa se o parse foi ok
-        // print_program(p);
+        if(p_ast)
+            print_program(p);
+
         buff_file(file_name);
         sem_errs = build_ct(p);
 
-        if(!sem_errs) 
+        if(!sem_errs && p_ct) 
             print_ct();
     }
     destruct_program(p);
-    /*
-    for(int i=0; i<57; i++)
-        printf("%s", source[i]);
-    */
     free(source);
     return 0;
 }

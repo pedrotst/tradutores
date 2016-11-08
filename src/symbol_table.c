@@ -215,6 +215,7 @@ void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
     HASH_FIND_STR(*f_table, funs->name, f); // funcao declarada?
     if(f == NULL){
         f = (Function*)malloc(sizeof(Function));
+        f->vars = NULL;
 
         // insert this
         v = (Variable*)malloc(sizeof(Variable));
@@ -561,7 +562,11 @@ void print_tabs(int tabs){
 void print_functions(Function *ft){
     Function *f;
     for(f=ft; f != NULL; f = (f->hh.next)){
-        printf("\t%d: %s %s(", f->line, f->type, f->name);
+        printf("\t%d: ", f->line);
+        if(f->type != NULL)
+            printf("%s ", f->type);
+        printf("%s(", f->name);
+
         print_fargs(f->fargs);
         printf("){\n");
         print_vars(f->vars, 2);

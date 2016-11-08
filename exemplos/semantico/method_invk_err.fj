@@ -1,7 +1,7 @@
 class bbar extends Object{
     int i;
     bool x(int q, bool p){
-        return false;
+        return this.i;
     }
 }
 

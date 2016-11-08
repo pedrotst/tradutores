@@ -202,6 +202,7 @@ void hash_insert_fargs(FormalArgs *fargs, Variable **v_table){
 
 void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
     Function *f;
+    Variable *v;
 
     // if function has constr name, sem_errs return
     if(funs->type != NULL && !strcmp(funs->name, c->selfName)){
@@ -210,10 +211,21 @@ void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
         sem_errs++;
         return;
     }
-    
+
     HASH_FIND_STR(*f_table, funs->name, f); // funcao declarada?
     if(f == NULL){
         f = (Function*)malloc(sizeof(Function));
+
+        // insert this
+        v = (Variable*)malloc(sizeof(Variable));
+        v->name = strdup("this");
+        v->type = c->selfName;
+        v->tref = c;
+        v->line = 0;
+        v->ch_begin = 0;
+        v->ch_end = 0;
+        HASH_ADD_KEYPTR(hh, f->vars, v->name, 4, v);
+    
         f->name = funs->name;
         f->type = funs->type;
         f->tref = resolve_type(funs->type, funs->line, funs->type_begin, funs->type_end);
@@ -390,7 +402,7 @@ void function_check_argTypes(Function *f, MethodInvoc *m_invk){
         int farg_num = arg_num;
         while(fargs != NULL){
             fargs = fargs->next;
-            arg_num++;
+            farg_num++;
         }
         printf("Error %d:%d: method %s expected %d arguments but %d was given\n", m_invk->line, m_invk->name_begin, m_invk->mname, farg_num, arg_num);
         print_arq_line(m_invk->line, m_invk->name_begin, m_invk->name_end);

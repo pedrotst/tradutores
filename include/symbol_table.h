@@ -44,7 +44,7 @@ Class* resolve_type(char *type, int line, int ch_begin, int ch_end);
 
 void check_stmts(StmtList *stmts, Function *f);
 void check_bool(Exp *e, Function *f);
-void function_check_argTypes(Function *f, ArgList *args);
+void function_check_argTypes(Function *f, ArgList *args, int line);
 
 char* var_type(Var *v, Function *f);
 char* exp_type(Exp *e, Function *f);

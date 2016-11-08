@@ -1,0 +1,51 @@
+class A extends Object{
+	A () {
+	}
+}
+class B extends Object{
+	B () {
+	}
+}
+class Pair extends Object{
+	Object fst;
+	Object snd;
+	Pair (Object fst, Object snd) {
+		this.fst = fst;
+		this.snd = snd;
+	}
+	Pair setfst (Object newfst) {
+		return new Pair(newfst, this.snd);
+	}
+}
+A myA;
+B myB;
+Pair myPair;
+myA = new A();
+myB = new B();
+myPair = new Pair(myA, myB);
+myPair.setfst(new B())
+Coloca Object na ct
+Coloca A na ct
+Coloca B na ct
+Coloca Pair na ct
+Error 28:25: variable newfst was not declared at
+        return new Pair(newfst, this.snd); 
+                        ^^^^^^
+Error 28:25: method Pair expected argument of type Object but received has type ?? at 
+        return new Pair(newfst, this.snd); 
+                        ^^^^^^
+Error 37:19: variable myA was not declared at
+myPair = new Pair(myA, myB);
+                  ^^^
+Error 37:19: method Pair expected argument of type Object but received has type ?? at 
+myPair = new Pair(myA, myB);
+                  ^^^
+Error 37:24: variable myB was not declared at
+myPair = new Pair(myA, myB);
+                       ^^^
+Error 37:24: method Pair expected argument of type Object but received has type ?? at 
+myPair = new Pair(myA, myB);
+                       ^^^
+Error 38:15: method setfst expected argument of type Object but received has type B at 
+myPair.setfst(new B());
+              ^^^^^^^

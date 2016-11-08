@@ -322,7 +322,7 @@ char* var_type(Var *v, Function *f){
             HASH_FIND_STR(ct, obj->cname, c_decl);
             if(c_decl != NULL){
                 HASH_FIND_STR(c_decl->functions, obj->cname, f_decl);
-                function_check_argTypes(f_decl, obj->args);
+                function_check_argTypes(f_decl, obj->args, v->line);
             } else {
                 if(obj->args != NULL){
                     printf("Error %d: class %s constructor expected 0 arguments at\n", v->line, obj->cname);
@@ -338,6 +338,12 @@ char* var_type(Var *v, Function *f){
             // 1) encontrar o tipo do objeto
             if(m_invk->obj == NULL)
                 obj_type = f->this->selfName;
+            else if(!strcmp(m_invk->mname, "int") || !strcmp(m_invk->mname, "int")){
+                printf("Error %d: Primitive types does not have methods at\n", v->line);
+                print_arq_line(v->line, v->ch_begin, v->ch_end);
+                sem_errs++;
+                return "??";
+            }
             else
                 obj_type = var_type(m_invk->obj, f);
             // 2) encontrar a declaracao daquela classe 
@@ -351,7 +357,7 @@ char* var_type(Var *v, Function *f){
                 return "??";
             }
             // 4) Match the arg types with the fargs types
-            function_check_argTypes(f_decl, m_invk->args);
+            function_check_argTypes(f_decl, m_invk->args, v->line);
             // 5) retornar o tipo do retorno
             return f_decl->type;
 
@@ -378,7 +384,7 @@ char* var_type(Var *v, Function *f){
     return "??";
 }
 
-void function_check_argTypes(Function *f, ArgList *args){
+void function_check_argTypes(Function *f, ArgList *args, int line){
     FormalArgs *fargs = f->fargs;
     Exp *arg;
     char *argType;
@@ -403,17 +409,17 @@ void function_check_argTypes(Function *f, ArgList *args){
             fargs = fargs->next;
             farg_num++;
         }
-        printf("Error %d: method %s expected %d arguments but %d was given\n", args->line, f->name, farg_num, arg_num);
-        print_arq_line(args->line, 0, 0);
+        printf("Error %d: method %s expected %d arguments but %d was given\n", line, f->name, farg_num, arg_num);
+        print_arq_line(line, 0, 0);
         sem_errs++;
     } else if (args != NULL){
-        printf("Error %d: method %s expected %d arguments ", args->line, f->name, arg_num);
+        printf("Error %d: method %s expected %d arguments ", line, f->name, arg_num);
         while(args != NULL){
             args = args->next;
             arg_num++;
         }
         printf("but %d was given\n", arg_num);
-        print_arq_line(args->line, 0, 0);
+        print_arq_line(line, 0, 0);
         sem_errs++;
     }
 

@@ -103,6 +103,9 @@ VarDecl* varDecl_node(char *type, IdList *ids,
 }
 
 StmtList* stmtList_node(StmtList *stmt, StmtList *head, int line){
+    if(stmt == NULL)
+        return NULL;
+
     stmt->line = line;
     stmt->next= NULL;
 

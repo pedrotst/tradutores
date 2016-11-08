@@ -27,7 +27,7 @@ Class* resolve_type(char *type, int line, int ch_begin, int ch_end){
     if(strcmp(type, "int") && strcmp(type, "bool")){
         HASH_FIND_STR(ct, type, t);
         if(t == NULL){
-            printf("ERROR %d:%d: class %s not declared\n", line, ch_begin, type);
+            printf("ERROR %d:%d: class %s not declared at\n", line, ch_begin, type);
             print_arq_line(line, ch_begin, ch_end);
         }
 
@@ -44,7 +44,7 @@ void add_raw_classes_ct(Program *p){
             int ch_len = strlen("class ") + 1;
             printf("WARN %d: Class %s already declared\n", cdecl->line, tmp->selfName);
             print_arq_line(cdecl->line, ch_len, ch_len + strlen(cdecl->selfName) - 1);
-            printf("Note %d: Last declaration was here\n", tmp->line);
+            printf("Note %d: Last declaration was here\n\n", tmp->line);
             print_arq_line(tmp->line, ch_len, ch_len + strlen(tmp->selfName) - 1);
         }else{
             c = (Class*) malloc(sizeof(Class));
@@ -147,7 +147,7 @@ void hash_insert_varDecl(VarDecl *vars, Variable **v_table){
         }else{
             printf("WARN %d:%d: Redeclaration of %s \n", vars->line, ids->ch_begin, tmp->name);
             print_arq_line(vars->line, ids->ch_begin, ids->ch_end);
-            printf("Note %d:%d: Last declaration of %s was here\n", tmp->line, tmp->ch_begin, tmp->name);
+            printf("Note %d:%d: Last declaration of %s was here\n\n", tmp->line, tmp->ch_begin, tmp->name);
             print_arq_line(tmp->line, tmp->ch_begin, tmp->ch_end);
 
         }
@@ -172,7 +172,7 @@ void hash_insert_fargs(FormalArgs *fargs, Variable **v_table){
         }else{
             printf("WARN %d: Variable %s already declared\n", fargs->line, fargs->name);
             print_arq_line(fargs->line, fargs->ch_begin , fargs->ch_end);
-            printf("Note %d:%d: Last declaration was here\n", tmp->line, tmp->ch_begin);
+            printf("Note %d:%d: Last declaration was here\n\n", tmp->line, tmp->ch_begin);
             print_arq_line(tmp->line, tmp->ch_begin, tmp->ch_end);
         }
         fargs = fargs->next;
@@ -212,6 +212,8 @@ void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
         f->line = funs->line;
         f->name_begin = funs->name_begin;
         f->name_end = funs->name_end;
+        f->type_begin = funs->type_begin;
+        f->type_end = funs->type_end;
         f->this = c;
         f->stmts = funs->stmts;
         f->fargs = funs->fargs;
@@ -223,7 +225,7 @@ void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
     else{
         printf("WARN %d: Function %s already declared in class %s\n", funs->line, funs->name, c->selfName);
         print_arq_line(funs->line, funs->name_begin, funs->name_end);
-        printf("Note %d: Last declaration was here\n", f->line);
+        printf("Note %d: Last declaration was here\n\n", f->line);
         print_arq_line(f->line, f->name_begin, f->name_end);
     }
     
@@ -263,8 +265,10 @@ void check_return(Exp *e, Function *f){
 
     }
     else if(strcmp(e_type, f->type)){
-        printf("Error %d: return must have type %s or some subtype, but was %s at\n", e->line, f->type, e_type);
+        printf("Error %d: function %s must return some type %s, but was %s at\n", e->line, f->name, f->type, e_type);
         print_arq_line(e->line, e->ch_begin, e->ch_begin);
+        printf("Note %d: function signature is here\n", f->line);
+        print_arq_line(f->line, f->type_begin, f->type_begin);
         sem_errs++;
     }
 }
@@ -289,7 +293,7 @@ void check_assignment(Assignment *assgn, Function *f){
         if(strcmp(lhs_type, rhs_type)){
             printf("Error %d: lhs of assignment has different type then rhs in\n", assgn->line);
             print_arq_line(assgn->line, 0, 0);
-            printf("Note: lhs of assignment has type %s and rhs has type %s\n", lhs_type, rhs_type);
+            printf("Note: lhs of assignment has type %s and rhs has type %s\n\n", lhs_type, rhs_type);
         sem_errs++;
         }
     }
@@ -322,7 +326,7 @@ char* var_type(Var *v, Function *f){
             HASH_FIND_STR(ct, obj->cname, c_decl);
             if(c_decl != NULL){
                 HASH_FIND_STR(c_decl->functions, obj->cname, f_decl);
-                function_check_argTypes(f_decl, obj->args, v->line);
+                function_check_argTypes(f_decl, obj->args, f, v->line);
             } else {
                 if(obj->args != NULL){
                     printf("Error %d: class %s constructor expected 0 arguments at\n", v->line, obj->cname);
@@ -357,7 +361,7 @@ char* var_type(Var *v, Function *f){
                 return "??";
             }
             // 4) Match the arg types with the fargs types
-            function_check_argTypes(f_decl, m_invk->args, v->line);
+            function_check_argTypes(f_decl, m_invk->args, f,v->line);
             // 5) retornar o tipo do retorno
             return f_decl->type;
 
@@ -384,7 +388,7 @@ char* var_type(Var *v, Function *f){
     return "??";
 }
 
-void function_check_argTypes(Function *f, ArgList *args, int line){
+void function_check_argTypes(Function *f, ArgList *args, Function *scope, int line){
     FormalArgs *fargs = f->fargs;
     Exp *arg;
     char *argType;
@@ -392,8 +396,8 @@ void function_check_argTypes(Function *f, ArgList *args, int line){
 
     while(fargs != NULL && args != NULL){
         arg = args->arg;
-        argType = exp_type(args->arg, f);
-        if(strcmp(fargs->type, argType) != 0){
+        argType = exp_type(args->arg, scope);
+        if(!isSubClass(argType, fargs->type)){
             printf("Error %d:%d: method %s expected argument of type %s but received has type %s at \n", arg->line, arg->ch_begin, f->name, fargs->type, argType);
             print_arq_line(arg->line, arg->ch_begin, arg->ch_end);
             sem_errs++;
@@ -450,6 +454,27 @@ char* op_type(char op){
     else if(op == '+' || op == '-' || op == '*' || op == '/')
         return "int";
     return "??";
+}
+
+int isSubClass(char *lhs, char *rhs){
+    /*if(!strcmp(lhs, "int") || !strcmp(lhs, "bool"))
+        return 0;
+    if(!strcmp(rhs, "int") || !strcmp(rhs, "bool"))
+        return 0;
+    */
+    Class *l, *r;
+
+    HASH_FIND_STR(ct, lhs, l);
+    HASH_FIND_STR(ct, rhs, r);
+    if(l == NULL || r == NULL)
+        return 0;
+
+    while(l != NULL){
+        if(!strcmp(l->selfName, r->selfName))
+            return 1;
+        l = l->super;
+    }
+    return 0;
 }
     
 

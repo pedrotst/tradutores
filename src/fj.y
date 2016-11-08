@@ -235,7 +235,7 @@ stmt
 | assignment ';' {$$ = stmt_node(ASSGN_STMT, NULL, NULL, NULL, NULL, $1, NULL);}
 | RETURN exp ';' {$$=stmt_node(RET_STMT, NULL, NULL, NULL, $2, NULL, NULL);}
 | var ';' {$$=stmt_node(VAR_STMT, NULL, NULL, NULL, NULL, NULL, $1);}
-| error ';' {yyerrok;$$ = NULL;}
+| error ';' {yyerrok; $$ = NULL;}
 ;
 
 suite
@@ -303,6 +303,7 @@ int main(int argc, char **argv)
     ct = NULL;
     yyin = fopen(file_name, "r");
     yyparse();
+    fclose(yyin);
     if(!yynerrs && !l_errs){ // So printa se o parse foi ok
         if(p_ast)
             print_program(p);
@@ -314,7 +315,7 @@ int main(int argc, char **argv)
             print_ct();
     }
     destruct_program(p);
-    free(source);
+    // free(source);
     return 0;
 }
 

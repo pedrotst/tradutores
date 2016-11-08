@@ -20,6 +20,7 @@ struct Function_s{
     char *name, *type;
     Class *tref;
     int line, name_begin, name_end;
+    int type_begin, type_end;
     Variable *vars;
     StmtList *stmts;
     FormalArgs *fargs;
@@ -44,8 +45,9 @@ Class* resolve_type(char *type, int line, int ch_begin, int ch_end);
 
 void check_stmts(StmtList *stmts, Function *f);
 void check_bool(Exp *e, Function *f);
-void function_check_argTypes(Function *f, ArgList *args, int line);
+void function_check_argTypes(Function *f, ArgList *args, Function *scope, int line);
 
+int isSubClass(char *lhs, char *rhs);
 char* var_type(Var *v, Function *f);
 char* exp_type(Exp *e, Function *f);
 int check_binOp(BinOp *b, Function *f);

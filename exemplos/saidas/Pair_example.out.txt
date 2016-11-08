@@ -1,0 +1,26 @@
+------------------ # Class Table # ------------------
+Main:{
+}
+8: A extd Object{
+	9: A(){
+		0: A this[0-0];
+	}
+}
+14: B extd Object{
+	15: B(){
+		0: B this[0-0];
+	}
+}
+19: Pair extd Object{
+	20: Object fst[12-14];
+	21: Object snd[12-14];
+	22: Pair(Object fst, Object snd){
+		0: Pair this[0-0];
+		22: Object fst[17-19];
+		22: Object snd[29-31];
+	}
+	27: Pair setfst(Object newfst){
+		0: Pair this[0-0];
+		27: Object newfst[24-29];
+	}
+}

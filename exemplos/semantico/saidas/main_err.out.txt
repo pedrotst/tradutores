@@ -1,0 +1,12 @@
+Error 3: lhs of assignment has different type then rhs in
+i = true;
+
+Note: lhs of assignment has type int and rhs has type bool
+
+Error 4: main and constructors cannot have a return at
+return true;
+       ^
+WARN 1: unreachable code after return
+ERROR 5:0: class bar not declared at
+bar a;
+

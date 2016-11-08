@@ -1,0 +1,13 @@
+WARN 3:7: Redeclaration of a 
+	bool a; // warn aqui
+	     ^
+Note 2:6: Last declaration of a was here
+
+	int a;
+	    ^
+------------------ # Class Table # ------------------
+Main:{
+}
+1: foo extd Object{
+	2: int a[6-6];
+}

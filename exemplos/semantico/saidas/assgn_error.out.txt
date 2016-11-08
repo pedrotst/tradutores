@@ -1,0 +1,13 @@
+Error 7: cannot assign a value to a method invocation in
+		b.m() = 23; // error
+
+Error 8: cannot assign a value an object creation in
+		new B() = 32; // error
+
+Error 10: rhs of operation is not int
+		a = 32 + true;
+		         ^^^^
+Error 11: lhs of assignment has different type then rhs in
+		b = 44;
+
+Note: lhs of assignment has type bar and rhs has type int

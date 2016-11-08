@@ -1,0 +1,12 @@
+WARN 2: Class foo already declared
+class foo extends Object {} // warn aqui
+      ^^^
+Note 1: Last declaration was here
+
+class foo extends Object {}
+      ^^^
+------------------ # Class Table # ------------------
+Main:{
+}
+1: foo extd Object{
+}

@@ -1,0 +1,23 @@
+WARN 2: Variable a already declared
+	int bar (int a, bool a){ // warn aqui
+	                     ^
+Note 2:15: Last declaration was here
+
+	int bar (int a, bool a){ // warn aqui
+	             ^
+WARN 3:10: Redeclaration of a 
+		Object a; // warn aqui
+		       ^
+Note 2:15: Last declaration of a was here
+
+	int bar (int a, bool a){ // warn aqui
+	             ^
+------------------ # Class Table # ------------------
+Main:{
+}
+1: foo extd Object{
+	2: int bar(int a, bool a){
+		0: foo this[0-0];
+		2: int a[15-15];
+	}
+}

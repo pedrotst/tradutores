@@ -1,0 +1,21 @@
+Error 4:12: expected a bool, but int was given at
+        if 1+1
+           ^^^
+Error 5: lhs of assignment has different type then rhs in
+            a = 1;
+
+Note: lhs of assignment has type bool and rhs has type int
+
+Error 7: lhs of assignment has different type then rhs in
+            a = 2;
+
+Note: lhs of assignment has type bool and rhs has type int
+
+Error 9:15: expected a bool, but int was given at
+        while 2+2
+              ^^^
+Error 10: lhs of assignment has different type then rhs in
+            a = 3;
+
+Note: lhs of assignment has type bool and rhs has type int
+

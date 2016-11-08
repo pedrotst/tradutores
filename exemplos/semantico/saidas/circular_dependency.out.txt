@@ -1,0 +1,24 @@
+class bar extends Object{
+	foo f;
+	bar b;
+}
+class foo extends bar{
+	bar b;
+	bar fu () {
+		return b;
+	}
+}
+
+------------------ # Class Table # ------------------
+Main:{
+}
+1: bar extd Object{
+	2: foo f[9-9];
+	3: bar b[9-9];
+}
+6: foo extd bar{
+	7: bar b[9-9];
+	9: bar fu(){
+		0: foo this[0-0];
+	}
+}

@@ -1,0 +1,20 @@
+class foo extends Object{
+	int i;
+	int f () {
+		int j;
+		return j;
+	}
+}
+foo f;
+f.i = f.f();
+
+------------------ # Class Table # ------------------
+Main:{
+}
+1: foo extd Object{
+	2: int i[9-9];
+	3: int f(){
+		0: foo this[0-0];
+		4: int j[13-13];
+	}
+}

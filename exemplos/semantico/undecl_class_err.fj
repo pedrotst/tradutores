@@ -1,1 +1,1 @@
-class foo extends bar {} // bar undeclared
+class foo extends bar {} /* bar undeclared */

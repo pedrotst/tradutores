@@ -1,0 +1,6 @@
+Error 3: function f must return some type int, but was bool at
+        return true;
+               ^
+Note 2: function signature is here
+    int f(){
+

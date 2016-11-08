@@ -1,0 +1,3 @@
+Error 3:6: expected a bool, but int was given at
+		if u {} // u is not a bool
+		   ^

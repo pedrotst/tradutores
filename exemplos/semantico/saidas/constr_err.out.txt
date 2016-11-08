@@ -1,0 +1,9 @@
+Error 7: main and constructors cannot have a return at
+            return false;
+                   ^
+WARN 10: Function foo already declared in class foo
+    foo(){
+    ^^^
+Note 2: Last declaration was here
+    foo(){
+    ^^^

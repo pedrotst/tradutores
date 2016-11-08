@@ -1,0 +1,15 @@
+WARN 3: Function bar already declared in class foo
+	bool bar () {} // warn aqui
+	     ^^^
+Note 2: Last declaration was here
+
+	int bar () {}
+	    ^^^
+------------------ # Class Table # ------------------
+Main:{
+}
+1: foo extd Object{
+	2: int bar(){
+		0: foo this[0-0];
+	}
+}

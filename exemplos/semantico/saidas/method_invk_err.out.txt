@@ -1,0 +1,39 @@
+Error 4: return must have type bool or some subtype, but was int at
+        return this.i;
+               ^
+Error 19: method x expected 2 arguments but 0 was given
+        i = b.x();
+
+Error 19: lhs of assignment has different type then rhs in
+        i = b.x();
+
+Note: lhs of assignment has type bar and rhs has type bool
+
+Error 20: lhs of assignment has different type then rhs in
+        i = b.i; 
+
+Note: lhs of assignment has type bar and rhs has type int
+
+Error 21:15: class bar does not have a method y
+        b.i = b.y(1); 
+                ^
+Error 21: lhs of assignment has different type then rhs in
+        b.i = b.y(1); 
+
+Note: lhs of assignment has type int and rhs has type ??
+
+Error 22:18: method x expected argument of type int but received has type bool at 
+        uu = b.x(true); 
+                 ^^^^
+Error 22: method x expected 2 arguments but 1 was given
+        uu = b.x(true); 
+
+Error 23:18: method x expected argument of type int but received has type bool at 
+        uu = b.x(true, 1); 
+                 ^^^^
+Error 23:24: method x expected argument of type bool but received has type int at 
+        uu = b.x(true, 1); 
+                       ^
+Error 25: method x expected 2 arguments but 0 was given
+        uu = b.x(); 
+

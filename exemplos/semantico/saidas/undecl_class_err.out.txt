@@ -1,0 +1,3 @@
+Error 1: Class bar is not a defined class at
+class foo extends bar {} /* bar undeclared */
+                  ^^^

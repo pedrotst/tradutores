@@ -263,6 +263,8 @@ void check_stmts(StmtList *stmts, Function *f){
             check_stmts(stmts->stmt_u->whileStmt->loop, f);
         } else if(stmts->utype == ASSGN_STMT){
             check_assignment(stmts->stmt_u->assgn, f);
+        } else if(stmts->utype == VAR_STMT){
+            var_type(stmts->stmt_u->varStmt, f);
         } else if(stmts->utype == RET_STMT){
             check_return(stmts->stmt_u->returnExp, f);
             if(stmts->next != NULL){

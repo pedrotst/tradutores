@@ -122,7 +122,7 @@ StmtList* stmtList_node(StmtList *stmt, StmtList *head, int line){
 
 
 StmtList* stmt_node(tag utype, VarDecl *varDecl, IfStmt *ifStmt,
-        WhileStmt *whileStmt, Exp *returnExp, Assignment *assgn){
+        WhileStmt *whileStmt, Exp *returnExp, Assignment *assgn, Var *varStmt){
     StmtList *stmt = (StmtList*)malloc(sizeof(StmtList));
     Stmt_u *stmt_u = (Stmt_u*)malloc(sizeof(Stmt_u));
     stmt->line = 0;
@@ -143,6 +143,9 @@ StmtList* stmt_node(tag utype, VarDecl *varDecl, IfStmt *ifStmt,
             break;
         case WHILE_STMT:
             stmt_u->whileStmt = whileStmt;
+            break;
+        case VAR_STMT:
+            stmt_u->varStmt = varStmt;
             break;
         default:
         break;
@@ -700,6 +703,9 @@ void print_stmt(StmtList *stmts, int tabs){
             case IF_STMT:
                 print_if(stmts->stmt_u->ifStmt, tabs);
                 break;
+            case VAR_STMT:
+                print_var(stmts->stmt_u->varStmt, tabs);
+                break;
             default:
             break;
         }
@@ -740,7 +746,7 @@ void print_return(Exp *e, int tabs){
 void print_exp(Exp *e){
     if(e != NULL){
         if(e->utype == VAR_EXP)
-            print_var(e->exp_u->var);
+            print_var(e->exp_u->var, 0);
         else if(e->utype == BINOP_EXP)
             print_binOp(e->exp_u->binOp);
         else if(e->utype == PAR_EXP){
@@ -817,13 +823,14 @@ void print_binOp(BinOp *b){
 void print_assignment(Assignment *assgn, int tabs){
     if(assgn != NULL){
         print_tabs(tabs);
-        print_var(assgn->lhs);
+        print_var(assgn->lhs, 0);
         printf(" = ");
         print_exp(assgn->rhs);
     }
 }
 
-void print_var(Var *var){
+void print_var(Var *var, int tabs){
+    print_tabs(tabs);
     if(var != NULL){
         if(var->utype == ID_VAR)
             printf("%s", var->var_u->id);
@@ -847,7 +854,7 @@ void print_obj(Object *obj){
 
 void print_methodInvoc(MethodInvoc *minvok){
     if(minvok != NULL){
-        print_var(minvok->obj);
+        print_var(minvok->obj, 0);
         if(minvok->obj != NULL)
             printf(".");
         printf("%s(", minvok->mname);
@@ -858,7 +865,7 @@ void print_methodInvoc(MethodInvoc *minvok){
 
 void print_fieldAccess(FieldAccess *faccess){
     if(faccess != NULL){
-        print_var(faccess->obj);
+        print_var(faccess->obj, 0);
         printf(".%s", faccess->fname);
     }
 }

@@ -222,19 +222,19 @@ primary
 stmt
 : IF exp suite {
     IfStmt *a = if_node($2, $3, NULL);
-    $$=stmt_node(IF_STMT, NULL, a, NULL, NULL, NULL);
+    $$=stmt_node(IF_STMT, NULL, a, NULL, NULL, NULL, NULL);
     }
 | IF exp suite ELSE suite %prec ELSE{
     IfStmt *a = if_node($2, $3, $5);
-    $$=stmt_node(IF_STMT, NULL, a, NULL, NULL, NULL);
+    $$=stmt_node(IF_STMT, NULL, a, NULL, NULL, NULL, NULL);
     }
 | WHILE exp suite {
     WhileStmt *w = while_node($2, $3);
-    $$=stmt_node(WHILE_STMT, NULL, NULL, w, NULL, NULL);}
-| varDecl ';' { $$=stmt_node(VAR_DECL, $1, NULL, NULL, NULL, NULL); }
-| assignment ';' {$$ = stmt_node(ASSGN_STMT, NULL, NULL, NULL, NULL, $1);}
-| RETURN exp ';' {$$=stmt_node(RET_STMT, NULL, NULL, NULL, $2, NULL);}
-| var ';' {$$=NULL;}
+    $$=stmt_node(WHILE_STMT, NULL, NULL, w, NULL, NULL, NULL);}
+| varDecl ';' { $$=stmt_node(VAR_DECL, $1, NULL, NULL, NULL, NULL, NULL); }
+| assignment ';' {$$ = stmt_node(ASSGN_STMT, NULL, NULL, NULL, NULL, $1, NULL);}
+| RETURN exp ';' {$$=stmt_node(RET_STMT, NULL, NULL, NULL, $2, NULL, NULL);}
+| var ';' {$$=stmt_node(VAR_STMT, NULL, NULL, NULL, NULL, NULL, $1);}
 | error ';' {yyerrok;$$ = NULL;}
 ;
 

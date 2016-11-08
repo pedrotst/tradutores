@@ -10,7 +10,7 @@
 /*tags serão utilizadas para tipagem das unions*/
 typedef enum type_enum{
     VAR_DECL, FUN_DECL, CONSTR_DECL,
-    IF_STMT, RET_STMT, WHILE_STMT, ASSGN_STMT,
+    IF_STMT, RET_STMT, WHILE_STMT, ASSGN_STMT, VAR_STMT,
     ID_VAR, OBJ_VAR,
     FIELD_OBJ, METH_OBJ, NEW_OBJ,
     VAR_EXP, BINOP_EXP, PAR_EXP, PRIM_EXP,
@@ -114,6 +114,7 @@ typedef union Stmt__u{
     Exp *returnExp;
     VarDecl *varDecl;
     Assignment *assgn;
+    Var *varStmt;
 }Stmt_u;
 
 struct StmtList_s{
@@ -204,7 +205,7 @@ FormalArgs* formalArgs_node(char *type, char *name, FormalArgs *head, int line, 
 StmtList* stmtList_node(StmtList *stmt, StmtList *head, int line);
 
 StmtList* stmt_node(tag utype, VarDecl *varDecl, IfStmt *ifStmt,
-    WhileStmt *whileStmt, Exp *returnStmt, Assignment *assgn);
+    WhileStmt *whileStmt, Exp *returnStmt, Assignment *assgn, Var *varStmt);
 
 IfStmt* if_node(Exp *cond, StmtList *then, StmtList *els);
 WhileStmt* while_node(Exp *cond, StmtList *loop);
@@ -239,7 +240,7 @@ void print_varDecl(VarDecl *varDecls, int tabs);
 void print_funDecl(FunctionDecl *funDecl);
 void print_constrDecl(ConstrDecl *constrDecl);
 void print_return(Exp *e, int tabs);
-void print_var(Var *v);
+void print_var(Var *v, int tabs);
 void print_if(IfStmt *i, int tabs);
 void print_while(WhileStmt *w, int tabs);
 void print_exp(Exp *e);

@@ -1,0 +1,38 @@
+------------------ # Class Table # ------------------
+Main:{
+}
+8: Int extd Object{
+	0: super(){
+	}
+	9: Int(){
+		0: Int this[0-0];
+	}
+	11: Int add(Int rhs){
+		0: Int this[0-0];
+		11: Int rhs[17-19];
+	}
+}
+16: O extd Int{
+	0: super(){
+	}
+	17: O(){
+		0: O this[0-0];
+	}
+	19: Int add(Int rhs){
+		0: O this[0-0];
+		19: Int rhs[17-19];
+	}
+}
+24: S extd Int{
+	25: Int num[9-11];
+	0: super(){
+	}
+	27: S(Int num){
+		0: S this[0-0];
+		27: Int num[11-13];
+	}
+	32: Int add(Int rhs){
+		0: S this[0-0];
+		32: Int rhs[17-19];
+	}
+}

@@ -55,6 +55,20 @@ void add_raw_classes_ct(Program *p){
             c->functions = NULL;
             c->fields = NULL;
             DEBUG_PRINT("Coloca %s na ct\n", c->selfName);
+            Function *f;
+
+            f = (Function*) malloc(sizeof(Function));
+            f->name = strdup("super");
+            f->type = NULL;
+            f->tref = NULL;
+            f->fargs = NULL;
+            f->vars = NULL;
+            f->stmts = NULL;
+            f->line = f->type_begin = f->type_end = f->name_begin = f->name_end = 0;
+            f->this = c;
+
+
+            HASH_ADD_KEYPTR(hh, c->functions, f->name, strlen(f->name), f);
             HASH_ADD_KEYPTR(hh, ct, c->selfName, strlen(c->selfName), c);
         } 
         cdecl = cdecl->next;
@@ -105,9 +119,47 @@ int build_ct(Program *p){
 
 }
 
+void add_raw_funs_class(Class *c, ClassMember *cmem){
+    Function *f;
+    FunctionDecl *funs;
+
+    while(cmem != NULL){
+        if(cmem->utype == FUN_DECL){
+            funs = cmem->member->funDecl;
+            HASH_FIND_STR(c->functions, funs->name, f); // funcao declarada?
+            if(f == NULL){
+                DEBUG_PRINT("add fun %s to class %s\n", funs->name, c->selfName);
+                f = (Function*) malloc(sizeof(Function));   
+                f->vars = NULL;
+
+                f->name = funs->name;
+                f->type = funs->type;
+                f->tref = NULL;
+                f->line = funs->line;
+                f->name_begin = funs->name_begin;
+                f->name_end = funs->name_end;
+                f->type_begin = funs->type_begin;
+                f->type_end = funs->type_end;
+                f->this = c;
+                f->stmts = funs->stmts;
+                f->fargs = funs->fargs;
+                f->vars = NULL;
+                HASH_ADD_KEYPTR(hh, c->functions, f->name, strlen(f->name), f);
+            }
+            else{
+                printf("WARN %d: Function %s already declared in class %s\n", funs->line, funs->name, c->selfName);
+                print_arq_line(funs->line, funs->name_begin, funs->name_end);
+                printf("Note %d: Last declaration was here\n\n", f->line);
+                print_arq_line(f->line, f->name_begin, f->name_end);
+            }
+        
+        }
+        cmem = cmem->next;
+    }
+}
+
 void build_class_body(Class *c, ClassMember *cmem){
-    int constr_count = 0;
-    int constr_line = 0;
+    add_raw_funs_class(c, cmem);
     while(cmem != NULL){
         if(cmem->utype == VAR_DECL)
             hash_insert_varDecl(cmem->member->varDecls, &(c->fields));
@@ -116,14 +168,6 @@ void build_class_body(Class *c, ClassMember *cmem){
 
         cmem = cmem->next;
     }
-    /*
-    if(constr_count > 1){
-        printf("Error %d: Only one constructor per class is permited at class %s\n", constr_line, c->selfName);
-        print_arq_line(constr_line, 0, 0);
-        sem_errs++;
-    }
-    */
-
 }
 
 /**
@@ -192,42 +236,26 @@ void hash_insert_function(FunctionDecl *funs, Function **f_table, Class *c){
     }
 
     HASH_FIND_STR(*f_table, funs->name, f); // funcao declarada?
-    if(f == NULL){
-        f = (Function*)malloc(sizeof(Function));
-        f->vars = NULL;
-
-        // insert this
-        v = (Variable*)malloc(sizeof(Variable));
-        v->name = strdup("this");
-        v->type = c->selfName;
-        v->tref = c;
-        v->line = 0;
-        v->ch_begin = 0;
-        v->ch_end = 0;
-        HASH_ADD_KEYPTR(hh, f->vars, v->name, 4, v);
-    
-        f->name = funs->name;
-        f->type = funs->type;
+     
+    if(f != NULL){
         f->tref = resolve_type(funs->type, funs->line, funs->type_begin, funs->type_end);
-        f->line = funs->line;
-        f->name_begin = funs->name_begin;
-        f->name_end = funs->name_end;
-        f->type_begin = funs->type_begin;
-        f->type_end = funs->type_end;
-        f->this = c;
-        f->stmts = funs->stmts;
-        f->fargs = funs->fargs;
+
+    // insert this
+    Variable *v = (Variable*)malloc(sizeof(Variable));
+    v->name = strdup("this");
+    v->type = c->selfName;
+    v->tref = c;
+    v->line = 0;
+    v->ch_begin = 0;
+    v->ch_end = 0;
+    HASH_ADD_KEYPTR(hh, f->vars, v->name, 4, v);
+
+
         // insert the arguments to the function var table
         hash_insert_fargs(funs->fargs, &(f->vars));
         check_stmts(funs->stmts, f);
-        HASH_ADD_KEYPTR(hh, *f_table, f->name, strlen(f->name), f);
     }
-    else{
-        printf("WARN %d: Function %s already declared in class %s\n", funs->line, funs->name, c->selfName);
-        print_arq_line(funs->line, funs->name_begin, funs->name_end);
-        printf("Note %d: Last declaration was here\n\n", f->line);
-        print_arq_line(f->line, f->name_begin, f->name_end);
-    }
+    
     
 }
 
@@ -326,7 +354,9 @@ char* var_type(Var *v, Function *f){
             HASH_FIND_STR(ct, obj->cname, c_decl);
             if(c_decl != NULL){
                 HASH_FIND_STR(c_decl->functions, obj->cname, f_decl);
-                function_check_argTypes(f_decl, obj->args, f, v->line);
+                if(f_decl != NULL){
+                    function_check_argTypes(f_decl, obj->args, f, v->line);
+                }
             } else {
                 if(obj->args != NULL){
                     printf("Error %d: class %s constructor expected 0 arguments at\n", v->line, obj->cname);

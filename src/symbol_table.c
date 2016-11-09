@@ -372,14 +372,15 @@ char* var_type(Var *v, Function *f){
             // 1) encontrar o tipo do objeto
             if(m_invk->obj == NULL)
                 obj_type = f->this->selfName;
-            else if(!strcmp(m_invk->mname, "int") || !strcmp(m_invk->mname, "int")){
+            else
+                obj_type = var_type(m_invk->obj, f);
+
+            if(!strcmp(obj_type, "int") || !strcmp(obj_type, "int")){
                 printf("Error %d: Primitive types does not have methods at\n", v->line);
                 print_arq_line(v->line, v->ch_begin, v->ch_end);
                 sem_errs++;
                 return "??";
             }
-            else
-                obj_type = var_type(m_invk->obj, f);
             // 2) encontrar a declaracao daquela classe 
             HASH_FIND_STR(ct, obj_type, c_decl);
             // 3) encontrar o metodo na declaracao daquela classe 

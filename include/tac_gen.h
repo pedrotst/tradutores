@@ -7,6 +7,6 @@
 #include "symbol_table.h"
 
 
-void gen_tac(Class *ct);
+void gen_tac(Class *ct, Program *p);
 
 #endif

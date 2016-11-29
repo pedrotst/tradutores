@@ -1,0 +1,11 @@
+class f extends Object{
+    int fiel;
+    int fa(){
+        fiel = 1;
+    }
+}
+
+int i, i, b, c, d;
+bool x, y, z;
+i = 1;
+b = 32;

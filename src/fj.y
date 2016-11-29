@@ -316,7 +316,7 @@ int main(int argc, char **argv)
             if(p_ct)
                 print_ct();
 
-            gen_tac(ct);
+            gen_tac(ct, p);
         }
     }
     destruct_program(p);

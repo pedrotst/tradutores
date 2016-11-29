@@ -586,25 +586,27 @@ Variable* class_get_field(Class* c, char* id){
 */
 
 void print_ct(){
-Class *c = NULL;
-/*
-   HASH_FIND_STR(ct, "a", c);
-   printf("Achei %d:%s extd %s na ct\n", c->line, c->selfName, c->superName);
-   */
-   printf("------------------ # Class Table # ------------------\n");
-   for(c=ct; c != NULL; c = (c->hh.next)){
-       // Don't print if its object
-       if(strcmp(c->selfName, "Object")) {
-           printf("%d: %s extd %s{\n", c->line, c->selfName, c->superName);
-           print_vars(c->fields, 1);
-           print_functions(c->functions);
-           printf("}\n");
-       } else{
-           printf("Main:{\n");
-           print_vars(c->fields, 1);
-           printf("}\n");
-       }
-   }
+    Class *c = NULL;
+    /*
+       HASH_FIND_STR(ct, "a", c);
+       printf("Achei %d:%s extd %s na ct\n", c->line, c->selfName, c->superName);
+     */
+    printf("------------------ # Class Table # ------------------\n");
+    for(c=ct; c != NULL; c = (c->hh.next)){
+        // Don't print if its object
+        if(strcmp(c->selfName, "Object")) {
+            printf("%d: %s extd %s{\n", c->line, c->selfName, c->superName);
+            print_vars(c->fields, 1);
+            print_functions(c->functions);
+            printf("}\n");
+        } else{
+            Function *main = NULL;
+            printf("Main:{\n");
+            HASH_FIND_STR(c->functions, "main", main);
+            print_vars(main->vars, 1);
+            printf("}\n");
+        }
+    }
 }
 
 void print_vars(Variable *vt, int tabs){

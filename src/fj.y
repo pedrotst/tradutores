@@ -6,6 +6,7 @@
 #include "debug.h"
 #include "ast.h"
 #include "symbol_table.h"
+#include "tac_gen.h"
 
 
 void yyerror(const char*);
@@ -311,8 +312,12 @@ int main(int argc, char **argv)
         buff_file(file_name);
         sem_errs = build_ct(p);
 
-        if(!sem_errs && p_ct) 
-            print_ct();
+        if(!sem_errs ) {
+            if(p_ct)
+                print_ct();
+
+            gen_tac(ct);
+        }
     }
     destruct_program(p);
     // free(source);

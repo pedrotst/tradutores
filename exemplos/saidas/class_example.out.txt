@@ -1,0 +1,202 @@
+class bar extends Object{
+	int u, b, c, d, e;
+	int x;
+	bool qk (At x) {
+	}
+	int f (int a, bool b) {
+		int aasdf, c;
+		a = b;
+		new Bar() = a;
+		return a;
+	}
+	int f () {
+	}
+	bar (Bool a, int a) {
+		return a + d;
+		int c, d;
+		a = b <= d;
+		c = this.f(1, 2, i);
+		u = f(a, b, 32 + (new U(new A()) * 44));
+	}
+}
+class foo extends bar{
+	int x, k, c, d;
+	foo (int a, boolean c, xit b) {
+		a = b;
+	}
+	int a, b, asdf, kct;
+	int fx () {
+		bar b;
+		b.f(1, true) = 32;
+	}
+}
+class a extends foo{
+	bar eu, sou, muito, louco;
+}
+int a, fjd, fodassse, d;
+Foo f;
+a = b;
+if true{
+	a = b;
+}
+else{
+	b = c;
+}
+while asasdfsdaf{
+	u = asdf && 32;
+}
+a = new A(1, 2, c);
+x = a.foo(12);
+d = (c.u);
+
+WARN 14: Function f already declared in class bar
+    int f(){}
+        ^
+Note 7: Last declaration was here
+
+    int f(int a, bool b){
+        ^
+ERROR 5:13: class At not declared at
+    bool qk(At x){}
+            ^^
+Error 9: lhs of assignment has different type then rhs in
+        a = b;
+
+Note: lhs of assignment has type int and rhs has type bool
+
+Error 10: cannot assign a value an object creation in
+        new Bar() = a;
+
+ERROR 16:9: class Bool not declared at
+    bar(Bool a, int a){
+        ^^^^
+WARN 16: Variable a already declared
+    bar(Bool a, int a){
+                    ^
+Note 16:14: Last declaration was here
+
+    bar(Bool a, int a){
+             ^
+Error 17: lhs of operation is not int
+        return a + d;
+               ^
+Error 17: main and constructors cannot have a return at
+        return a + d;
+               ^
+WARN 16: unreachable code after return
+Error 19: lhs of operation is not bool
+        a = b <= d;
+            ^
+Error 19: rhs of operation is not bool
+        a = b <= d;
+                 ^
+Error 19: lhs of assignment has different type then rhs in
+        a = b <= d;
+
+Note: lhs of assignment has type Bool and rhs has type bool
+
+Error 20:20: method f expected argument of type int but received has type int at 
+        c = this.f(1,2,i);
+                   ^
+Error 20:22: method f expected argument of type bool but received has type int at 
+        c = this.f(1,2,i);
+                     ^
+Error 20: method f expected 2 arguments but 3 was given
+        c = this.f(1,2,i);
+
+Error 21:15: method f expected argument of type int but received has type Bool at 
+        u = f(a, b, 32 + (new U(new A()) * 44));
+              ^
+Error 21:18: method f expected argument of type bool but received has type int at 
+        u = f(a, b, 32 + (new U(new A()) * 44));
+                 ^
+Error 21: method f expected 2 arguments but 3 was given
+        u = f(a, b, 32 + (new U(new A()) * 44));
+
+ERROR 27:16: class boolean not declared at
+    foo(int a, boolean c, xit b){
+               ^^^^^^^
+ERROR 27:27: class xit not declared at
+    foo(int a, boolean c, xit b){
+                          ^^^
+Error 28: lhs of assignment has different type then rhs in
+        a = b;
+
+Note: lhs of assignment has type int and rhs has type xit
+
+Error 33: cannot assign a value to a method invocation in
+        b.f(1, true) = 32;
+
+ERROR 42:0: class Foo not declared at
+Foo f;
+
+Error 44:3: variable b was not declared at
+a=b;
+  ^
+Error 44: lhs of assignment has different type then rhs in
+a=b;
+
+Note: lhs of assignment has type int and rhs has type ??
+
+Error 46:9: variable b was not declared at
+    a = b;
+        ^
+Error 46: lhs of assignment has different type then rhs in
+    a = b;
+
+Note: lhs of assignment has type int and rhs has type ??
+
+Error 49:5: variable b was not declared at
+    b = c;
+    ^
+Error 49:9: variable c was not declared at
+    b = c;
+        ^
+Error 52:7: variable asasdfsdaf was not declared at
+while asasdfsdaf{
+      ^^^^^^^^^^
+Error 52:7: expected a bool, but ?? was given at
+while asasdfsdaf{
+      ^^^^^^^^^^
+Error 53:5: variable u was not declared at
+    u = asdf && 32;
+    ^
+Error 53:9: variable asdf was not declared at
+    u = asdf && 32;
+        ^^^^
+Error 53: lhs of operation is not bool
+    u = asdf && 32;
+        ^^^^
+Error 53: rhs of operation is not bool
+    u = asdf && 32;
+                ^^
+Error 53: lhs of assignment has different type then rhs in
+    u = asdf && 32;
+
+Note: lhs of assignment has type ?? and rhs has type bool
+
+Error 56: class A constructor expected 0 arguments at
+a = new A(1, 2, c);
+
+Error 56: lhs of assignment has different type then rhs in
+a = new A(1, 2, c);
+
+Note: lhs of assignment has type int and rhs has type A
+
+Error 57:1: variable x was not declared at
+x = a.foo(12);
+^
+Error 57: Primitive types does not have methods at
+x = a.foo(12);
+    ^^^^^^^^^
+Error 58:6: variable c was not declared at
+d = (c.u);
+     ^
+Error 58:6: class Object does not have a field u
+d = (c.u);
+     ^^^
+Error 58: lhs of assignment has different type then rhs in
+d = (c.u);
+
+Note: lhs of assignment has type int and rhs has type ??
+

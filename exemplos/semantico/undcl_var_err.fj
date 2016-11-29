@@ -1,5 +1,5 @@
 class foo extends Object {
 	int bar (int a){
-		if u {}; // undeclared u
+		if u {} // undeclared u
 	}
 }
